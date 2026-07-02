@@ -40,7 +40,7 @@ a{color:inherit;text-decoration:none}
   background:radial-gradient(120% 90% at 50% 50%,transparent 55%,rgba(5,10,8,.55) 100%)}
 
 /* ---------- Скролл-простор ---------- */
-.spacer{height:700vh;position:relative;z-index:0}
+.spacer{height:1000vh;position:relative;z-index:0}
 
 /* ---------- Оверлеи-пространства ---------- */
 .overlay{position:fixed;inset:0;z-index:5;pointer-events:none}
@@ -130,6 +130,53 @@ h1,.h1{font-family:var(--serif);font-weight:400;font-size:clamp(2.2rem,7vw,4.8re
 .brand em{font-style:italic;color:var(--brass-l)}
 .brand .mark{color:var(--brass)}
 
+/* ---------- Экран-приглашение ---------- */
+.enter{position:fixed;inset:0;z-index:11000;
+  background:radial-gradient(90% 70% at 50% 40%,#16261e 0%,var(--bg) 70%);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.1rem;
+  text-align:center;padding:0 1.5rem;
+  transition:opacity 1.2s var(--ease),visibility 1.2s}
+.enter.is-gone{opacity:0;visibility:hidden}
+.enter__mark{font-size:2.6rem;color:var(--brass);animation:breathe 3.2s var(--ease) infinite}
+@keyframes breathe{50%{transform:scale(1.14);opacity:.75}}
+.enter__brand{font-family:var(--serif);font-size:clamp(2.6rem,8vw,4.2rem);letter-spacing:.1em;color:var(--ink)}
+.enter__sub{font-size:.72rem;letter-spacing:.3em;text-transform:uppercase;color:var(--brass);margin-bottom:1.2rem}
+.enter__note{font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft);opacity:.7;margin-top:1.4rem}
+.flat .enter{display:none}
+body:not(.entered):not(.flat) .hint{opacity:0}
+
+/* ---------- Кнопка звука ---------- */
+.mute{position:fixed;left:clamp(1.2rem,4vw,2.4rem);bottom:1.6rem;z-index:10;
+  width:46px;height:46px;border-radius:50%;border:1px solid var(--line);
+  background:rgba(15,27,22,.55);backdrop-filter:blur(8px);color:var(--brass-l);
+  font-size:1.05rem;cursor:pointer;display:none;align-items:center;justify-content:center;
+  transition:border-color .4s,transform .4s var(--ease)}
+.mute:hover{border-color:var(--brass);transform:scale(1.08)}
+.mute:focus-visible{outline:2px solid var(--brass-l);outline-offset:3px}
+body.entered .mute{display:flex}
+.flat .mute{display:none !important}
+
+/* ---------- Панель услуги (фокус на карточке) ---------- */
+.focus-panel{position:fixed;right:clamp(1rem,6vw,5rem);top:50%;z-index:9;
+  width:min(360px,86vw);background:rgba(16,27,21,.9);backdrop-filter:blur(14px);
+  border:1px solid var(--line);border-radius:18px;padding:1.7rem 1.6rem 1.5rem;
+  opacity:0;transform:translateY(-50%) translateX(34px);pointer-events:none;
+  transition:opacity .6s var(--ease),transform .6s var(--ease)}
+.focus-panel.is-on{opacity:1;transform:translateY(-50%);pointer-events:auto}
+.focus-panel .dur{font-size:.7rem;letter-spacing:.24em;text-transform:uppercase;color:var(--brass);margin-bottom:.4rem}
+.focus-panel h3{font-family:var(--serif);font-weight:400;font-size:1.75rem;line-height:1.1;margin-bottom:.7rem}
+.focus-panel p{color:var(--ink-soft);font-size:.93rem;font-weight:300;line-height:1.55}
+.focus-panel .row{display:flex;gap:.7rem;margin-top:1.2rem;flex-wrap:wrap}
+.focus-panel .btn{padding:.7rem 1.5rem;font-size:.88rem}
+.focus-close{position:absolute;top:.65rem;right:.85rem;background:none;border:0;
+  color:var(--ink-soft);font-size:1.15rem;cursor:pointer;padding:.3rem;line-height:1}
+.focus-close:hover{color:var(--brass-l)}
+@media (max-width:640px){
+  .focus-panel{left:1rem;right:1rem;top:auto;bottom:5.4rem;width:auto;
+    transform:translateY(24px)}
+  .focus-panel.is-on{transform:translateY(0)}
+}
+
 /* ============================================================
    ПЛОСКИЙ ФОЛБЭК (нет WebGL / prefers-reduced-motion / ?flat)
    ============================================================ */
@@ -169,7 +216,7 @@ html.no-js .space{opacity:1;transform:none}
 <main class="overlay" id="top">
 
   <!-- 1. Вход -->
-  <section class="space" data-c="0.045" data-w="0.055" aria-label="Вход">
+  <section class="space" data-c="0.045" data-w="0.038" aria-label="Вход">
     <div class="inner">
       <p class="eyebrow">MAI SPA · тайский SPA · Йошкар-Ола</p>
       <h1>Вечер, который<br><span class="em">тело запомнит</span></h1>
@@ -179,7 +226,7 @@ html.no-js .space{opacity:1;transform:none}
   </section>
 
   <!-- 2. Зал ритуалов -->
-  <section class="space" data-c="0.30" data-w="0.055" aria-label="Зал ритуалов">
+  <section class="space" data-c="0.30" data-w="0.038" aria-label="Зал ритуалов">
     <div class="inner">
       <p class="eyebrow">Пространство второе</p>
       <h2 class="h2">Зал ритуалов</h2>
@@ -197,7 +244,7 @@ html.no-js .space{opacity:1;transform:none}
   </section>
 
   <!-- 3. Пространство пара -->
-  <section class="space" data-c="0.52" data-w="0.055" aria-label="Пространство пара">
+  <section class="space" data-c="0.52" data-w="0.038" aria-label="Пространство пара">
     <div class="inner">
       <p class="eyebrow">Пространство третье</p>
       <h2 class="h2">Пространство пара</h2>
@@ -207,7 +254,7 @@ html.no-js .space{opacity:1;transform:none}
   </section>
 
   <!-- 4. Зал мастеров -->
-  <section class="space" data-c="0.74" data-w="0.055" aria-label="Зал мастеров">
+  <section class="space" data-c="0.74" data-w="0.038" aria-label="Зал мастеров">
     <div class="inner">
       <p class="eyebrow">Пространство четвёртое</p>
       <h2 class="h2">Зал мастеров</h2>
@@ -221,7 +268,7 @@ html.no-js .space{opacity:1;transform:none}
   </section>
 
   <!-- 5. Финал -->
-  <section class="space" data-c="0.965" data-w="0.075" aria-label="Контакты">
+  <section class="space" data-c="0.965" data-w="0.055" aria-label="Контакты">
     <div class="inner">
       <p class="eyebrow">MAI SPA · Йошкар-Ола</p>
       <h2 class="h2">До встречи<br>в <span class="em">тишине</span></h2>
@@ -244,6 +291,29 @@ html.no-js .space{opacity:1;transform:none}
 
 <div class="hint" id="hint" aria-hidden="true"><span>Листайте</span><i></i></div>
 
+<!-- Экран-приглашение -->
+<div class="enter" id="enter" role="dialog" aria-label="Вход в MAI SPA">
+  <span class="enter__mark">✦</span>
+  <p class="enter__brand">MAI SPA</p>
+  <p class="enter__sub">премиальный тайский SPA · Йошкар-Ола</p>
+  <button class="btn" id="enterBtn" type="button">Войти в MAI SPA</button>
+  <p class="enter__note">путешествие со звуком · это займёт минуту</p>
+</div>
+
+<!-- Звук -->
+<button class="mute" id="muteBtn" type="button" aria-label="Включить или выключить звук">🔊</button>
+
+<!-- Панель услуги -->
+<aside class="focus-panel" id="focusPanel" aria-hidden="true">
+  <button class="focus-close" id="focusClose" type="button" aria-label="Закрыть">✕</button>
+  <p class="dur" id="fpDur"></p>
+  <h3 id="fpTitle"></h3>
+  <p id="fpDesc"></p>
+  <div class="row">
+    <a class="btn" href="https://n1351412.yclients.com" target="_blank" rel="noopener">Записаться</a>
+  </div>
+</aside>
+
 <noscript><style>#gl,.vignette,.spacer,.rail,.hint{display:none}.overlay{position:static}.space{position:static;min-height:auto;padding:4rem 1.5rem}</style></noscript>
 
 <script>
@@ -261,6 +331,7 @@ document.documentElement.classList.add('js');
 var REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
 var FLAT_QS = /[?&]flat=1/.test(location.search);
 var DEBUG_P = (function(){ var m = location.search.match(/[?&]p=([\d.]+)/); return m ? parseFloat(m[1]) : null; })();
+var DEBUG_FOCUS = (function(){ var m = location.search.match(/[?&]focus=(\d+)/); return m ? parseInt(m[1],10) : null; })();
 var MOBILE = innerWidth < 760;
 
 /* ---------- палитра ---------- */
@@ -323,9 +394,9 @@ function mat4Basis(R,U,F,P,sx,sy){
 
 /* ---------- Catmull-Rom сплайн (аналог THREE.CatmullRomCurve3) ---------- */
 var CTRL = [
-  v3(0, 2.0, 84), v3(0, 2.0, 60), v3(0, 2.0, 36), v3(0, 2.0, 14),
-  v3(0, 2.0, -2), v3(6, 1.8, -15), v3(13, 1.6, -30), v3(5, 1.9, -44),
-  v3(-12, 2.2, -58), v3(-7, 4.6, -72), v3(0, 9.0, -86)
+  v3(0, 2.0, 116), v3(0, 2.0, 84), v3(0, 2.0, 52), v3(0, 2.0, 20),
+  v3(0, 2.0, -6), v3(8, 1.8, -26), v3(17, 1.6, -46), v3(7, 1.9, -66),
+  v3(-16, 2.2, -84), v3(-9, 4.8, -102), v3(0, 9.5, -120)
 ];
 function splineP(t) {
   t = clamp(t, 0, 1);
@@ -693,12 +764,12 @@ function texName(name) {
    Построение сцены
    ============================================================ */
 var SERVICES = [
-  ['01','Тайский массаж','60–90 мин'],
-  ['02','Oil-массаж','60–90 мин'],
-  ['03','SPA для одного','90–120 мин'],
-  ['04','SPA для двоих','90–180 мин'],
-  ['05','VIP-ритуалы','120–180 мин'],
-  ['06','Thai Yoga','60 мин']
+  ['01','Тайский массаж','60–90 мин','Классическая техника без масла: точечное давление и мягкие растяжения по линиям сен. Возвращает телу лёгкость и подвижность.'],
+  ['02','Oil-массаж','60–90 мин','Тёплое ароматическое масло и длинные обволакивающие движения. Глубокое расслабление и уход за кожей.'],
+  ['03','SPA для одного','90–120 мин','Персональный ритуал: массаж, мягкий пилинг и тёплый уход. Полтора-два часа тишины, принадлежащей только вам.'],
+  ['04','SPA для двоих','90–180 мин','Парный ритуал в отдельном кабинете: синхронный массаж в четыре руки. Общее воспоминание на двоих.'],
+  ['05','VIP-ритуалы','120–180 мин','Максимальная программа: сочетание техник, травяные мешочки и чайная церемония. Вечер полного перезапуска.'],
+  ['06','Thai Yoga','60 мин','Пассивная йога: мастер мягко растягивает и скручивает тело за вас. Энергия и гибкость — без усилий.']
 ];
 var MASTERS = ['Мисс Лауан','Мисс Ванни','Мисс Натсинее'];
 var MASTER_IMGS = [null, null, null];
@@ -890,8 +961,8 @@ function buildQuads() {
     scene.quads.push({
       tex: texCard(SERVICES[i][0], SERVICES[i][1], SERVICES[i][2]),
       pos: add(ringC, off), R: rb.R, U: rb.U, F: scale(rb.T,-1),
-      sx: 1.5, sy: 1.87, alpha: 0.98, additive: false,
-      bob: i, ring: { c: ringC, R: rb.R, U: rb.U, rad: RAD, a0: a }
+      sx: 1.5, sy: 1.87, alpha: 0.98, additive: false, hoverAmt: 0,
+      bob: i, card: i, ring: { c: ringC, R: rb.R, U: rb.U, rad: RAD, a0: a }
     });
   }
 
@@ -924,6 +995,7 @@ function buildQuads() {
     scene.quads.push({ tex: texName(MASTERS[i]), pos: add(pp, [0,-2.9,0]),
       R: mb.R, U: mb.U, F: scale(mb.T,-1), sx: 2.2, sy: 0.82, alpha: 0.95, additive: true });
   }
+  scene.cardQuads = scene.quads.filter(function (q) { return q.card != null; });
   texturesReady = true;
 }
 
@@ -935,6 +1007,147 @@ if (document.fonts && document.fonts.ready) {
   document.fonts.ready.then(tryBuildQuads);
   setTimeout(tryBuildQuads, 700);
 } else tryBuildQuads();
+
+/* ============================================================
+   ВХОД + ЗВУК (генеративный WebAudio: дрон, вода, гонг)
+   ============================================================ */
+var entered = false;
+var enterEl = document.getElementById('enter');
+var enterBtn = document.getElementById('enterBtn');
+var muteBtn = document.getElementById('muteBtn');
+var AC = null, master = null;
+var mutedFlag = false;
+try { mutedFlag = localStorage.getItem('maispa-muted') === '1'; } catch (e) {}
+
+document.documentElement.style.overflow = 'hidden'; // до входа не листается
+
+function startAudio() {
+  if (AC) return;
+  try { AC = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { return; }
+  master = AC.createGain();
+  master.gain.value = mutedFlag ? 0 : 1;
+  master.connect(AC.destination);
+  var amb = AC.createGain(); amb.gain.value = 0.05; amb.connect(master);
+  // тёплый дрон (ре-минорная пятерня)
+  [[73.42,'triangle',1],[110,'sine',0.7],[146.83,'sine',0.32]].forEach(function (cfg, i) {
+    var o = AC.createOscillator(); o.type = cfg[1]; o.frequency.value = cfg[0]; o.detune.value = (i - 1) * 5;
+    var g = AC.createGain(); g.gain.value = 0.11 * cfg[2];
+    var lfo = AC.createOscillator(); lfo.frequency.value = 0.05 + i * 0.041;
+    var lg = AC.createGain(); lg.gain.value = 0.045 * cfg[2];
+    lfo.connect(lg); lg.connect(g.gain);
+    o.connect(g); g.connect(amb); o.start(); lfo.start();
+  });
+  // вода: шум через плавающий bandpass
+  var len = AC.sampleRate * 2, buf = AC.createBuffer(1, len, AC.sampleRate), d = buf.getChannelData(0);
+  for (var i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+  var src = AC.createBufferSource(); src.buffer = buf; src.loop = true;
+  var bp = AC.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 620; bp.Q.value = 0.85;
+  var ng = AC.createGain(); ng.gain.value = 0.014;
+  var nlfo = AC.createOscillator(); nlfo.frequency.value = 0.1;
+  var nlg = AC.createGain(); nlg.gain.value = 190;
+  nlfo.connect(nlg); nlg.connect(bp.frequency);
+  src.connect(bp); bp.connect(ng); ng.connect(amb);
+  src.start(); nlfo.start();
+}
+function gong(base, vol) {
+  if (!AC || mutedFlag) return;
+  if (AC.state === 'suspended') AC.resume();
+  var t0 = AC.currentTime; vol = vol || 1;
+  [1, 1.503, 2.12, 2.76, 3.51].forEach(function (m, i) {
+    var o = AC.createOscillator(); o.type = 'sine';
+    o.frequency.value = base * m * (1 + (Math.random() - 0.5) * 0.004);
+    var g = AC.createGain();
+    var v = vol * 0.15 / Math.pow(i + 1, 1.2);
+    g.gain.setValueAtTime(0, t0);
+    g.gain.linearRampToValueAtTime(v, t0 + 0.012);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + 2.6 + i * 0.35);
+    o.connect(g); g.connect(master);
+    o.start(t0); o.stop(t0 + 3.4 + i * 0.35);
+  });
+}
+var lastRoom = -1;
+function doEnter(withSound) {
+  if (entered) return;
+  entered = true;
+  document.body.classList.add('entered');
+  enterEl.classList.add('is-gone');
+  document.documentElement.style.overflow = '';
+  if (withSound && !REDUCED) { startAudio(); gong(140, 1.1); }
+  lastRoom = 0;
+}
+enterBtn.addEventListener('click', function () { doEnter(true); });
+muteBtn.addEventListener('click', function () {
+  mutedFlag = !mutedFlag;
+  try { localStorage.setItem('maispa-muted', mutedFlag ? '1' : '0'); } catch (e) {}
+  if (master) master.gain.value = mutedFlag ? 0 : 1;
+  muteBtn.textContent = mutedFlag ? '🔇' : '🔊';
+});
+muteBtn.textContent = mutedFlag ? '🔇' : '🔊';
+
+/* ============================================================
+   ФОКУС НА КАРТОЧКЕ УСЛУГИ (клик — подлёт камеры)
+   ============================================================ */
+var focus = { active: false, anim: 0, q: null };
+var camState = null;   // текущее состояние камеры для рейкаста
+var hoverQ = null;
+var focusPanel = document.getElementById('focusPanel');
+var fpTitle = document.getElementById('fpTitle');
+var fpDur = document.getElementById('fpDur');
+var fpDesc = document.getElementById('fpDesc');
+
+function raycastCards(mx, my) {
+  if (!camState || !scene.cardQuads || !scene.cardQuads.length) return null;
+  var nx = (mx / W) * 2 - 1, ny = -((my / H) * 2 - 1);
+  var tanV = 0.5774, tanH = tanV * (W / H);
+  var d = norm(add(add(camState.fw, scale(camState.rt, nx * tanH)), scale(camState.up, ny * tanV)));
+  var bestQ = null, bestT = 1e9;
+  for (var i = 0; i < scene.cardQuads.length; i++) {
+    var q = scene.cardQuads[i];
+    if (!q.curPos) continue;
+    var denom = d[0]*q.F[0] + d[1]*q.F[1] + d[2]*q.F[2];
+    if (Math.abs(denom) < 1e-4) continue;
+    var w0 = sub(q.curPos, camState.eye);
+    var tt = (w0[0]*q.F[0] + w0[1]*q.F[1] + w0[2]*q.F[2]) / denom;
+    if (tt < 0.5 || tt > bestT) continue;
+    var hit = add(camState.eye, scale(d, tt));
+    var loc = sub(hit, q.curPos);
+    var hx = (loc[0]*q.R[0] + loc[1]*q.R[1] + loc[2]*q.R[2]) / q.sx;
+    var hy = (loc[0]*q.U[0] + loc[1]*q.U[1] + loc[2]*q.U[2]) / q.sy;
+    if (Math.abs(hx) <= 1.03 && Math.abs(hy) <= 1.03) { bestQ = q; bestT = tt; }
+  }
+  return bestQ;
+}
+function openFocus(q) {
+  focus.active = true; focus.q = q;
+  var svc = SERVICES[q.card];
+  fpDur.textContent = svc[2];
+  fpTitle.textContent = svc[1];
+  fpDesc.textContent = svc[3];
+  focusPanel.classList.add('is-on');
+  focusPanel.setAttribute('aria-hidden', 'false');
+  gong(300 + q.card * 24, 0.35);
+}
+function closeFocus() {
+  if (!focus.active) return;
+  focus.active = false;
+  focusPanel.classList.remove('is-on');
+  focusPanel.setAttribute('aria-hidden', 'true');
+}
+document.getElementById('focusClose').addEventListener('click', closeFocus);
+addEventListener('wheel', function () { if (focus.active) closeFocus(); }, { passive: true });
+addEventListener('touchmove', function () { if (focus.active) closeFocus(); }, { passive: true });
+document.addEventListener('click', function (e) {
+  if (e.target.closest('a, button, .focus-panel, .rail')) return;
+  if (!entered) return;
+  var q = raycastCards(e.clientX, e.clientY);
+  if (q) openFocus(q);
+  else closeFocus();
+});
+document.addEventListener('mousemove', function (e) {
+  if (!entered || focus.active) { hoverQ = null; return; }
+  hoverQ = raycastCards(e.clientX, e.clientY);
+  document.body.style.cursor = hoverQ ? 'pointer' : '';
+});
 
 /* ============================================================
    Скролл → полёт камеры
@@ -992,7 +1205,7 @@ function updateOverlays(t) {
   for (var i=0;i<spaces.length;i++){
     var el = spaces[i];
     var c = parseFloat(el.dataset.c), w = parseFloat(el.dataset.w);
-    var vis = Math.exp(-((t-c)*(t-c)) / (2*w*w));
+    var vis = Math.exp(-((t-c)*(t-c)) / (2*w*w)) * (1 - focus.anim);
     el.style.opacity = vis.toFixed(3);
     el.style.transform = 'translateY(' + ((1-vis)*26).toFixed(1) + 'px)';
     el.style.pointerEvents = vis > 0.45 ? 'auto' : 'none';
@@ -1000,6 +1213,7 @@ function updateOverlays(t) {
   var best = 0, bd = 1e9;
   for (i=0;i<ROOM_T.length;i++){ var d = Math.abs(t-ROOM_T[i]); if (d<bd){bd=d;best=i;} }
   for (i=0;i<dots.length;i++) dots[i].classList.toggle('is-active', i===best);
+  if (entered && best !== lastRoom) { gong(150 + best * 24, 0.85); lastRoom = best; }
 }
 
 /* ---------- размер ---------- */
@@ -1016,8 +1230,17 @@ addEventListener('resize', resize);
 resize();
 
 /* ---------- debug: ?p=0.5 ---------- */
-if (DEBUG_P != null) {
-  tCur = tTarget = clamp(DEBUG_P, 0, 1);
+if (DEBUG_P != null || DEBUG_FOCUS != null) {
+  if (DEBUG_P != null) tCur = tTarget = clamp(DEBUG_P, 0, 1);
+  doEnter(false); // автовход без звука для скриншотов
+  if (DEBUG_FOCUS != null) {
+    var focusWait = setInterval(function () {
+      if (scene.cardQuads && scene.cardQuads[DEBUG_FOCUS] && scene.cardQuads[DEBUG_FOCUS].curPos) {
+        openFocus(scene.cardQuads[DEBUG_FOCUS]);
+        clearInterval(focusWait);
+      }
+    }, 300);
+  }
 }
 
 /* ============================================================
@@ -1026,9 +1249,13 @@ if (DEBUG_P != null) {
 gl.enable(gl.BLEND);
 gl.clearColor(BG[0], BG[1], BG[2], 1);
 var t0 = performance.now();
+var prevNow = t0, ringClock = 0;
 
 function frame(now) {
   var time = (now - t0) / 1000;
+  var dt = Math.min(0.05, (now - prevNow) / 1000); prevNow = now;
+  if (!focus.active) ringClock += dt;            // кольцо замирает при фокусе
+  focus.anim += ((focus.active ? 1 : 0) - focus.anim) * 0.06;
   tCur += (tTarget - tCur) * 0.055;              // демпфирование полёта
   px += (pxT - px) * 0.04; py += (pyT - py) * 0.04;
 
@@ -1052,6 +1279,17 @@ function frame(now) {
   var up = cross(rt, fw);
   eye = add(eye, add(scale(rt, px*0.55), scale(up, -py*0.35)));
 
+  camState = { eye: eye, fw: fw, rt: rt, up: up };
+
+  // подлёт камеры к карточке услуги
+  if (focus.anim > 0.001 && focus.q && focus.q.curPos) {
+    var fq = focus.q;
+    var fEye = add(add(fq.curPos, scale(fq.F, MOBILE ? 5.6 : 4.4)), scale(fq.U, 0.12));
+    var fa = focus.anim * focus.anim * (3 - 2 * focus.anim);
+    eye = [lerp(eye[0], fEye[0], fa), lerp(eye[1], fEye[1], fa), lerp(eye[2], fEye[2], fa)];
+    target = [lerp(target[0], fq.curPos[0], fa), lerp(target[1], fq.curPos[1], fa), lerp(target[2], fq.curPos[2], fa)];
+  }
+
   var view = mat4LookAt(eye, target, [0,1,0]);
 
   gl.clear(gl.COLOR_BUFFER_BIT);
@@ -1073,12 +1311,18 @@ function frame(now) {
       var q = scene.quads[i];
       var pos = q.pos;
       if (q.ring) { // лёгкое вращение кольца карточек + покачивание
-        var a = q.ring.a0 + time*0.07;
+        var a = q.ring.a0 + ringClock*0.07;
         var off = add(scale(q.ring.R, Math.cos(a)*q.ring.rad),
-                      scale(q.ring.U, Math.sin(a)*q.ring.rad*0.72 + 0.6 + Math.sin(time*0.9+q.bob)*0.18));
+                      scale(q.ring.U, Math.sin(a)*q.ring.rad*0.72 + 0.6 + Math.sin(ringClock*0.9+q.bob)*0.18));
         pos = add(q.ring.c, off);
       }
-      var m = mat4Basis(q.R, q.U, q.F, pos, q.sx, q.sy);
+      q.curPos = pos;
+      if (q.card != null) { // hover: карточка мягко увеличивается
+        var hTgt = (hoverQ === q || focus.q === q && focus.active) ? 1 : 0;
+        q.hoverAmt += (hTgt - q.hoverAmt) * 0.1;
+      }
+      var hs = 1 + (q.hoverAmt || 0) * 0.09;
+      var m = mat4Basis(q.R, q.U, q.F, pos, q.sx * hs, q.sy * hs);
       var al = q.alpha * (q.pulse ? flick : 1);
       if (q.additive) gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
       else gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
