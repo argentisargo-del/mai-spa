@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MAI SPA — премиальный тайский SPA в Йошкар-Оле</title>
+  <meta name="description" content="MAI SPA — премиальный тайский SPA-салон в Йошкар-Оле. Мастера из Таиланда, аутентичный тайский массаж, аромамасла и травяные мешочки. 30 минут массажа в подарок." />
+  <meta name="theme-color" content="#0d1210" />
+
+  <!-- Fonts (грузятся на реальном хостинге; есть системный fallback) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body>
+
+  <!-- Прелоадер -->
+  <div class="preloader" id="preloader" aria-hidden="true">
+    <div class="preloader__mark">
+      <span class="preloader__lotus">✦</span>
+      <span class="preloader__name">MAI&nbsp;SPA</span>
+    </div>
+    <div class="preloader__bar"><i></i></div>
+  </div>
+
+  <!-- Кастомный курсор -->
+  <div class="cursor" id="cursor" aria-hidden="true"></div>
+  <div class="cursor-dot" id="cursorDot" aria-hidden="true"></div>
+
+  <!-- Прогресс скролла -->
+  <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
+
+  <!-- Навигация -->
+  <header class="nav" id="nav">
+    <a href="#hero" class="nav__brand" data-magnetic>
+      <span class="nav__lotus">✦</span> MAI <em>SPA</em>
+    </a>
+    <nav class="nav__links" aria-label="Основная навигация">
+      <a href="#philosophy" data-magnetic>Философия</a>
+      <a href="#ritual" data-magnetic>Ритуал</a>
+      <a href="#services" data-magnetic>Услуги</a>
+      <a href="#gift" data-magnetic>Сертификаты</a>
+      <a href="#contact" data-magnetic>Контакты</a>
+    </nav>
+    <a href="#contact" class="btn btn--primary nav__cta" data-magnetic>Записаться</a>
+    <button class="nav__burger" id="burger" aria-label="Меню"><span></span><span></span></button>
+  </header>
+
+  <!-- Мобильное меню -->
+  <div class="mobile-menu" id="mobileMenu" aria-hidden="true">
+    <a href="#philosophy">Философия</a>
+    <a href="#ritual">Ритуал</a>
+    <a href="#services">Услуги</a>
+    <a href="#gift">Сертификаты</a>
+    <a href="#contact">Контакты</a>
+    <a href="#contact" class="btn btn--primary">Записаться</a>
+  </div>
+
+  <main id="smooth-content">
+
+    <!-- ================= HERO ================= -->
+    <section class="hero" id="hero">
+      <canvas class="hero__canvas" id="heroCanvas" aria-hidden="true"></canvas>
+      <div class="hero__glow" aria-hidden="true"></div>
+
+      <div class="hero__inner">
+        <p class="label label--center reveal">Йошкар-Ола · Тайский SPA</p>
+        <h1 class="hero__title">
+          <span class="reveal" style="--d:.05s">Искусство</span>
+          <span class="reveal hero__title-em" style="--d:.15s">тайского прикосновения</span>
+        </h1>
+        <p class="hero__sub reveal" style="--d:.3s">
+          Премиальный SPA-ритуал с мастерами из Таиланда. Тёплое масло, травяные мешочки
+          и тишина, в которой тело вспоминает, что значит покой.
+        </p>
+        <div class="hero__actions reveal" style="--d:.45s">
+          <a href="#contact" class="btn btn--primary" data-magnetic>Записаться на сеанс</a>
+          <a href="#services" class="btn btn--ghost" data-magnetic>Программы и цены</a>
+        </div>
+      </div>
+
+      <a href="#philosophy" class="hero__scroll" aria-label="Листайте вниз">
+        <span>Листайте</span>
+        <i></i>
+      </a>
+    </section>
+
+    <!-- ================= ФИЛОСОФИЯ ================= -->
+    <section class="section philosophy" id="philosophy">
+      <div class="wrap philosophy__grid">
+        <div class="philosophy__text">
+          <p class="label reveal">Философия</p>
+          <h2 class="h2 reveal" style="--d:.1s">
+            Не процедура.<br><em>Ритуал возвращения к себе.</em>
+          </h2>
+          <p class="lead reveal" style="--d:.2s">
+            В MAI SPA массаж — это язык, на котором тело разговаривает с покоем.
+            Наши мастера приехали из Таиланда и хранят традицию, которой сотни лет:
+            точное давление, дыхание, тёплое масло и травы.
+          </p>
+          <p class="reveal" style="--d:.3s">
+            Мы возвращаем баланс за один сеанс — снимаем усталость, восстанавливаем тело
+            после нагрузок и травм, возвращаем лёгкость и ясность. Вы приходите уставшим —
+            уходите обновлённым.
+          </p>
+          <div class="stats reveal" style="--d:.4s">
+            <div class="stat"><b data-count="12">0</b><span>лет практики</span></div>
+            <div class="stat"><b data-count="8">0</b><span>мастеров из Таиланда</span></div>
+            <div class="stat"><b data-count="15000" data-suffix="+">0</b><span>счастливых гостей</span></div>
+          </div>
+        </div>
+        <div class="philosophy__art reveal" style="--d:.2s">
+          <div class="art-card" data-parallax="0.12" data-photo>
+            <div class="art-card__orn"></div>
+            <span class="art-card__cap">масло · орхидея · тепло</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= PARTICLE RITUAL (главная фишка) ================= -->
+    <section class="ritual" id="ritual">
+      <div class="ritual__sticky">
+        <canvas class="ritual__canvas" id="ritualCanvas" aria-hidden="true"></canvas>
+        <div class="ritual__captions">
+          <p class="label label--center ritual__label" data-step="0">Из хаоса</p>
+          <p class="label label--center ritual__label" data-step="1">— рождается форма</p>
+          <p class="label label--center ritual__label" data-step="2">— и снова покой</p>
+        </div>
+        <div class="ritual__hint">↕ листайте — частицы соберутся в единое целое и рассыпутся вновь</div>
+      </div>
+      <div class="ritual__spacer"></div>
+    </section>
+
+    <!-- ================= УСЛУГИ ================= -->
+    <section class="section services" id="services">
+      <div class="wrap">
+        <div class="section__head">
+          <p class="label reveal">Программы</p>
+          <h2 class="h2 reveal" style="--d:.1s">Тайские ритуалы MAI SPA</h2>
+          <p class="lead lead--center reveal" style="--d:.2s">
+            Каждая программа — авторская. Подберём под ваше состояние: расслабиться,
+            восстановиться или проснуться.
+          </p>
+        </div>
+
+        <div class="cards">
+          <article class="card reveal" data-tilt style="--d:.05s">
+            <span class="card__num">01</span>
+            <h3 class="card__title">Классический тайский</h3>
+            <p class="card__desc">Аутентичная работа по энергетическим линиям: растяжки, точечное давление, глубокое расслабление.</p>
+            <div class="card__meta"><span>60 / 90 мин</span><b>от 3 500 ₽</b></div>
+          </article>
+
+          <article class="card reveal" data-tilt style="--d:.12s">
+            <span class="card__num">02</span>
+            <h3 class="card__title">Аромамасляный</h3>
+            <p class="card__desc">Мягкие обволакивающие движения с тёплым ароматическим маслом. Снимает стресс и напряжение.</p>
+            <div class="card__meta"><span>60 / 90 мин</span><b>от 4 200 ₽</b></div>
+          </article>
+
+          <article class="card reveal" data-tilt style="--d:.19s">
+            <span class="card__num">03</span>
+            <h3 class="card__title">Травяные мешочки</h3>
+            <p class="card__desc">Горячие компрессы с тайскими травами прогревают мышцы и суставы, дарят глубокое тепло.</p>
+            <div class="card__meta"><span>90 мин</span><b>от 5 000 ₽</b></div>
+          </article>
+
+          <article class="card reveal" data-tilt style="--d:.05s">
+            <span class="card__num">04</span>
+            <h3 class="card__title">Стоун-терапия</h3>
+            <p class="card__desc">Массаж горячими вулканическими камнями. Расслабляет глубокие слои мышц, восстанавливает силы.</p>
+            <div class="card__meta"><span>75 мин</span><b>от 4 800 ₽</b></div>
+          </article>
+
+          <article class="card reveal" data-tilt style="--d:.12s">
+            <span class="card__num">05</span>
+            <h3 class="card__title">Массаж стоп</h3>
+            <p class="card__desc">Рефлекторная проработка стоп по тайской традиции. Лёгкость во всём теле уже после первого сеанса.</p>
+            <div class="card__meta"><span>45 мин</span><b>от 2 500 ₽</b></div>
+          </article>
+
+          <article class="card reveal" data-tilt style="--d:.19s">
+            <span class="card__num">06</span>
+            <h3 class="card__title">SPA-ритуал для двоих</h3>
+            <p class="card__desc">Парная программа в отдельном кабинете: масло, травы, чай. Особенный вечер вдвоём.</p>
+            <div class="card__meta"><span>120 мин</span><b>от 9 800 ₽</b></div>
+          </article>
+        </div>
+
+        <p class="services__note reveal">
+          Первым гостям — <b>30 минут массажа в подарок</b> при записи на любую программу.
+        </p>
+      </div>
+    </section>
+
+    <!-- ================= ГАЛЕРЕЯ ================= -->
+    <section class="section gallery" id="gallery">
+      <div class="wrap">
+        <div class="section__head">
+          <p class="label reveal">Атмосфера</p>
+          <h2 class="h2 reveal" style="--d:.1s">Пространство тишины</h2>
+        </div>
+      </div>
+      <div class="gallery__grid">
+        <figure class="gtile gtile--tall reveal" data-parallax="0.1" data-photo><span>Кабинет</span></figure>
+        <figure class="gtile reveal" data-parallax="0.16" data-photo style="--d:.08s"><span>Свечи</span></figure>
+        <figure class="gtile reveal" data-parallax="0.2" data-photo style="--d:.16s"><span>Орхидея</span></figure>
+        <figure class="gtile gtile--wide reveal" data-parallax="0.12" data-photo style="--d:.1s"><span>Чайная церемония</span></figure>
+        <figure class="gtile reveal" data-parallax="0.18" data-photo style="--d:.2s"><span>Масла</span></figure>
+      </div>
+    </section>
+
+    <!-- ================= СЕРТИФИКАТЫ ================= -->
+    <section class="section gift" id="gift">
+      <div class="wrap gift__inner reveal">
+        <div class="gift__card" data-tilt>
+          <div class="gift__shine"></div>
+          <p class="label">Подарочный сертификат</p>
+          <div class="gift__value">MAI <em>SPA</em></div>
+          <p class="gift__desc">Электронный или бумажный. На любую сумму и программу.</p>
+          <div class="gift__foot"><span>✦ вручную оформленный</span></div>
+        </div>
+        <div class="gift__text">
+          <p class="label reveal">Лучший подарок</p>
+          <h2 class="h2 reveal" style="--d:.1s">Подарите <em>отдых</em>, а не вещь</h2>
+          <p class="lead reveal" style="--d:.2s">
+            Сертификат MAI SPA — это вечер тепла, тишины и заботы для близкого человека.
+            Оформим красиво: в электронном виде за минуту или на плотной бумаге с орнаментом.
+          </p>
+          <a href="#contact" class="btn btn--primary reveal" style="--d:.3s" data-magnetic>Заказать сертификат</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= КОНТАКТЫ ================= -->
+    <section class="section contact" id="contact">
+      <div class="wrap contact__grid">
+        <div class="contact__text">
+          <p class="label reveal">Контакты</p>
+          <h2 class="h2 reveal" style="--d:.1s">Запишитесь<br>на ваш ритуал</h2>
+          <p class="lead reveal" style="--d:.2s">
+            Позвоните или напишите — подберём удобное время и подходящую программу.
+          </p>
+
+          <ul class="contact__list reveal" style="--d:.3s">
+            <li>
+              <span class="contact__k">Телефон</span>
+              <a href="tel:+78362000000" class="contact__v" data-magnetic>+7 (8362) 00-00-00</a>
+            </li>
+            <li>
+              <span class="contact__k">Адрес</span>
+              <span class="contact__v">Йошкар-Ола, ул. ——, д. —</span>
+            </li>
+            <li>
+              <span class="contact__k">Часы</span>
+              <span class="contact__v">Ежедневно · 10:00 — 22:00</span>
+            </li>
+          </ul>
+
+          <div class="contact__socials reveal" style="--d:.4s">
+            <a href="#" data-magnetic>Telegram</a>
+            <a href="#" data-magnetic>WhatsApp</a>
+            <a href="#" data-magnetic>VK</a>
+          </div>
+        </div>
+
+        <form class="contact__form reveal" style="--d:.2s" onsubmit="return false;">
+          <div class="field">
+            <input type="text" id="c-name" required placeholder=" " />
+            <label for="c-name">Ваше имя</label>
+          </div>
+          <div class="field">
+            <input type="tel" id="c-phone" required placeholder=" " />
+            <label for="c-phone">Телефон</label>
+          </div>
+          <div class="field">
+            <textarea id="c-msg" rows="3" placeholder=" "></textarea>
+            <label for="c-msg">Пожелания (необязательно)</label>
+          </div>
+          <button class="btn btn--primary btn--block" type="submit" data-magnetic>Отправить заявку</button>
+          <p class="contact__hint">Нажимая кнопку, вы соглашаетесь с обработкой персональных данных.</p>
+        </form>
+      </div>
+    </section>
+
+    <!-- ================= FOOTER ================= -->
+    <footer class="footer">
+      <div class="wrap footer__inner">
+        <a href="#hero" class="footer__brand"><span class="nav__lotus">✦</span> MAI <em>SPA</em></a>
+        <p class="footer__tag">Премиальный тайский SPA · Йошкар-Ола</p>
+        <p class="footer__copy">© <span id="year"></span> MAI SPA. Все права защищены.</p>
+      </div>
+    </footer>
+
+  </main>
+
+  <script src="assets/js/particles.js" defer></script>
+  <script src="assets/js/app.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,337 @@
+/* ============================================================
+   MAI SPA — style.css
+   Премиальный тайский SPA · тёмная тёплая палитра
+   ============================================================ */
+
+:root{
+  --bg:#0d1210;
+  --bg-2:#121a16;
+  --surface:#18211c;
+  --surface-2:#1d2822;
+  --ink:#f3ede1;
+  --ink-soft:#b9b3a5;
+  --ink-dim:#7d8078;
+  --gold:#c9a24b;
+  --gold-2:#e8cd8a;
+  --jade:#5f9e7f;
+  --jade-deep:#2f5d47;
+  --line:#2a352e;
+  --ease:cubic-bezier(.22,1,.36,1);
+  --serif:"Cormorant Garamond", "Times New Roman", Georgia, serif;
+  --sans:"Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --wrap:1200px;
+}
+
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+
+body{
+  font-family:var(--sans);
+  background:var(--bg);
+  color:var(--ink);
+  line-height:1.6;
+  overflow-x:hidden;
+  font-weight:400;
+  -webkit-font-smoothing:antialiased;
+  cursor:none;
+}
+@media (hover:none){ body{cursor:auto} }
+
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+::selection{background:var(--gold);color:var(--bg)}
+
+/* ---------- Утилиты ---------- */
+.wrap{width:100%;max-width:var(--wrap);margin:0 auto;padding:0 clamp(1.25rem,5vw,2.5rem)}
+.section{padding:clamp(5rem,12vh,11rem) 0;position:relative}
+.section:nth-of-type(even){background:var(--bg-2)}
+
+.label{
+  font-size:.72rem;letter-spacing:.28em;text-transform:uppercase;
+  color:var(--gold);font-weight:600;display:inline-flex;align-items:center;gap:.7em;
+}
+.label::before{content:"";width:2.2em;height:1px;background:linear-gradient(90deg,transparent,var(--gold))}
+.label--center{justify-content:center}
+.label--center::before{background:linear-gradient(90deg,transparent,var(--gold),transparent);width:3em}
+.label--center::after{content:"";width:3em;height:1px;background:linear-gradient(90deg,var(--gold),transparent)}
+
+.h2{
+  font-family:var(--serif);font-weight:400;line-height:1.05;
+  font-size:clamp(2.4rem,6vw,4.6rem);letter-spacing:-.01em;margin:.5rem 0 1.4rem;
+}
+.h2 em{font-style:italic;color:var(--gold-2)}
+
+.lead{font-size:clamp(1.05rem,1.6vw,1.3rem);color:var(--ink-soft);max-width:56ch;font-weight:300}
+.lead--center{margin-inline:auto;text-align:center}
+
+.section__head{text-align:center;max-width:720px;margin:0 auto clamp(2.5rem,6vh,5rem);display:flex;flex-direction:column;align-items:center}
+
+/* ---------- Кнопки ---------- */
+.btn{
+  --pad:1rem 2rem;
+  display:inline-flex;align-items:center;justify-content:center;gap:.6em;
+  padding:var(--pad);border-radius:100px;font-family:var(--sans);font-weight:600;
+  font-size:.95rem;letter-spacing:.01em;cursor:pointer;border:1px solid transparent;
+  position:relative;overflow:hidden;transition:transform .5s var(--ease),box-shadow .5s var(--ease);
+  will-change:transform;
+}
+.btn--primary{
+  background:linear-gradient(135deg,var(--gold-2),var(--gold));
+  color:#1a140a;box-shadow:0 10px 30px -12px rgba(201,162,75,.6);
+}
+.btn--primary::after{
+  content:"";position:absolute;inset:0;transform:translateX(-120%);
+  background:linear-gradient(105deg,transparent 30%,rgba(255,255,255,.55) 50%,transparent 70%);
+  transition:transform .8s var(--ease);
+}
+.btn--primary:hover::after{transform:translateX(120%)}
+.btn--primary:hover{transform:translateY(-3px);box-shadow:0 18px 40px -14px rgba(201,162,75,.75)}
+.btn--ghost{border-color:var(--line);color:var(--ink);background:rgba(255,255,255,.02)}
+.btn--ghost:hover{border-color:var(--gold);color:var(--gold-2);transform:translateY(-3px)}
+.btn--block{width:100%}
+
+/* ---------- Курсор ---------- */
+.cursor,.cursor-dot{position:fixed;top:0;left:0;pointer-events:none;z-index:9999;border-radius:50%;mix-blend-mode:screen}
+.cursor{width:34px;height:34px;border:1px solid rgba(201,162,75,.6);transform:translate(-50%,-50%);transition:width .35s var(--ease),height .35s var(--ease),background .35s var(--ease),border-color .35s}
+.cursor.is-active{width:64px;height:64px;background:rgba(201,162,75,.12);border-color:transparent}
+.cursor-dot{width:5px;height:5px;background:var(--gold-2);transform:translate(-50%,-50%)}
+@media (hover:none){.cursor,.cursor-dot{display:none}}
+
+/* ---------- Прогресс скролла ---------- */
+.scroll-progress{position:fixed;top:0;left:0;height:2px;width:0;z-index:9998;
+  background:linear-gradient(90deg,var(--jade),var(--gold-2));box-shadow:0 0 12px rgba(201,162,75,.6)}
+
+/* ---------- Прелоадер ---------- */
+.preloader{position:fixed;inset:0;z-index:10000;background:var(--bg);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.6rem;
+  transition:opacity .8s var(--ease),visibility .8s}
+.preloader.is-done{opacity:0;visibility:hidden}
+.preloader__mark{display:flex;align-items:center;gap:.6rem;font-family:var(--serif);font-size:clamp(1.8rem,5vw,2.6rem);letter-spacing:.05em;color:var(--ink)}
+.preloader__lotus{color:var(--gold);animation:spin 4s linear infinite}
+.preloader__name{opacity:0;animation:fadeIn 1s var(--ease) .2s forwards}
+.preloader__bar{width:min(220px,60vw);height:2px;background:var(--line);overflow:hidden;border-radius:2px}
+.preloader__bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--jade),var(--gold-2));animation:load 1.8s var(--ease) forwards}
+@keyframes load{to{width:100%}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes fadeIn{to{opacity:1}}
+
+/* ---------- Навигация ---------- */
+.nav{position:fixed;top:0;left:0;width:100%;z-index:900;
+  display:flex;align-items:center;justify-content:space-between;gap:2rem;
+  padding:1.3rem clamp(1.25rem,5vw,2.5rem);
+  transition:background .5s var(--ease),padding .5s var(--ease),border-color .5s;
+  border-bottom:1px solid transparent}
+.nav.is-scrolled{background:rgba(13,18,16,.72);backdrop-filter:blur(14px);padding-block:.9rem;border-color:var(--line)}
+.nav__brand{font-family:var(--serif);font-size:1.5rem;letter-spacing:.06em;display:flex;align-items:center;gap:.4rem;color:var(--ink)}
+.nav__brand em{font-style:italic;color:var(--gold-2)}
+.nav__lotus{color:var(--gold)}
+.nav__links{display:flex;gap:2rem}
+.nav__links a{font-size:.9rem;color:var(--ink-soft);position:relative;padding:.2rem 0;transition:color .3s}
+.nav__links a::after{content:"";position:absolute;left:0;bottom:-2px;width:0;height:1px;background:var(--gold);transition:width .4s var(--ease)}
+.nav__links a:hover{color:var(--ink)}
+.nav__links a:hover::after{width:100%}
+.nav__cta{--pad:.6rem 1.4rem;font-size:.85rem}
+.nav__burger{display:none;flex-direction:column;gap:6px;background:none;border:0;cursor:pointer;padding:8px}
+.nav__burger span{width:26px;height:2px;background:var(--ink);transition:.4s var(--ease)}
+.nav.menu-open .nav__burger span:nth-child(1){transform:translateY(8px) rotate(45deg)}
+.nav.menu-open .nav__burger span:nth-child(2){transform:translateY(-0px) rotate(-45deg)}
+
+.mobile-menu{position:fixed;inset:0;z-index:850;background:rgba(13,18,16,.97);backdrop-filter:blur(10px);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.6rem;
+  opacity:0;visibility:hidden;transition:opacity .5s var(--ease),visibility .5s}
+.mobile-menu.is-open{opacity:1;visibility:visible}
+.mobile-menu a{font-family:var(--serif);font-size:2rem;color:var(--ink)}
+.mobile-menu .btn{font-family:var(--sans);font-size:1rem;margin-top:1rem}
+
+@media (max-width:880px){
+  .nav__links,.nav__cta{display:none}
+  .nav__burger{display:flex}
+}
+
+/* ============================================================
+   HERO
+   ============================================================ */
+.hero{position:relative;min-height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden;
+  background:radial-gradient(120% 90% at 50% 0%,#16211b 0%,var(--bg) 60%)}
+.hero__canvas{position:absolute;inset:0;width:100%;height:100%;z-index:1}
+.hero__glow{position:absolute;inset:0;z-index:2;pointer-events:none;
+  background:radial-gradient(50% 45% at 50% 60%,rgba(201,162,75,.10),transparent 70%)}
+.hero__inner{position:relative;z-index:3;text-align:center;max-width:900px;padding:0 1.5rem}
+.hero__title{font-family:var(--serif);font-weight:300;line-height:1;margin:1.4rem 0 1.6rem;
+  font-size:clamp(2.8rem,8.5vw,7rem);letter-spacing:-.015em}
+.hero__title span{display:block}
+.hero__title-em{font-style:italic;color:var(--gold-2)}
+.hero__sub{max-width:52ch;margin:0 auto;color:var(--ink-soft);font-weight:300;font-size:clamp(1.05rem,1.7vw,1.35rem)}
+.hero__actions{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-top:2.4rem}
+.hero__scroll{position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);z-index:3;
+  display:flex;flex-direction:column;align-items:center;gap:.6rem;font-size:.7rem;letter-spacing:.24em;
+  text-transform:uppercase;color:var(--ink-dim)}
+.hero__scroll i{width:1px;height:44px;background:linear-gradient(var(--gold),transparent);position:relative;overflow:hidden}
+.hero__scroll i::after{content:"";position:absolute;top:0;left:0;width:100%;height:40%;background:var(--gold-2);animation:scrolldot 2s var(--ease) infinite}
+@keyframes scrolldot{0%{transform:translateY(-100%)}100%{transform:translateY(250%)}}
+
+/* ============================================================
+   ФИЛОСОФИЯ
+   ============================================================ */
+.philosophy__grid{display:grid;grid-template-columns:1.1fr .9fr;gap:clamp(2rem,6vw,5rem);align-items:center}
+.philosophy__text p:not(.label){margin-top:1.1rem;color:var(--ink-soft);font-weight:300}
+.stats{display:flex;gap:clamp(1.5rem,4vw,3rem);margin-top:2.6rem;flex-wrap:wrap}
+.stat b{display:block;font-family:var(--serif);font-size:clamp(2.2rem,4vw,3.4rem);color:var(--gold-2);line-height:1;font-weight:500}
+.stat span{font-size:.82rem;color:var(--ink-dim);letter-spacing:.04em}
+
+.philosophy__art{position:relative}
+.art-card{position:relative;aspect-ratio:4/5;border-radius:14px;overflow:hidden;border:1px solid var(--line);
+  background:
+    radial-gradient(80% 60% at 30% 20%,rgba(95,158,127,.25),transparent 60%),
+    radial-gradient(90% 80% at 80% 90%,rgba(201,162,75,.28),transparent 60%),
+    linear-gradient(160deg,#1a2620,#0f1713)}
+.art-card__orn{position:absolute;inset:0;
+  background:
+    radial-gradient(circle at 50% 45%,transparent 28%,rgba(201,162,75,.10) 28.5%,transparent 30%),
+    radial-gradient(circle at 50% 45%,transparent 40%,rgba(201,162,75,.08) 40.5%,transparent 42%),
+    radial-gradient(circle at 50% 45%,transparent 52%,rgba(95,158,127,.08) 52.5%,transparent 54%);
+  opacity:.9}
+.art-card__orn::before{content:"✦";position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  font-size:clamp(4rem,10vw,7rem);color:rgba(201,162,75,.5)}
+.art-card__cap{position:absolute;left:1.2rem;bottom:1.1rem;font-size:.72rem;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--ink-soft)}
+
+/* ============================================================
+   RITUAL (particle assembly)
+   ============================================================ */
+.ritual{position:relative;background:var(--bg)}
+.ritual__spacer{height:300vh}
+.ritual__sticky{position:sticky;top:0;height:100vh;overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+  background:radial-gradient(120% 100% at 50% 50%,#12191510 0%,var(--bg) 70%)}
+.ritual__canvas{position:absolute;inset:0;width:100%;height:100%}
+.ritual__captions{position:absolute;top:14%;left:0;width:100%;text-align:center;pointer-events:none}
+.ritual__label{position:absolute;left:50%;top:0;transform:translateX(-50%) translateY(10px);opacity:0;
+  transition:opacity .6s var(--ease),transform .6s var(--ease);white-space:nowrap}
+.ritual__label.is-on{opacity:1;transform:translateX(-50%) translateY(0)}
+.ritual__hint{position:absolute;bottom:8%;left:50%;transform:translateX(-50%);font-size:.75rem;
+  letter-spacing:.14em;color:var(--ink-dim);text-transform:uppercase;text-align:center;padding:0 1rem}
+
+/* ============================================================
+   УСЛУГИ
+   ============================================================ */
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:1.4rem}
+.card{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:16px;
+  padding:2.2rem 2rem 1.8rem;overflow:hidden;transition:transform .5s var(--ease),border-color .5s,background .5s;
+  transform-style:preserve-3d;will-change:transform}
+.card::before{content:"";position:absolute;inset:0;opacity:0;transition:opacity .5s var(--ease);
+  background:radial-gradient(120% 120% at var(--mx,50%) var(--my,0%),rgba(201,162,75,.14),transparent 55%)}
+.card:hover{border-color:rgba(201,162,75,.45);background:var(--surface-2)}
+.card:hover::before{opacity:1}
+.card__num{font-family:var(--serif);font-size:1.1rem;color:var(--gold);letter-spacing:.1em;opacity:.8}
+.card__title{font-family:var(--serif);font-size:1.7rem;font-weight:500;margin:.5rem 0 .7rem;line-height:1.1}
+.card__desc{font-size:.95rem;color:var(--ink-soft);font-weight:300;min-height:4.2em}
+.card__meta{display:flex;align-items:baseline;justify-content:space-between;margin-top:1.4rem;padding-top:1.1rem;border-top:1px solid var(--line)}
+.card__meta span{font-size:.82rem;color:var(--ink-dim);letter-spacing:.04em}
+.card__meta b{font-family:var(--serif);font-size:1.35rem;color:var(--gold-2);font-weight:500}
+.services__note{text-align:center;margin-top:2.6rem;color:var(--ink-soft);font-weight:300}
+.services__note b{color:var(--gold-2)}
+
+/* ============================================================
+   ГАЛЕРЕЯ
+   ============================================================ */
+.gallery__grid{display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:180px;gap:1rem;
+  max-width:var(--wrap);margin:0 auto;padding:0 clamp(1.25rem,5vw,2.5rem)}
+.gtile{position:relative;border-radius:14px;overflow:hidden;border:1px solid var(--line);
+  grid-row:span 1;background:linear-gradient(160deg,#1a2620,#0f1713);display:flex;align-items:flex-end}
+.gtile::before{content:"";position:absolute;inset:0;opacity:.9;
+  background:
+    radial-gradient(70% 60% at 30% 20%,rgba(95,158,127,.22),transparent 60%),
+    radial-gradient(80% 70% at 80% 90%,rgba(201,162,75,.24),transparent 60%)}
+.gtile span{position:relative;z-index:2;padding:1rem 1.2rem;font-family:var(--serif);font-style:italic;
+  font-size:1.15rem;color:var(--ink);text-shadow:0 2px 10px rgba(0,0,0,.5)}
+.gtile--tall{grid-row:span 2}
+.gtile--wide{grid-column:span 2}
+.gtile img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+
+/* ============================================================
+   СЕРТИФИКАТЫ
+   ============================================================ */
+.gift__inner{display:grid;grid-template-columns:1fr 1fr;gap:clamp(2rem,6vw,5rem);align-items:center}
+.gift__card{position:relative;aspect-ratio:1.6/1;border-radius:20px;overflow:hidden;
+  padding:2.2rem;display:flex;flex-direction:column;justify-content:space-between;
+  border:1px solid rgba(201,162,75,.4);transform-style:preserve-3d;will-change:transform;
+  background:
+    radial-gradient(120% 120% at 80% 10%,rgba(201,162,75,.35),transparent 55%),
+    linear-gradient(150deg,#241d10,#14120b)}
+.gift__shine{position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(105deg,transparent 42%,rgba(232,205,138,.28) 50%,transparent 58%);
+  transform:translateX(-30%);transition:transform .2s linear}
+.gift__value{font-family:var(--serif);font-size:clamp(2.4rem,6vw,3.6rem);letter-spacing:.06em;color:var(--gold-2)}
+.gift__value em{font-style:italic}
+.gift__desc{color:var(--ink-soft);font-size:.95rem;font-weight:300}
+.gift__foot{font-size:.75rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold)}
+.gift__card .label{color:var(--gold-2)}
+
+/* ============================================================
+   КОНТАКТЫ
+   ============================================================ */
+.contact__grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(2rem,6vw,5rem);align-items:start}
+.contact__list{list-style:none;margin:2.4rem 0 0;display:flex;flex-direction:column;gap:1.3rem}
+.contact__list li{display:flex;flex-direction:column;gap:.2rem;padding-bottom:1.3rem;border-bottom:1px solid var(--line)}
+.contact__k{font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold)}
+.contact__v{font-size:1.15rem;color:var(--ink);font-family:var(--serif)}
+.contact__socials{display:flex;gap:1.4rem;margin-top:2rem}
+.contact__socials a{font-size:.9rem;color:var(--ink-soft);position:relative}
+.contact__socials a:hover{color:var(--gold-2)}
+
+.contact__form{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:clamp(1.6rem,3vw,2.4rem);display:flex;flex-direction:column;gap:1.3rem}
+.field{position:relative}
+.field input,.field textarea{width:100%;background:transparent;border:0;border-bottom:1px solid var(--line);
+  padding:1.1rem .2rem .5rem;color:var(--ink);font-family:var(--sans);font-size:1rem;resize:none;transition:border-color .4s}
+.field textarea{border:1px solid var(--line);border-radius:10px;padding:1.2rem .8rem .5rem}
+.field label{position:absolute;left:.2rem;top:1.1rem;color:var(--ink-dim);pointer-events:none;transition:.3s var(--ease);font-size:1rem}
+.field textarea + label{left:.8rem}
+.field input:focus,.field textarea:focus{outline:none;border-color:var(--gold)}
+.field input:focus + label,.field input:not(:placeholder-shown) + label,
+.field textarea:focus + label,.field textarea:not(:placeholder-shown) + label{
+  top:-.2rem;font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;color:var(--gold)}
+.contact__hint{font-size:.72rem;color:var(--ink-dim);text-align:center}
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+.footer{padding:4rem 0 3rem;border-top:1px solid var(--line);background:var(--bg)}
+.footer__inner{text-align:center;display:flex;flex-direction:column;align-items:center;gap:.6rem}
+.footer__brand{font-family:var(--serif);font-size:1.8rem;letter-spacing:.06em}
+.footer__brand em{font-style:italic;color:var(--gold-2)}
+.footer__tag{color:var(--ink-soft);font-size:.9rem}
+.footer__copy{color:var(--ink-dim);font-size:.8rem;margin-top:.6rem}
+
+/* ============================================================
+   REVEAL-АНИМАЦИИ
+   ============================================================ */
+.reveal{opacity:0;transform:translateY(28px);filter:blur(6px);
+  transition:opacity .9s var(--ease) var(--d,0s),transform .9s var(--ease) var(--d,0s),filter .9s var(--ease) var(--d,0s)}
+.reveal.is-in{opacity:1;transform:none;filter:blur(0)}
+
+@media (prefers-reduced-motion:reduce){
+  .reveal{opacity:1;transform:none;filter:none;transition:none}
+  .hero__scroll i::after,.preloader__lotus{animation:none}
+  .ritual__spacer{height:120vh}
+}
+
+/* ============================================================
+   АДАПТИВ
+   ============================================================ */
+@media (max-width:980px){
+  .cards{grid-template-columns:repeat(2,1fr)}
+  .gallery__grid{grid-template-columns:repeat(2,1fr)}
+}
+@media (max-width:760px){
+  .philosophy__grid,.gift__inner,.contact__grid{grid-template-columns:1fr}
+  .philosophy__art{order:-1;max-width:420px}
+  .gift__card{order:-1}
+  .cards{grid-template-columns:1fr}
+  .card__desc{min-height:0}
+  .gallery__grid{grid-auto-rows:150px}
+  .gtile--wide{grid-column:span 2}
+  .gtile--tall{grid-row:span 1}
+  .ritual__spacer{height:220vh}
+}
