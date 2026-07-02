@@ -226,7 +226,8 @@
     if (photoCanvas) {
       photoField = new P.ImageParticleField(photoCanvas, {
         src: 'assets/img/massage.jpg',
-        count: REDUCED ? 2500 : (window.innerWidth < 640 ? 3200 : 6000)
+        count: REDUCED ? 2500 : (window.innerWidth < 640 ? 3200 : 6000),
+        onphoto: function () { if (REDUCED) photoField.snap(); }
       });
       photoField.assemble = REDUCED ? 1 : 0;
       photoField.start();

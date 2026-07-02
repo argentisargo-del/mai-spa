@@ -376,32 +376,59 @@
       drawSource(octx, w, h);
       const data = octx.getImageData(0, 0, w, h).data;
       const target = opts.count || (w < 500 ? 3200 : 6000);
-      const step = Math.max(3, Math.round(Math.sqrt(w * h / target)));
       particles = [];
-      let i = 0;
-      for (let y = 0; y < h; y += step) {
-        for (let x = 0; x < w; x += step) {
+
+      // мягкий подъём яркости для тёмных фото (gamma + gain)
+      const lift = img
+        ? function (c) { return Math.min(255, Math.round(Math.pow(c / 255, 0.8) * 255 * 1.2 + 8)); }
+        : function (c) { return c; };
+      const lumMin = img ? 0.03 : 0.075; // фото тёмные — порог ниже
+
+      // 1) собираем всех кандидатов мелкой сеткой
+      const scan = 3;
+      const cand = [];
+      for (let y = 0; y < h; y += scan) {
+        for (let x = 0; x < w; x += scan) {
           const o = (y * w + x) * 4;
-          const r = data[o], g = data[o + 1], b = data[o + 2], a = data[o + 3];
+          const a = data[o + 3];
           if (a < 120) continue;
+          const r = data[o], g = data[o + 1], b = data[o + 2];
           const lum = (r * 0.299 + g * 0.587 + b * 0.114) / 255;
-          if (lum < 0.075) continue; // силуэты — дыры
-          const s1 = seeded(i), s2 = seeded(i + 4321), s3 = seeded(i + 777);
-          particles.push({
-            hx: x, hy: y,
-            sx: x + (s1 - 0.5) * w * 1.4,
-            sy: y + (s2 - 0.5) * h * 1.4,
-            x: x + (s1 - 0.5) * w * 1.4,
-            y: y + (s2 - 0.5) * h * 1.4,
-            col: r + ',' + g + ',' + b,
-            size: step * 0.62,
-            amp: 8 + s3 * 26,
-            spd: 0.25 + s1 * 0.45,
-            ph: s2 * 6.283,
-            k: 0.08 + s3 * 0.08
-          });
-          i++;
+          if (lum < lumMin) continue;
+          cand.push(x, y, r, g, b);
         }
+      }
+      const total = cand.length / 5;
+      if (!total) return;
+
+      // 2) равномерно прореживаем до target
+      const stride = Math.max(1, total / target);
+      // размер частицы — чтобы покрыть занимаемую площадь
+      const size = Math.max(2.2, Math.sqrt((total * scan * scan) / Math.min(total, target)) * 0.62);
+
+      let i = 0;
+      for (let f = 0; f < total; f += stride) {
+        // джиттер выбора — убирает регулярный полосатый паттерн
+        const j = Math.min(total - 1, Math.floor(f + seeded(i + 31) * stride));
+        const o = j * 5;
+        const x = cand[o] + (seeded(i + 57) - 0.5) * scan * 1.6,
+              y = cand[o + 1] + (seeded(i + 91) - 0.5) * scan * 1.6;
+        const r = lift(cand[o + 2]), g = lift(cand[o + 3]), b = lift(cand[o + 4]);
+        const s1 = seeded(i), s2 = seeded(i + 4321), s3 = seeded(i + 777);
+        particles.push({
+          hx: x, hy: y,
+          sx: x + (s1 - 0.5) * w * 1.4,
+          sy: y + (s2 - 0.5) * h * 1.4,
+          x: x + (s1 - 0.5) * w * 1.4,
+          y: y + (s2 - 0.5) * h * 1.4,
+          col: r + ',' + g + ',' + b,
+          size: size,
+          amp: 8 + s3 * 26,
+          spd: 0.25 + s1 * 0.45,
+          ph: s2 * 6.283,
+          k: 0.08 + s3 * 0.08
+        });
+        i++;
       }
     }
 
@@ -439,11 +466,20 @@
     this.start = function () { if (!raf) raf = requestAnimationFrame(frame); };
     this.stop = function () { if (raf) { cancelAnimationFrame(raf); raf = null; } };
     this.resize = resize;
+    // мгновенно поставить частицы в позиции текущего assemble (без перелёта)
+    this.snap = function () {
+      const asm = self.assemble;
+      for (let i = 0; i < particles.length; i++) {
+        const p = particles[i];
+        p.x = lerp(p.sx, p.hx, asm);
+        p.y = lerp(p.sy, p.hy, asm);
+      }
+    };
 
     // пробуем загрузить реальное фото; нет — рисуем сцену-силуэт
     if (opts.src) {
       const im = new Image();
-      im.onload = function () { img = im; build(); };
+      im.onload = function () { img = im; build(); if (opts.onphoto) opts.onphoto(); };
       im.onerror = function () { /* остаёмся на процедурной сцене */ };
       im.src = opts.src;
     }
