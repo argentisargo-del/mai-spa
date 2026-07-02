@@ -168,7 +168,7 @@
      ЧАСТИЦЫ
      ============================================================ */
   const P = window.MAISPA_Particles;
-  let heroField = null, ritualField = null;
+  let heroField = null, ritualField = null, photoField = null;
 
   function initParticles() {
     if (!P) return;
@@ -218,6 +218,32 @@
         ritualCanvas.addEventListener('mouseleave', function () { ritualField.setMouse(-9999, -9999, false); });
       }
     }
+
+    // PHOTO: сцена «две мастерицы + гостья» из цветных частиц.
+    // Собирается когда карточка у центра экрана, разлетается при скролле.
+    // Положите реальное фото в assets/img/massage.jpg — эффект применится к нему.
+    const photoCanvas = $('#photoCanvas');
+    if (photoCanvas) {
+      photoField = new P.ImageParticleField(photoCanvas, {
+        src: 'assets/img/massage.jpg',
+        count: REDUCED ? 2500 : (window.innerWidth < 640 ? 3200 : 6000)
+      });
+      photoField.assemble = REDUCED ? 1 : 0;
+      photoField.start();
+    }
+  }
+
+  /* ---------- Скролл-драйв фото-частиц ---------- */
+  const photoCard = $('#photoCanvas');
+  function drivePhoto() {
+    if (!photoField || !photoCard || REDUCED) return;
+    const r = photoCard.getBoundingClientRect();
+    const vh = window.innerHeight;
+    const center = r.top + r.height / 2;
+    const dist = Math.abs(center - vh / 2);
+    const range = vh * 0.55;
+    const p = clamp(1 - dist / range, 0, 1);
+    photoField.assemble = Math.pow(p, 0.75);
   }
 
   // плавная анимация значения assemble
@@ -273,6 +299,7 @@
         onProgress();
         applyParallax();
         driveRitual();
+        drivePhoto();
         ticking = false;
       });
       ticking = true;
@@ -287,8 +314,10 @@
     rz = setTimeout(function () {
       if (heroField) heroField.resize();
       if (ritualField) ritualField.resize();
+      if (photoField) photoField.resize();
       applyParallax();
       driveRitual();
+      drivePhoto();
     }, 180);
   });
 

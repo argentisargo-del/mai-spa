@@ -247,7 +247,213 @@
   }
 
   /* ------------------------------------------------------------
+     Процедурная сцена: две мастерицы делают массаж гостье.
+     Тёплый свет свечей, фигуры — тёмные силуэты (в частицах
+     читаются как «вырезы» на светящемся фоне).
+     ------------------------------------------------------------ */
+  function drawSpaScene(ctx, w, h) {
+    // тёплый фон
+    let g = ctx.createLinearGradient(0, 0, 0, h);
+    g.addColorStop(0, '#18211a');
+    g.addColorStop(0.5, '#33291a');
+    g.addColorStop(1, '#4a3620');
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, w, h);
+
+    function glow(x, y, r, rgba) {
+      const rg = ctx.createRadialGradient(x, y, 0, x, y, r);
+      rg.addColorStop(0, rgba);
+      rg.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = rg;
+      ctx.fillRect(x - r, y - r, r * 2, r * 2);
+    }
+    // свет: центральное тёплое свечение + свечи по низу
+    glow(w * 0.5, h * 0.40, w * 0.75, 'rgba(236,196,120,0.50)');
+    glow(w * 0.16, h * 0.82, w * 0.30, 'rgba(255,186,96,0.45)');
+    glow(w * 0.84, h * 0.80, w * 0.26, 'rgba(255,176,88,0.38)');
+
+    const dark = '#0b100d';
+    ctx.fillStyle = dark;
+    ctx.strokeStyle = dark;
+    ctx.lineCap = 'round';
+
+    function ell(x, y, rx, ry, rot) {
+      ctx.beginPath();
+      ctx.ellipse(x, y, rx, ry, rot || 0, 0, 6.283);
+      ctx.fill();
+    }
+    function arm(x1, y1, cx, cy, x2, y2, lw) {
+      ctx.lineWidth = lw;
+      ctx.beginPath();
+      ctx.moveTo(x1, y1);
+      ctx.quadraticCurveTo(cx, cy, x2, y2);
+      ctx.stroke();
+    }
+
+    // массажный стол
+    ctx.beginPath();
+    if (ctx.roundRect) ctx.roundRect(w * 0.10, h * 0.615, w * 0.80, h * 0.05, w * 0.012);
+    else ctx.rect(w * 0.10, h * 0.615, w * 0.80, h * 0.05);
+    ctx.fill();
+    ctx.fillRect(w * 0.17, h * 0.66, w * 0.028, h * 0.24);  // ножки
+    ctx.fillRect(w * 0.79, h * 0.66, w * 0.028, h * 0.24);
+
+    // гостья на столе (лежит, голова слева) — приподнята над столешницей
+    ell(w * 0.195, h * 0.565, w * 0.042, w * 0.042);                 // голова
+    ell(w * 0.42, h * 0.572, w * 0.165, h * 0.036);                  // корпус
+    ell(w * 0.585, h * 0.568, w * 0.085, h * 0.040);                 // бёдра (изгиб)
+    ell(w * 0.755, h * 0.585, w * 0.105, h * 0.024);                 // ноги
+
+    // мастерица 1 — за столом, наклонена к спине гостьи
+    ell(w * 0.38, h * 0.295, w * 0.043, w * 0.046);                  // голова
+    ell(w * 0.38, h * 0.246, w * 0.020, w * 0.020);                  // пучок
+    ctx.beginPath();                                                 // корпус с наклоном
+    ctx.moveTo(w * 0.335, h * 0.345);
+    ctx.quadraticCurveTo(w * 0.30, h * 0.50, w * 0.325, h * 0.615);
+    ctx.lineTo(w * 0.435, h * 0.615);
+    ctx.quadraticCurveTo(w * 0.455, h * 0.46, w * 0.425, h * 0.345);
+    ctx.closePath(); ctx.fill();
+    arm(w * 0.355, h * 0.375, w * 0.40, h * 0.47, w * 0.455, h * 0.560, w * 0.030); // руки на спине
+    arm(w * 0.415, h * 0.370, w * 0.47, h * 0.44, w * 0.505, h * 0.556, w * 0.030);
+
+    // мастерица 2 — у ног гостьи
+    ell(w * 0.665, h * 0.330, w * 0.040, w * 0.043);                 // голова
+    ell(w * 0.665, h * 0.284, w * 0.018, w * 0.018);                 // пучок
+    ctx.beginPath();
+    ctx.moveTo(w * 0.625, h * 0.378);
+    ctx.quadraticCurveTo(w * 0.60, h * 0.50, w * 0.618, h * 0.615);
+    ctx.lineTo(w * 0.715, h * 0.615);
+    ctx.quadraticCurveTo(w * 0.73, h * 0.47, w * 0.705, h * 0.378);
+    ctx.closePath(); ctx.fill();
+    arm(w * 0.64, h * 0.405, w * 0.67, h * 0.48, w * 0.715, h * 0.565, w * 0.028);
+    arm(w * 0.70, h * 0.402, w * 0.745, h * 0.47, w * 0.775, h * 0.568, w * 0.028);
+
+    // свечи слева внизу
+    const candles = [[0.115, 0.885, 0.055], [0.165, 0.90, 0.038], [0.205, 0.892, 0.046]];
+    for (const c of candles) {
+      ctx.fillStyle = dark;
+      ctx.fillRect(w * c[0] - w * 0.012, h * c[1] - h * c[2], w * 0.024, h * c[2]);
+      // пламя
+      ctx.fillStyle = '#ffe9b0';
+      ell(w * c[0], h * c[1] - h * c[2] - h * 0.014, w * 0.007, h * 0.012);
+      ctx.fillStyle = dark;
+    }
+  }
+
+  /* ------------------------------------------------------------
+     ImageParticleField — фото/сцена из цветных частиц.
+     Сэмплирует пиксели источника (Image или draw-функция),
+     каждая частица несёт цвет пикселя. assemble: 0=разлетелось,
+     1=собралось в изображение. Тёмные пиксели пропускаются —
+     силуэты читаются как «вырезы».
+     ------------------------------------------------------------ */
+  function ImageParticleField(canvas, opts) {
+    opts = opts || {};
+    const ctx = canvas.getContext('2d');
+    let W = 0, H = 0, DPR = 1;
+    let particles = [];
+    this.assemble = 0;
+    const self = this;
+    let img = null; // реальное фото, если загрузится
+
+    function drawSource(octx, w, h) {
+      if (img) {
+        // cover-вписывание фото
+        const s = Math.max(w / img.width, h / img.height);
+        const dw = img.width * s, dh = img.height * s;
+        octx.drawImage(img, (w - dw) / 2, (h - dh) / 2, dw, dh);
+      } else {
+        (opts.draw || drawSpaScene)(octx, w, h);
+      }
+    }
+
+    function build() {
+      const w = Math.round(W), h = Math.round(H);
+      if (w < 10 || h < 10) return;
+      const off = document.createElement('canvas');
+      off.width = w; off.height = h;
+      const octx = off.getContext('2d', { willReadFrequently: true });
+      drawSource(octx, w, h);
+      const data = octx.getImageData(0, 0, w, h).data;
+      const target = opts.count || (w < 500 ? 3200 : 6000);
+      const step = Math.max(3, Math.round(Math.sqrt(w * h / target)));
+      particles = [];
+      let i = 0;
+      for (let y = 0; y < h; y += step) {
+        for (let x = 0; x < w; x += step) {
+          const o = (y * w + x) * 4;
+          const r = data[o], g = data[o + 1], b = data[o + 2], a = data[o + 3];
+          if (a < 120) continue;
+          const lum = (r * 0.299 + g * 0.587 + b * 0.114) / 255;
+          if (lum < 0.075) continue; // силуэты — дыры
+          const s1 = seeded(i), s2 = seeded(i + 4321), s3 = seeded(i + 777);
+          particles.push({
+            hx: x, hy: y,
+            sx: x + (s1 - 0.5) * w * 1.4,
+            sy: y + (s2 - 0.5) * h * 1.4,
+            x: x + (s1 - 0.5) * w * 1.4,
+            y: y + (s2 - 0.5) * h * 1.4,
+            col: r + ',' + g + ',' + b,
+            size: step * 0.62,
+            amp: 8 + s3 * 26,
+            spd: 0.25 + s1 * 0.45,
+            ph: s2 * 6.283,
+            k: 0.08 + s3 * 0.08
+          });
+          i++;
+        }
+      }
+    }
+
+    function resize() {
+      DPR = Math.min(window.devicePixelRatio || 1, 2);
+      const r = canvas.getBoundingClientRect();
+      W = r.width; H = r.height;
+      canvas.width = W * DPR;
+      canvas.height = H * DPR;
+      ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+      build();
+    }
+
+    let t = 0, raf = null;
+    function frame() {
+      t += 0.016;
+      ctx.clearRect(0, 0, W, H);
+      const asm = self.assemble;
+      const alpha = 0.22 + asm * 0.78;
+      for (let i = 0; i < particles.length; i++) {
+        const p = particles[i];
+        const fx = p.sx + Math.cos(t * p.spd + p.ph) * p.amp;
+        const fy = p.sy + Math.sin(t * p.spd * 0.9 + p.ph) * p.amp;
+        const gx = lerp(fx, p.hx, asm);
+        const gy = lerp(fy, p.hy, asm);
+        const k = p.k * (0.5 + asm);
+        p.x += (gx - p.x) * k;
+        p.y += (gy - p.y) * k;
+        ctx.fillStyle = 'rgba(' + p.col + ',' + alpha + ')';
+        ctx.fillRect(p.x, p.y, p.size, p.size);
+      }
+      raf = requestAnimationFrame(frame);
+    }
+
+    this.start = function () { if (!raf) raf = requestAnimationFrame(frame); };
+    this.stop = function () { if (raf) { cancelAnimationFrame(raf); raf = null; } };
+    this.resize = resize;
+
+    // пробуем загрузить реальное фото; нет — рисуем сцену-силуэт
+    if (opts.src) {
+      const im = new Image();
+      im.onload = function () { img = im; build(); };
+      im.onerror = function () { /* остаёмся на процедурной сцене */ };
+      im.src = opts.src;
+    }
+
+    resize();
+    return this;
+  }
+
+  /* ------------------------------------------------------------
      Инициализация после загрузки
      ------------------------------------------------------------ */
-  window.MAISPA_Particles = { ParticleField, drawWord, drawLotus, REDUCED };
+  window.MAISPA_Particles = { ParticleField, ImageParticleField, drawWord, drawLotus, drawSpaScene, REDUCED };
 })();
