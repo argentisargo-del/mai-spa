@@ -1,0 +1,1554 @@
+<!DOCTYPE html>
+<html lang="ru" class="no-js">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>MAI SPA — премиальный тайский SPA в Йошкар-Оле</title>
+<meta name="description" content="MAI SPA — иммерсивное путешествие: тайский массаж, oil-ритуалы, хаммам и чайная церемония. Первомайская 80, Йошкар-Ола. Запись: 696-696." />
+<meta name="theme-color" content="#0F1B16" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Prata&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+/* ============================================================
+   MAI SPA — иммерсивный 3D-сайт
+   Палитра: нефрит #0F1B16 · латунь #D3A15C · свет #E8C088 · текст #F3EBDD
+   ============================================================ */
+:root{
+  --bg:#0F1B16;
+  --brass:#D3A15C;
+  --brass-l:#E8C088;
+  --ink:#F3EBDD;
+  --ink-soft:#c9c0ae;
+  --line:rgba(211,161,92,.28);
+  --serif:'Prata', Georgia, 'Times New Roman', serif;
+  --sans:'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --ease:cubic-bezier(.22,1,.36,1);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  background:var(--bg);color:var(--ink);font-family:var(--sans);
+  line-height:1.6;overflow-x:hidden;-webkit-font-smoothing:antialiased;
+}
+a{color:inherit;text-decoration:none}
+::selection{background:var(--brass);color:var(--bg)}
+
+/* ---------- WebGL-холст ---------- */
+#gl{position:fixed;inset:0;width:100%;height:100%;display:block;z-index:1}
+.vignette{position:fixed;inset:0;z-index:2;pointer-events:none;
+  background:radial-gradient(120% 90% at 50% 50%,transparent 55%,rgba(5,10,8,.55) 100%)}
+
+/* ---------- Скролл-простор ---------- */
+.spacer{height:1200vh;position:relative;z-index:0}
+
+/* ---------- Оверлеи-пространства ---------- */
+.overlay{position:fixed;inset:0;z-index:5;pointer-events:none}
+.space{
+  position:absolute;inset:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;text-align:center;
+  padding:0 clamp(1.2rem,6vw,4rem);
+}
+.js .space{opacity:0;transform:translateY(26px)}
+.space .inner{max-width:760px;display:flex;flex-direction:column;align-items:center;gap:1.1rem}
+.eyebrow{font-size:.7rem;letter-spacing:.34em;text-transform:uppercase;color:var(--brass);font-weight:600}
+h1,.h1{font-family:var(--serif);font-weight:400;font-size:clamp(2.2rem,7vw,4.8rem);line-height:1.08;text-wrap:balance;
+  text-shadow:0 2px 30px rgba(5,10,8,.8)}
+.h2{font-family:var(--serif);font-weight:400;font-size:clamp(1.9rem,5.4vw,3.6rem);line-height:1.1;text-wrap:balance;
+  text-shadow:0 2px 30px rgba(5,10,8,.8)}
+.space p{color:var(--ink-soft);max-width:56ch;font-weight:300;font-size:clamp(.98rem,1.5vw,1.15rem);
+  text-shadow:0 1px 18px rgba(5,10,8,.9)}
+.em{color:var(--brass-l);font-style:italic}
+
+.btn{
+  pointer-events:auto;display:inline-flex;align-items:center;gap:.55em;
+  padding:.95rem 2.1rem;border-radius:100px;font-weight:600;font-size:.95rem;
+  background:linear-gradient(135deg,var(--brass-l),var(--brass));color:#241a0d;
+  box-shadow:0 12px 34px -12px rgba(211,161,92,.65);
+  transition:transform .45s var(--ease),box-shadow .45s var(--ease);
+  position:relative;overflow:hidden;border:0;cursor:pointer;
+}
+.btn::after{content:"";position:absolute;inset:0;transform:translateX(-130%);
+  background:linear-gradient(105deg,transparent 30%,rgba(255,255,255,.5) 50%,transparent 70%);
+  transition:transform .7s var(--ease)}
+.btn:hover::after{transform:translateX(130%)}
+.btn:hover{transform:translateY(-3px);box-shadow:0 18px 44px -14px rgba(232,192,136,.8)}
+.btn:focus-visible{outline:2px solid var(--brass-l);outline-offset:3px}
+.btn--ghost{background:transparent;color:var(--ink);border:1px solid var(--line);box-shadow:none}
+.btn--ghost:hover{border-color:var(--brass);color:var(--brass-l)}
+.btn-row{display:flex;gap:.9rem;flex-wrap:wrap;justify-content:center}
+
+/* услуги (DOM-версия для SEO; в сцене — карточки) */
+.services-list{list-style:none;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:.5rem 2.4rem;margin-top:.4rem;text-align:left}
+.services-list li{display:flex;justify-content:space-between;gap:1.2rem;padding:.5rem 0;
+  border-bottom:1px solid rgba(211,161,92,.16);font-size:.95rem}
+.services-list b{font-weight:500;color:var(--ink)}
+.services-list span{color:var(--brass);white-space:nowrap;font-size:.85rem;letter-spacing:.04em}
+
+/* мастера */
+.masters{display:flex;gap:clamp(1rem,4vw,2.6rem);flex-wrap:wrap;justify-content:center;margin-top:.6rem}
+.master{display:flex;flex-direction:column;align-items:center;gap:.7rem}
+.master b{font-family:var(--serif);font-weight:400;font-size:1.25rem;color:var(--ink)}
+.master .btn{padding:.62rem 1.5rem;font-size:.85rem}
+
+.master-photo{display:none}
+.flat .master-photo{display:block;width:128px;height:128px;border-radius:50%;object-fit:cover;
+  object-position:50% 20%;border:2px solid var(--brass);box-shadow:0 0 24px rgba(211,161,92,.35)}
+
+/* контакты */
+.contacts{display:flex;flex-direction:column;gap:.35rem;font-size:1.05rem}
+.contacts a{border-bottom:1px solid rgba(211,161,92,.35);transition:color .3s;pointer-events:auto}
+.contacts a:hover{color:var(--brass-l)}
+
+/* ---------- Прогресс-путь ---------- */
+.rail{position:fixed;right:clamp(.9rem,3vw,2.2rem);top:50%;transform:translateY(-50%);
+  z-index:10;display:flex;flex-direction:column;align-items:center;gap:0}
+.rail__line{width:1px;height:46px;background:linear-gradient(var(--line),var(--line))}
+.rail__dot{width:9px;height:9px;border-radius:50%;border:1px solid var(--brass);
+  background:transparent;cursor:pointer;padding:0;flex:none;
+  transition:background .4s,box-shadow .4s,transform .4s var(--ease)}
+.rail__dot:hover{transform:scale(1.35)}
+.rail__dot.is-active{background:var(--brass-l);box-shadow:0 0 12px rgba(232,192,136,.8)}
+.rail__dot:focus-visible{outline:2px solid var(--brass-l);outline-offset:3px}
+
+/* ---------- Подсказка ---------- */
+.hint{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%);z-index:10;
+  display:flex;flex-direction:column;align-items:center;gap:.55rem;
+  font-size:.68rem;letter-spacing:.3em;text-transform:uppercase;color:var(--ink-soft);
+  transition:opacity .8s var(--ease);pointer-events:none}
+.hint i{width:1px;height:40px;background:linear-gradient(var(--brass),transparent);position:relative;overflow:hidden}
+.hint i::after{content:"";position:absolute;top:0;left:0;width:100%;height:40%;background:var(--brass-l);
+  animation:hintdot 1.9s var(--ease) infinite}
+@keyframes hintdot{0%{transform:translateY(-100%)}100%{transform:translateY(260%)}}
+.hint.is-hidden{opacity:0}
+
+/* ---------- Брендинг в углу ---------- */
+.brand{position:fixed;top:1.4rem;left:clamp(1.2rem,4vw,2.4rem);z-index:10;
+  font-family:var(--serif);font-size:1.25rem;letter-spacing:.08em;color:var(--ink);
+  text-shadow:0 1px 14px rgba(5,10,8,.8)}
+.brand em{font-style:italic;color:var(--brass-l)}
+.brand .mark{color:var(--brass)}
+
+/* ---------- Экран-приглашение ---------- */
+.enter{position:fixed;inset:0;z-index:11000;
+  background:radial-gradient(90% 70% at 50% 40%,#16261e 0%,var(--bg) 70%);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.1rem;
+  text-align:center;padding:0 1.5rem;
+  transition:opacity 1.2s var(--ease),visibility 1.2s}
+.enter.is-gone{opacity:0;visibility:hidden}
+.enter__mark{font-size:2.6rem;color:var(--brass);animation:breathe 3.2s var(--ease) infinite}
+@keyframes breathe{50%{transform:scale(1.14);opacity:.75}}
+.enter__brand{font-family:var(--serif);font-size:clamp(2.6rem,8vw,4.2rem);letter-spacing:.1em;color:var(--ink)}
+.enter__sub{font-size:.72rem;letter-spacing:.3em;text-transform:uppercase;color:var(--brass);margin-bottom:1.2rem}
+.enter__note{font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft);opacity:.7;margin-top:1.4rem}
+.flat .enter{display:none}
+body:not(.entered):not(.flat) .hint{opacity:0}
+
+/* ---------- Кнопка звука ---------- */
+.mute{position:fixed;left:clamp(1.2rem,4vw,2.4rem);bottom:1.6rem;z-index:10;
+  width:46px;height:46px;border-radius:50%;border:1px solid var(--line);
+  background:rgba(15,27,22,.55);backdrop-filter:blur(8px);color:var(--brass-l);
+  font-size:1.05rem;cursor:pointer;display:none;align-items:center;justify-content:center;
+  transition:border-color .4s,transform .4s var(--ease)}
+.mute:hover{border-color:var(--brass);transform:scale(1.08)}
+.mute:focus-visible{outline:2px solid var(--brass-l);outline-offset:3px}
+body.entered .mute{display:flex}
+.flat .mute{display:none !important}
+
+/* ---------- Панель услуги (фокус на карточке) ---------- */
+.focus-panel{position:fixed;right:clamp(1rem,6vw,5rem);top:50%;z-index:9;
+  width:min(360px,86vw);background:rgba(16,27,21,.9);backdrop-filter:blur(14px);
+  border:1px solid var(--line);border-radius:18px;padding:1.7rem 1.6rem 1.5rem;
+  opacity:0;transform:translateY(-50%) translateX(34px);pointer-events:none;
+  transition:opacity .6s var(--ease),transform .6s var(--ease)}
+.focus-panel.is-on{opacity:1;transform:translateY(-50%);pointer-events:auto}
+.focus-panel .dur{font-size:.7rem;letter-spacing:.24em;text-transform:uppercase;color:var(--brass);margin-bottom:.4rem}
+.focus-panel h3{font-family:var(--serif);font-weight:400;font-size:1.75rem;line-height:1.1;margin-bottom:.7rem}
+.focus-panel p{color:var(--ink-soft);font-size:.93rem;font-weight:300;line-height:1.55}
+.focus-panel .row{display:flex;gap:.7rem;margin-top:1.2rem;flex-wrap:wrap}
+.focus-panel .btn{padding:.7rem 1.5rem;font-size:.88rem}
+.focus-close{position:absolute;top:.65rem;right:.85rem;background:none;border:0;
+  color:var(--ink-soft);font-size:1.15rem;cursor:pointer;padding:.3rem;line-height:1}
+.focus-close:hover{color:var(--brass-l)}
+@media (max-width:640px){
+  .focus-panel{left:1rem;right:1rem;top:auto;bottom:5.4rem;width:auto;
+    transform:translateY(24px)}
+  .focus-panel.is-on{transform:translateY(0)}
+}
+
+/* ============================================================
+   ПЛОСКИЙ ФОЛБЭК (нет WebGL / prefers-reduced-motion / ?flat)
+   ============================================================ */
+@media (prefers-reduced-motion:reduce){
+  .hint i::after{animation:none}
+}
+.flat #gl,.flat .vignette,.flat .spacer,.flat .rail,.flat .hint{display:none}
+.flat .overlay{position:static;pointer-events:auto}
+.flat .space{position:static;opacity:1 !important;transform:none !important;
+  min-height:auto;padding:clamp(3.4rem,9vh,6.5rem) clamp(1.2rem,6vw,4rem);
+  border-bottom:1px solid rgba(211,161,92,.14)}
+.flat .space:nth-child(odd){background:#12211a}
+.flat .space .inner{gap:1.2rem}
+.flat .flat-photo{display:block;width:min(420px,86vw);border-radius:14px;
+  border:1px solid var(--line);margin-top:.6rem}
+.flat-photo{display:none}
+html.no-js .space{opacity:1;transform:none}
+
+@media (max-width:640px){
+  .services-list{grid-template-columns:1fr}
+  .rail{right:.6rem}
+  .eyebrow{letter-spacing:.18em}
+  .space p{max-width:100%}
+  .brand{font-size:1.05rem}
+}
+</style>
+</head>
+<body>
+
+<canvas id="gl" aria-hidden="true"></canvas>
+<div class="vignette" aria-hidden="true"></div>
+<div class="spacer" aria-hidden="true"></div>
+
+<a class="brand" href="#top" aria-label="MAI SPA — наверх"><span class="mark">✦</span> MAI <em>SPA</em></a>
+
+<!-- ================= ОВЕРЛЕИ 5 ПРОСТРАНСТВ ================= -->
+<main class="overlay" id="top">
+
+  <!-- 1. Вход -->
+  <section class="space" data-c="0.04" data-w="0.038" aria-label="Вход">
+    <div class="inner">
+      <p class="eyebrow">MAI SPA · тайский SPA · Йошкар-Ола</p>
+      <h1>Вечер, который<br><span class="em">тело запомнит</span></h1>
+      <p>Скролл ведёт вас сквозь пространства нашего SPA — от золотого тоннеля до парящего лотоса.</p>
+      <a class="btn" href="https://n1351412.yclients.com" target="_blank" rel="noopener">Записаться</a>
+    </div>
+  </section>
+
+  <!-- 2. Зал ритуалов -->
+  <section class="space" data-c="0.20" data-w="0.038" aria-label="Зал ритуалов">
+    <div class="inner">
+      <p class="eyebrow">Пространство второе</p>
+      <h2 class="h2">Зал ритуалов</h2>
+      <p>Шесть программ парят вокруг вас. Каждая — путь к балансу, подобранный под ваше состояние.</p>
+      <ul class="services-list">
+        <li><b>Тайский массаж</b><span>60–90 мин</span></li>
+        <li><b>Oil-массаж</b><span>60–90 мин</span></li>
+        <li><b>SPA для одного</b><span>90–120 мин</span></li>
+        <li><b>SPA для двоих</b><span>90–180 мин</span></li>
+        <li><b>VIP-ритуалы</b><span>120–180 мин</span></li>
+        <li><b>Thai Yoga</b><span>60 мин</span></li>
+      </ul>
+      <img class="flat-photo" src="assets/img/massage.jpg" alt="Мастерица MAI SPA делает массаж гостье при тёплом свете свечей" loading="lazy" />
+    </div>
+  </section>
+
+  <!-- 3. Пространство пара -->
+  <section class="space" data-c="0.34" data-w="0.038" aria-label="Пространство пара">
+    <div class="inner">
+      <p class="eyebrow">Пространство третье</p>
+      <h2 class="h2">Пространство пара</h2>
+      <p>Тёплый мрамор хаммама, кедровая <span class="em">фитобочка</span> и медленный пар, который забирает усталость.
+      После — чайная церемония: улун, тишина и время, принадлежащее только вам.</p>
+    </div>
+  </section>
+
+  <!-- 4. Сад орхидей -->
+  <section class="space" data-c="0.52" data-w="0.038" aria-label="Сад орхидей">
+    <div class="inner">
+      <p class="eyebrow">Пространство четвёртое</p>
+      <h2 class="h2">Сад орхидей</h2>
+      <p>Тропический уголок Таиланда: живые орхидеи, влажный тёплый воздух
+      и аромат франжипани. Пространство, где дыхание само становится глубже.</p>
+    </div>
+  </section>
+
+  <!-- 5. Зал мастеров -->
+  <section class="space" data-c="0.88" data-w="0.038" aria-label="Зал мастеров">
+    <div class="inner">
+      <p class="eyebrow">Пространство пятое</p>
+      <h2 class="h2">Зал мастеров</h2>
+      <p>Три мастера из Таиланда. Три техники. Одно чувство — руки, которые точно знают, что делают.</p>
+      <div class="masters">
+        <div class="master"><img class="master-photo" src="assets/img/master-lauan.jpg" alt="Мисс Лауан — мастер тайского массажа" loading="lazy" /><b>Мисс Лауан</b><a class="btn" href="https://n1351412.yclients.com" target="_blank" rel="noopener">Записаться</a></div>
+        <div class="master"><img class="master-photo" src="assets/img/master-vanni.jpg" alt="Мисс Ванни — мастер тайского массажа" loading="lazy" /><b>Мисс Ванни</b><a class="btn" href="https://n1351412.yclients.com" target="_blank" rel="noopener">Записаться</a></div>
+        <div class="master"><img class="master-photo" src="assets/img/master-natsinee.jpg" alt="Мисс Натсинее — мастер тайского массажа" loading="lazy" /><b>Мисс Натсинее</b><a class="btn" href="https://n1351412.yclients.com" target="_blank" rel="noopener">Записаться</a></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. Финал -->
+  <section class="space" data-c="0.97" data-w="0.055" aria-label="Контакты">
+    <div class="inner">
+      <p class="eyebrow">MAI SPA · Йошкар-Ола</p>
+      <h2 class="h2">До встречи<br>в <span class="em">тишине</span></h2>
+      <div class="contacts">
+        <span>Первомайская 80</span>
+        <a href="tel:+78362696696">696-696</a>
+        <a href="mailto:maitaispa12@gmail.com">maitaispa12@gmail.com</a>
+      </div>
+      <div class="btn-row">
+        <a class="btn" href="https://n1351412.yclients.com" target="_blank" rel="noopener">Записаться</a>
+        <a class="btn btn--ghost" href="https://n1351412.yclients.com" target="_blank" rel="noopener">Подарить сертификат</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ================= ПРОГРЕСС-ПУТЬ ================= -->
+<nav class="rail" aria-label="Путь по пространствам" id="rail"></nav>
+
+<div class="hint" id="hint" aria-hidden="true"><span>Листайте · зажмите, чтобы осмотреться</span><i></i></div>
+
+<!-- Экран-приглашение -->
+<div class="enter" id="enter" role="dialog" aria-label="Вход в MAI SPA">
+  <span class="enter__mark">✦</span>
+  <p class="enter__brand">MAI SPA</p>
+  <p class="enter__sub">премиальный тайский SPA · Йошкар-Ола</p>
+  <button class="btn" id="enterBtn" type="button">Войти в MAI SPA</button>
+  <p class="enter__note">путешествие со звуком · это займёт минуту</p>
+</div>
+
+<!-- Звук -->
+<button class="mute" id="muteBtn" type="button" aria-label="Включить или выключить звук">🔊</button>
+
+<!-- Панель услуги -->
+<aside class="focus-panel" id="focusPanel" aria-hidden="true">
+  <button class="focus-close" id="focusClose" type="button" aria-label="Закрыть">✕</button>
+  <p class="dur" id="fpDur"></p>
+  <h3 id="fpTitle"></h3>
+  <p id="fpDesc"></p>
+  <div class="row">
+    <a class="btn" href="https://n1351412.yclients.com" target="_blank" rel="noopener">Записаться</a>
+  </div>
+</aside>
+
+<noscript><style>#gl,.vignette,.spacer,.rail,.hint{display:none}.overlay{position:static}.space{position:static;min-height:auto;padding:4rem 1.5rem}</style></noscript>
+
+<script>
+/* ============================================================
+   MAI SPA — Immersive Experience
+   Полёт камеры по Catmull-Rom-кривой через 5 пространств.
+   Чистый WebGL (без зависимостей): движок ~ поведение
+   Three.js (FogExp2, BufferGeometry-частицы) + скролл-драйв.
+   ============================================================ */
+(function () {
+'use strict';
+document.documentElement.classList.remove('no-js');
+document.documentElement.classList.add('js');
+
+var REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
+var FLAT_QS = /[?&]flat=1/.test(location.search);
+var DEBUG_P = (function(){ var m = location.search.match(/[?&]p=([\d.]+)/); return m ? parseFloat(m[1]) : null; })();
+var DEBUG_FOCUS = (function(){ var m = location.search.match(/[?&]focus=(\d+)/); return m ? parseInt(m[1],10) : null; })();
+var MOBILE = innerWidth < 760;
+
+/* ---------- палитра ---------- */
+var BG = [15/255, 27/255, 22/255];          // #0F1B16
+var BRASS = [211/255, 161/255, 92/255];     // #D3A15C
+var BRASS_L = [232/255, 192/255, 136/255];  // #E8C088
+var JADE_GLOW = [95/255, 158/255, 127/255];
+
+/* ---------- DOM ---------- */
+var canvas = document.getElementById('gl');
+var spaces = [].slice.call(document.querySelectorAll('.space'));
+var railEl = document.getElementById('rail');
+var hintEl = document.getElementById('hint');
+
+/* ---------- фолбэк ---------- */
+function goFlat() { document.body.classList.add('flat'); }
+var gl = null;
+try {
+  gl = canvas.getContext('webgl', { antialias: true, alpha: false, powerPreference: 'high-performance' })
+    || canvas.getContext('experimental-webgl');
+} catch (e) { gl = null; }
+if (!gl || REDUCED || FLAT_QS) { goFlat(); return; }
+
+/* ============================================================
+   Мини-математика
+   ============================================================ */
+function v3(x,y,z){ return [x,y,z]; }
+function add(a,b){ return [a[0]+b[0],a[1]+b[1],a[2]+b[2]]; }
+function sub(a,b){ return [a[0]-b[0],a[1]-b[1],a[2]-b[2]]; }
+function scale(a,s){ return [a[0]*s,a[1]*s,a[2]*s]; }
+function norm(a){ var l=Math.hypot(a[0],a[1],a[2])||1; return [a[0]/l,a[1]/l,a[2]/l]; }
+function cross(a,b){ return [a[1]*b[2]-a[2]*b[1], a[2]*b[0]-a[0]*b[2], a[0]*b[1]-a[1]*b[0]]; }
+function lerp(a,b,t){ return a+(b-a)*t; }
+function clamp(v,a,b){ return v<a?a:(v>b?b:v); }
+
+function mat4Perspective(fov, aspect, near, far) {
+  var f = 1/Math.tan(fov/2), nf = 1/(near-far);
+  return [f/aspect,0,0,0, 0,f,0,0, 0,0,(far+near)*nf,-1, 0,0,2*far*near*nf,0];
+}
+function mat4LookAt(eye, target, up) {
+  var z = norm(sub(eye,target));
+  var x = norm(cross(up,z));
+  var y = cross(z,x);
+  return [x[0],y[0],z[0],0, x[1],y[1],z[1],0, x[2],y[2],z[2],0,
+    -(x[0]*eye[0]+x[1]*eye[1]+x[2]*eye[2]),
+    -(y[0]*eye[0]+y[1]*eye[1]+y[2]*eye[2]),
+    -(z[0]*eye[0]+z[1]*eye[1]+z[2]*eye[2]), 1];
+}
+function mat4Mul(a,b){ // a*b
+  var o = new Array(16);
+  for (var c=0;c<4;c++) for (var r=0;r<4;r++) {
+    o[c*4+r] = a[r]*b[c*4] + a[4+r]*b[c*4+1] + a[8+r]*b[c*4+2] + a[12+r]*b[c*4+3];
+  }
+  return o;
+}
+// модельная матрица из базиса (right,up,forward) + позиции + масштаба
+function mat4Basis(R,U,F,P,sx,sy){
+  return [R[0]*sx,R[1]*sx,R[2]*sx,0, U[0]*sy,U[1]*sy,U[2]*sy,0, F[0],F[1],F[2],0, P[0],P[1],P[2],1];
+}
+
+/* ---------- Catmull-Rom сплайн (аналог THREE.CatmullRomCurve3) ---------- */
+var CTRL = [
+  v3(0, 2.0, 116), v3(0, 2.0, 84), v3(0, 2.0, 52), v3(0, 2.0, 20),
+  v3(0, 2.0, -6), v3(8, 1.8, -26), v3(17, 1.6, -46),
+  // петля 360° ВНУТРИ сада орхидей: цветы кольцом вокруг камеры
+  v3(8, 2.0, -64),
+  v3(3.2, 2.2, -76.8), v3(4.2, 2.4, -81.5), v3(0, 2.6, -84.5),
+  v3(-4.2, 2.5, -81.5), v3(-3.2, 2.3, -76.8), v3(1.5, 2.2, -75.6),
+  v3(-3.5, 2.3, -88),    // выход из сада
+  v3(-18, 2.2, -112), v3(-8, 4.8, -128), v3(0, 9.5, -146)
+];
+function splineP(t) {
+  t = clamp(t, 0, 1);
+  var n = CTRL.length - 1;
+  var f = t * n;
+  var i = Math.min(Math.floor(f), n - 1);
+  var s = f - i;
+  var p0 = CTRL[Math.max(i-1,0)], p1 = CTRL[i], p2 = CTRL[Math.min(i+1,n)], p3 = CTRL[Math.min(i+2,n)];
+  var out = [0,0,0];
+  for (var k=0;k<3;k++){
+    var a = p1[k], b2 = 0.5*(p2[k]-p0[k]),
+        c = 0.5*(2*p0[k]-5*p1[k]+4*p2[k]-p3[k]),
+        d = 0.5*(-p0[k]+3*p1[k]-3*p2[k]+p3[k]);
+    out[k] = a + b2*s + c*s*s + d*s*s*s;
+  }
+  return out;
+}
+function splineT(t){ // касательная
+  var e = 0.001;
+  return norm(sub(splineP(Math.min(t+e,1)), splineP(Math.max(t-e,0))));
+}
+function basisAt(t){
+  var T = splineT(t);
+  var R = norm(cross(T, [0,1,0]));
+  var U = norm(cross(R, T));
+  return { T:T, R:R, U:U, P:splineP(t) };
+}
+
+/* ---------- якоря комнат ---------- */
+var ROOM_T = [0.04, 0.20, 0.34, 0.52, 0.88, 0.97];
+var ROOM_NAMES = ['Вход','Зал ритуалов','Пространство пара','Сад орхидей','Зал мастеров','Контакты'];
+
+/* ============================================================
+   WebGL-хелперы
+   ============================================================ */
+function makeShader(type, src) {
+  var sh = gl.createShader(type);
+  gl.shaderSource(sh, src); gl.compileShader(sh);
+  if (!gl.getShaderParameter(sh, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(sh) + '\n' + src);
+  return sh;
+}
+function makeProgram(vs, fs) {
+  var p = gl.createProgram();
+  gl.attachShader(p, makeShader(gl.VERTEX_SHADER, vs));
+  gl.attachShader(p, makeShader(gl.FRAGMENT_SHADER, fs));
+  gl.linkProgram(p);
+  if (!gl.getProgramParameter(p, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(p));
+  return p;
+}
+function makeTexture(cnv) {
+  var tex = gl.createTexture();
+  gl.bindTexture(gl.TEXTURE_2D, tex);
+  gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, cnv);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+  return tex;
+}
+
+/* ---------- шейдер точек (аналог PointsMaterial + дрейф) ---------- */
+var PT_VS = [
+'attribute vec3 aPos;',
+'attribute vec3 aAlt;',      // вторая форма (морф)
+'attribute vec3 aScatter;',  // рассыпанное состояние
+'attribute vec4 aSeed;', // x: фаза, y: скорость, z: размер, w: цвет-микс
+'uniform mat4 uView, uProj;',
+'uniform float uTime, uPxScale, uRotY, uAssemble, uMorph;',
+'uniform vec3 uDrift, uPivot;',
+'varying float vFog, vMix, vTw;',
+'void main(){',
+'  vec3 tgt = mix(aPos, aAlt, uMorph);',
+'  vec3 p = mix(aScatter, tgt, uAssemble) - uPivot;',
+'  float cy = cos(uRotY), sy = sin(uRotY);',
+'  p = vec3(p.x*cy + p.z*sy, p.y, -p.x*sy + p.z*cy) + uPivot;',
+'  p += vec3(sin(uTime*aSeed.y + aSeed.x),',
+'            cos(uTime*aSeed.y*0.83 + aSeed.x*1.7),',
+'            sin(uTime*aSeed.y*0.61 + aSeed.x*2.3)) * uDrift * (1.0 + (1.0 - uAssemble) * 4.0);',
+'  vec4 mv = uView * vec4(p, 1.0);',
+'  float dist = length(mv.xyz);',
+'  gl_Position = uProj * mv;',
+'  gl_PointSize = clamp(aSeed.z * uPxScale / dist, 1.0, 170.0);',
+'  vFog = 1.0 - exp(-0.0009 * dist * dist);',
+'  vMix = aSeed.w;',
+'  vTw = 0.75 + 0.25 * sin(uTime * (1.2 + aSeed.y) + aSeed.x * 7.0);',
+'}'].join('\n');
+var PT_FS = [
+'precision mediump float;',
+'uniform vec3 uColA, uColB;',
+'uniform float uAlpha;',
+'varying float vFog, vMix, vTw;',
+'void main(){',
+'  vec2 uv = gl_PointCoord * 2.0 - 1.0;',
+'  float d = length(uv);',
+'  float a = smoothstep(1.0, 0.12, d) * uAlpha * vTw * (1.0 - vFog);',
+'  vec3 col = mix(uColA, uColB, vMix);',
+'  gl_FragColor = vec4(col * a, a);',   // premultiplied, blending ONE/ONE
+'}'].join('\n');
+
+/* ---------- шейдер текстурных квадов ---------- */
+var QD_VS = [
+'attribute vec2 aPos;',
+'uniform mat4 uModel, uView, uProj;',
+'varying vec2 vUV; varying float vFog;',
+'void main(){',
+'  vUV = aPos * 0.5 + 0.5;',
+'  vec4 w = uModel * vec4(aPos, 0.0, 1.0);',
+'  vec4 mv = uView * w;',
+'  gl_Position = uProj * mv;',
+'  vFog = 1.0 - exp(-0.0009 * dot(mv.xyz, mv.xyz));',
+'}'].join('\n');
+var QD_FS = [
+'precision mediump float;',
+'uniform sampler2D uTex;',
+'uniform float uAlpha, uAdditive;',
+'uniform vec3 uFogColor;',
+'varying vec2 vUV; varying float vFog;',
+'void main(){',
+'  vec4 t = texture2D(uTex, vUV);',
+'  if (uAdditive > 0.5) {',
+'    gl_FragColor = vec4(t.rgb, t.a * uAlpha * (1.0 - vFog));', // blend: SRC_ALPHA, ONE
+'  } else {',
+'    gl_FragColor = vec4(mix(t.rgb, uFogColor, vFog), t.a * uAlpha);', // обычное смешивание
+'  }',
+'}'].join('\n');
+
+var ptProg = makeProgram(PT_VS, PT_FS);
+var qdProg = makeProgram(QD_VS, QD_FS);
+var PT = {
+  aPos: gl.getAttribLocation(ptProg,'aPos'), aSeed: gl.getAttribLocation(ptProg,'aSeed'),
+  aAlt: gl.getAttribLocation(ptProg,'aAlt'), aScatter: gl.getAttribLocation(ptProg,'aScatter'),
+  uAssemble: gl.getUniformLocation(ptProg,'uAssemble'), uMorph: gl.getUniformLocation(ptProg,'uMorph'),
+  uView: gl.getUniformLocation(ptProg,'uView'), uProj: gl.getUniformLocation(ptProg,'uProj'),
+  uTime: gl.getUniformLocation(ptProg,'uTime'), uPxScale: gl.getUniformLocation(ptProg,'uPxScale'),
+  uDrift: gl.getUniformLocation(ptProg,'uDrift'), uColA: gl.getUniformLocation(ptProg,'uColA'),
+  uColB: gl.getUniformLocation(ptProg,'uColB'), uAlpha: gl.getUniformLocation(ptProg,'uAlpha'),
+  uRotY: gl.getUniformLocation(ptProg,'uRotY'), uPivot: gl.getUniformLocation(ptProg,'uPivot')
+};
+var QD = {
+  aPos: gl.getAttribLocation(qdProg,'aPos'),
+  uModel: gl.getUniformLocation(qdProg,'uModel'), uView: gl.getUniformLocation(qdProg,'uView'),
+  uProj: gl.getUniformLocation(qdProg,'uProj'), uTex: gl.getUniformLocation(qdProg,'uTex'),
+  uAlpha: gl.getUniformLocation(qdProg,'uAlpha'), uAdditive: gl.getUniformLocation(qdProg,'uAdditive'),
+  uFogColor: gl.getUniformLocation(qdProg,'uFogColor')
+};
+
+/* квад-геометрия */
+var quadBuf = gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER, quadBuf);
+gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), gl.STATIC_DRAW);
+
+/* ---------- системы частиц (BufferGeometry-стиль) ---------- */
+function makePoints(positions, seeds, opts) {
+  var pb = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, pb);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
+  var sb = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, sb);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(seeds), gl.STATIC_DRAW);
+  var ab = null, scb = null;
+  if (opts.alt) {
+    ab = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, ab);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(opts.alt), gl.STATIC_DRAW);
+  }
+  if (opts.scatter) {
+    scb = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, scb);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(opts.scatter), gl.STATIC_DRAW);
+  }
+  return {
+    pb: pb, sb: sb, ab: ab, scb: scb, n: positions.length/3,
+    assembleVal: 1, morphVal: 0,
+    drift: opts.drift || [0.3,0.3,0.3],
+    colA: opts.colA || BRASS, colB: opts.colB || BRASS_L,
+    alpha: opts.alpha != null ? opts.alpha : 0.8,
+    pivot: opts.pivot || [0,0,0],
+    rotSpeed: opts.rotSpeed || 0
+  };
+}
+function drawPoints(sys, time, view, proj, pxScale) {
+  gl.useProgram(ptProg);
+  gl.bindBuffer(gl.ARRAY_BUFFER, sys.pb);
+  gl.enableVertexAttribArray(PT.aPos);
+  gl.vertexAttribPointer(PT.aPos, 3, gl.FLOAT, false, 0, 0);
+  gl.bindBuffer(gl.ARRAY_BUFFER, sys.sb);
+  gl.enableVertexAttribArray(PT.aSeed);
+  gl.vertexAttribPointer(PT.aSeed, 4, gl.FLOAT, false, 0, 0);
+  if (sys.ab) {
+    gl.bindBuffer(gl.ARRAY_BUFFER, sys.ab);
+    gl.enableVertexAttribArray(PT.aAlt);
+    gl.vertexAttribPointer(PT.aAlt, 3, gl.FLOAT, false, 0, 0);
+  } else {
+    gl.disableVertexAttribArray(PT.aAlt);
+    gl.vertexAttrib3f(PT.aAlt, 0, 0, 0);
+  }
+  if (sys.scb) {
+    gl.bindBuffer(gl.ARRAY_BUFFER, sys.scb);
+    gl.enableVertexAttribArray(PT.aScatter);
+    gl.vertexAttribPointer(PT.aScatter, 3, gl.FLOAT, false, 0, 0);
+  } else {
+    gl.disableVertexAttribArray(PT.aScatter);
+    gl.vertexAttrib3f(PT.aScatter, 0, 0, 0);
+  }
+  gl.uniform1f(PT.uAssemble, sys.ab ? sys.assembleVal : 1);
+  gl.uniform1f(PT.uMorph, sys.ab ? sys.morphVal : 0);
+  gl.uniformMatrix4fv(PT.uView, false, view);
+  gl.uniformMatrix4fv(PT.uProj, false, proj);
+  gl.uniform1f(PT.uTime, time);
+  gl.uniform1f(PT.uPxScale, pxScale);
+  gl.uniform3fv(PT.uDrift, sys.drift);
+  gl.uniform3fv(PT.uColA, sys.colA);
+  gl.uniform3fv(PT.uColB, sys.colB);
+  gl.uniform1f(PT.uAlpha, sys.alpha);
+  gl.uniform1f(PT.uRotY, sys.rotSpeed ? Math.sin(time * 0.35) * 0.22 : 0);
+  gl.uniform3fv(PT.uPivot, sys.pivot);
+  gl.drawArrays(gl.POINTS, 0, sys.n);
+}
+function drawQuad(model, tex, alpha, additive, view, proj) {
+  gl.useProgram(qdProg);
+  gl.bindBuffer(gl.ARRAY_BUFFER, quadBuf);
+  gl.enableVertexAttribArray(QD.aPos);
+  gl.vertexAttribPointer(QD.aPos, 2, gl.FLOAT, false, 0, 0);
+  gl.uniformMatrix4fv(QD.uModel, false, model);
+  gl.uniformMatrix4fv(QD.uView, false, view);
+  gl.uniformMatrix4fv(QD.uProj, false, proj);
+  gl.activeTexture(gl.TEXTURE0);
+  gl.bindTexture(gl.TEXTURE_2D, tex);
+  gl.uniform1i(QD.uTex, 0);
+  gl.uniform1f(QD.uAlpha, alpha);
+  gl.uniform1f(QD.uAdditive, additive ? 1 : 0);
+  gl.uniform3fv(QD.uFogColor, BG);
+  gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+}
+
+/* детерминированный рандом */
+function rnd(i){ var x = Math.sin(i*12.9898+78.233)*43758.5453; return x - Math.floor(x); }
+
+/* ============================================================
+   Канвас-текстуры (брендовые панели, надписи, порталы)
+   ============================================================ */
+function cnv(w,h){ var c = document.createElement('canvas'); c.width=w; c.height=h; return c; }
+var SERIF = "'Prata', Georgia, 'Times New Roman', serif";
+var SANS = "'Manrope', 'Segoe UI', sans-serif";
+
+function texLogo() {
+  var c = cnv(1024, 512), x = c.getContext('2d');
+  x.textAlign = 'center'; x.textBaseline = 'middle';
+  x.shadowColor = 'rgba(232,192,136,0.9)'; x.shadowBlur = 46;
+  x.fillStyle = '#E8C088';
+  x.font = '120px ' + SERIF;
+  x.fillText('MAI SPA', 512, 235);
+  x.shadowBlur = 0;
+  x.fillStyle = 'rgba(232,192,136,0.85)';
+  x.font = '600 26px ' + SANS;
+  var sub = 'Т А Й С К И Й   S P A';
+  x.fillText(sub, 512, 345);
+  return makeTexture(c);
+}
+function texCard(num, title, dur) {
+  var c = cnv(512, 640), x = c.getContext('2d');
+  // подложка
+  var g = x.createLinearGradient(0,0,0,640);
+  g.addColorStop(0,'#1a2822'); g.addColorStop(1,'#101b15');
+  x.fillStyle = g; roundRect(x, 6, 6, 500, 628, 22); x.fill();
+  // тёплый блик
+  var rg = x.createRadialGradient(256, 120, 10, 256, 120, 420);
+  rg.addColorStop(0,'rgba(211,161,92,0.20)'); rg.addColorStop(1,'rgba(211,161,92,0)');
+  x.fillStyle = rg; x.fillRect(0,0,512,640);
+  // рамка
+  x.strokeStyle = 'rgba(211,161,92,0.55)'; x.lineWidth = 3;
+  roundRect(x, 14, 14, 484, 612, 18); x.stroke();
+  x.strokeStyle = 'rgba(211,161,92,0.25)'; x.lineWidth = 1;
+  roundRect(x, 26, 26, 460, 588, 14); x.stroke();
+  // номер
+  x.fillStyle = 'rgba(211,161,92,0.9)';
+  x.textAlign = 'center';
+  x.font = '34px ' + SERIF;
+  x.fillText(num, 256, 96);
+  // лотос-марка
+  x.fillStyle = 'rgba(232,192,136,0.85)';
+  x.font = '44px serif';
+  x.fillText('✦', 256, 168);
+  // название (перенос по словам)
+  x.fillStyle = '#F3EBDD';
+  x.font = '52px ' + SERIF;
+  var words = title.split(' ');
+  var lines = [], cur = '';
+  for (var i=0;i<words.length;i++){
+    var test = cur ? cur + ' ' + words[i] : words[i];
+    if (x.measureText(test).width > 420 && cur) { lines.push(cur); cur = words[i]; }
+    else cur = test;
+  }
+  lines.push(cur);
+  var y0 = 320 - (lines.length-1)*34;
+  for (var j=0;j<lines.length;j++) x.fillText(lines[j], 256, y0 + j*68);
+  // длительность
+  x.fillStyle = 'rgba(211,161,92,0.95)';
+  x.font = '600 30px ' + SANS;
+  x.fillText(dur, 256, 520);
+  x.strokeStyle = 'rgba(211,161,92,0.4)';
+  x.beginPath(); x.moveTo(160,470); x.lineTo(352,470); x.stroke();
+  return makeTexture(c);
+}
+function roundRect(x, a,b,w,h,r){
+  x.beginPath();
+  x.moveTo(a+r,b); x.arcTo(a+w,b,a+w,b+h,r); x.arcTo(a+w,b+h,a,b+h,r);
+  x.arcTo(a,b+h,a,b,r); x.arcTo(a,b,a+w,b,r); x.closePath();
+}
+function texPortalRing() {
+  var c = cnv(512,512), x = c.getContext('2d');
+  var cx=256, cy=256;
+  for (var i=0;i<3;i++){
+    var r = 190 - i*10;
+    x.strokeStyle = i===1 ? 'rgba(232,192,136,0.95)' : 'rgba(211,161,92,0.5)';
+    x.lineWidth = i===1 ? 10 : 2.5;
+    x.shadowColor = 'rgba(232,192,136,0.9)'; x.shadowBlur = i===1?30:8;
+    x.beginPath(); x.arc(cx,cy,r,0,6.283); x.stroke();
+  }
+  return makeTexture(c);
+}
+function texGlow(inner, outer) {
+  var c = cnv(256,256), x = c.getContext('2d');
+  var g = x.createRadialGradient(128,128,4,128,128,126);
+  g.addColorStop(0, inner); g.addColorStop(1, outer);
+  x.fillStyle = g; x.fillRect(0,0,256,256);
+  return makeTexture(c);
+}
+function texPhotoCircle(img) {
+  var c = cnv(512, 512), x = c.getContext('2d');
+  // фото cover в круге
+  x.save();
+  x.beginPath(); x.arc(256, 256, 246, 0, 6.283); x.clip();
+  var sc = Math.max(512 / img.width, 512 / img.height);
+  var dw = img.width * sc, dh = img.height * sc;
+  x.drawImage(img, (512 - dw) / 2, -dh * 0.04, dw, dh); // верх кадра — лицо
+  // тёплая виньетка в тон сцены
+  var vg = x.createRadialGradient(256, 236, 120, 256, 256, 250);
+  vg.addColorStop(0, 'rgba(15,27,22,0)');
+  vg.addColorStop(1, 'rgba(15,27,22,0.55)');
+  x.fillStyle = vg; x.fillRect(0, 0, 512, 512);
+  x.restore();
+  // мягкое растворение края (под латунное кольцо)
+  x.globalCompositeOperation = 'destination-in';
+  var mg = x.createRadialGradient(256, 256, 180, 256, 256, 248);
+  mg.addColorStop(0, 'rgba(255,255,255,1)');
+  mg.addColorStop(0.86, 'rgba(255,255,255,1)');
+  mg.addColorStop(1, 'rgba(255,255,255,0)');
+  x.fillStyle = mg; x.fillRect(0, 0, 512, 512);
+  x.globalCompositeOperation = 'source-over';
+  return makeTexture(c);
+}
+function texOrchid(pr, pg, pb) {
+  var c = cnv(256, 256), x = c.getContext('2d');
+  var cx = 128, cy = 132;
+  function petal(dx, dy, rx, ry, rot, a) {
+    var g = x.createRadialGradient(cx + dx, cy + dy, 2, cx + dx, cy + dy, Math.max(rx, ry));
+    g.addColorStop(0, 'rgba(255,248,244,' + (a * 0.95) + ')');
+    g.addColorStop(0.55, 'rgba(' + pr + ',' + pg + ',' + pb + ',' + a + ')');
+    g.addColorStop(1, 'rgba(' + pr + ',' + pg + ',' + pb + ',0)');
+    x.fillStyle = g;
+    x.beginPath();
+    x.ellipse(cx + dx, cy + dy, rx, ry, rot, 0, 6.283);
+    x.fill();
+  }
+  // сепали (верх + два нижних)
+  petal(0, -52, 26, 50, 0, 0.85);
+  petal(-34, 38, 24, 44, 0.7, 0.85);
+  petal(34, 38, 24, 44, -0.7, 0.85);
+  // широкие боковые лепестки
+  petal(-46, -10, 52, 32, 0.35, 0.9);
+  petal(46, -10, 52, 32, -0.35, 0.9);
+  // губа
+  petal(0, 26, 20, 26, 0, 1);
+  // сердцевина
+  x.fillStyle = 'rgba(232,192,136,0.95)';
+  x.beginPath(); x.arc(cx, cy, 7, 0, 6.283); x.fill();
+  x.shadowColor = 'rgba(232,192,136,0.8)'; x.shadowBlur = 12;
+  x.beginPath(); x.arc(cx, cy, 4, 0, 6.283); x.fill();
+  return makeTexture(c);
+}
+function texName(name) {
+  var c = cnv(512,192), x = c.getContext('2d');
+  x.textAlign='center'; x.textBaseline='middle';
+  x.shadowColor = 'rgba(232,192,136,0.75)'; x.shadowBlur = 22;
+  x.fillStyle = '#F3EBDD';
+  x.font = '56px ' + SERIF;
+  x.fillText(name, 256, 96);
+  return makeTexture(c);
+}
+
+/* ============================================================
+   Построение сцены
+   ============================================================ */
+var SERVICES = [
+  ['01','Тайский массаж','60–90 мин','Классическая техника без масла: точечное давление и мягкие растяжения по линиям сен. Возвращает телу лёгкость и подвижность.'],
+  ['02','Oil-массаж','60–90 мин','Тёплое ароматическое масло и длинные обволакивающие движения. Глубокое расслабление и уход за кожей.'],
+  ['03','SPA для одного','90–120 мин','Персональный ритуал: массаж, мягкий пилинг и тёплый уход. Полтора-два часа тишины, принадлежащей только вам.'],
+  ['04','SPA для двоих','90–180 мин','Парный ритуал в отдельном кабинете: синхронный массаж в четыре руки. Общее воспоминание на двоих.'],
+  ['05','VIP-ритуалы','120–180 мин','Максимальная программа: сочетание техник, травяные мешочки и чайная церемония. Вечер полного перезапуска.'],
+  ['06','Thai Yoga','60 мин','Пассивная йога: мастер мягко растягивает и скручивает тело за вас. Энергия и гибкость — без усилий.']
+];
+var MASTERS = ['Мисс Лауан','Мисс Ванни','Мисс Натсинее'];
+var MASTER_IMGS = [null, null, null];
+['assets/img/master-lauan.jpg','assets/img/master-vanni.jpg','assets/img/master-natsinee.jpg']
+  .forEach(function (src, idx) {
+    var im = new Image();
+    im.onload = function () {
+      MASTER_IMGS[idx] = im;
+      if (fontsDone) buildQuads(); // перестроить с фото
+    };
+    im.src = src;
+  });
+
+var scene = { points: [], quads: [] };
+var texturesReady = false;
+
+function buildScene() {
+  var i, p, s;
+
+  /* --- глобальная золотая пыль вдоль всего пути --- */
+  var dustN = MOBILE ? 500 : 1000;
+  var pos = [], seed = [];
+  for (i=0;i<dustN;i++){
+    var t = rnd(i);
+    var base = splineP(t);
+    var b = basisAt(t);
+    var r1 = (rnd(i+11)-0.5)*22, r2 = (rnd(i+23)-0.5)*14;
+    p = add(add(base, scale(b.R, r1)), scale(b.U, r2 + 2));
+    pos.push(p[0],p[1],p[2]);
+    seed.push(rnd(i+31)*6.28, 0.15+rnd(i+41)*0.4, 0.05+rnd(i+53)*0.09, rnd(i+61));
+  }
+  scene.points.push(makePoints(pos, seed, { drift:[0.5,0.4,0.5], alpha:0.4 }));
+
+  /* --- 1. тоннель из золотых частиц (t 0..0.24) --- */
+  var tunN = MOBILE ? 900 : 1700;
+  pos = []; seed = [];
+  for (i=0;i<tunN;i++){
+    var tt = rnd(i+101)*0.24;
+    var bb = basisAt(tt);
+    var ang = rnd(i+113)*6.283;
+    var rad = 2.6 + rnd(i+127)*4.4;
+    p = add(add(bb.P, scale(bb.R, Math.cos(ang)*rad)), scale(bb.U, Math.sin(ang)*rad));
+    pos.push(p[0],p[1],p[2]);
+    seed.push(rnd(i+131)*6.28, 0.2+rnd(i+141)*0.5, 0.05+rnd(i+151)*0.08, rnd(i+161));
+  }
+  scene.points.push(makePoints(pos, seed, { drift:[0.35,0.3,0.35], alpha:0.55 }));
+
+  /* --- 3. пар хаммама --- */
+  var st = basisAt(ROOM_T[2]);
+  var stC = add(st.P, scale(st.T, 7));
+  var steamN = MOBILE ? 90 : 150;
+  pos = []; seed = [];
+  for (i=0;i<steamN;i++){
+    p = [ stC[0] + (rnd(i+201)-0.5)*18,
+          stC[1] - 2.2 + rnd(i+211)*7,
+          stC[2] + (rnd(i+221)-0.5)*16 ];
+    pos.push(p[0],p[1],p[2]);
+    seed.push(rnd(i+231)*6.28, 0.08+rnd(i+241)*0.16, 1.4+rnd(i+251)*1.6, rnd(i+261));
+  }
+  scene.points.push(makePoints(pos, seed, {
+    drift:[1.6,1.9,1.6], alpha:0.05,
+    colA:[0.95,0.82,0.62], colB:[0.75,0.78,0.72]
+  }));
+  // тёплые "угли" внизу хаммама
+  pos = []; seed = [];
+  var emberN = MOBILE ? 60 : 110;
+  for (i=0;i<emberN;i++){
+    p = [ stC[0] + (rnd(i+301)-0.5)*14, stC[1]-2.6+rnd(i+311)*1.2, stC[2] + (rnd(i+321)-0.5)*12 ];
+    pos.push(p[0],p[1],p[2]);
+    seed.push(rnd(i+331)*6.28, 0.3+rnd(i+341)*0.7, 0.04+rnd(i+351)*0.06, rnd(i+361));
+  }
+  scene.points.push(makePoints(pos, seed, { drift:[0.3,0.5,0.3], alpha:0.6,
+    colA:[0.9,0.45,0.18], colB:BRASS_L }));
+
+  /* --- 4б. сад орхидей: пыльца и светящаяся дымка --- */
+  var obC = [0, 2.4, -80];
+  var polN = MOBILE ? 160 : 280;
+  pos = []; seed = [];
+  for (i=0;i<polN;i++){
+    p = [ obC[0] + (rnd(i+601)-0.5)*22,
+          obC[1] + (rnd(i+611)-0.5)*10 + 1.5,
+          obC[2] + (rnd(i+621)-0.5)*20 ];
+    pos.push(p[0],p[1],p[2]);
+    seed.push(rnd(i+631)*6.28, 0.18+rnd(i+641)*0.4, 0.04+rnd(i+651)*0.06, rnd(i+661));
+  }
+  scene.points.push(makePoints(pos, seed, {
+    drift:[0.9,0.7,0.9], alpha:0.5,
+    colA:[0.85,0.55,0.75], colB:BRASS_L
+  }));
+
+  /* --- 5. лотос из частиц --- */
+  var fb = basisAt(0.995);
+  var lotusC = add(add(fb.P, scale(fb.T, 15)), [0,5.5,0]);
+  var N_FIN = MOBILE ? 1400 : 2400;
+  var lp = sampleLotus(N_FIN);
+  var wp = sampleWord(N_FIN);
+  var nFin = Math.min(lp.length, wp.length);
+  pos = []; seed = [];
+  var alt = [], scat = [];
+  var LS = 10.5;                 // мировой размер лотоса
+  var LW = 14.5;                 // ширина слова MAI SPA
+  for (i=0;i<nFin;i++){
+    // форма A — лотос
+    var lx = (lp[i][0]-0.5)*LS, ly = (0.62-lp[i][1])*LS, lz = (rnd(i+401)-0.5)*1.6;
+    p = add(add(add(lotusC, scale(fb.R, lx)), scale(fb.U, ly)), scale(fb.T, lz));
+    pos.push(p[0],p[1],p[2]);
+    // форма B — слово MAI SPA (та же плоскость)
+    var wx = (wp[i][0]-0.5)*LW, wy = (0.5-wp[i][1])*LW*300/1024, wz = (rnd(i+405)-0.5)*1.2;
+    var q = add(add(add(lotusC, scale(fb.R, wx)), scale(fb.U, wy)), scale(fb.T, wz));
+    alt.push(q[0],q[1],q[2]);
+    // рассыпанное состояние — облако вокруг
+    scat.push(
+      lotusC[0] + (rnd(i+461)-0.5)*22,
+      lotusC[1] + (rnd(i+471)-0.5)*14,
+      lotusC[2] + (rnd(i+481)-0.5)*18
+    );
+    seed.push(rnd(i+411)*6.28, 0.2+rnd(i+421)*0.5, 0.055+rnd(i+431)*0.075, 0.35+rnd(i+441)*0.65);
+  }
+  var finSys = makePoints(pos, seed, {
+    drift:[0.08,0.1,0.08], alpha:0.95,
+    pivot: lotusC, rotSpeed: 0.12,
+    alt: alt, scatter: scat
+  });
+  finSys.assembleVal = 0;
+  scene.points.push(finSys);
+  scene.finSys = finSys;
+  scene.lotusPos = lotusC;
+
+  // ореол вокруг лотоса
+  pos = []; seed = [];
+  var haloN = MOBILE ? 200 : 380;
+  for (i=0;i<haloN;i++){
+    var an = rnd(i+501)*6.283, rr = 4.5 + rnd(i+511)*7;
+    p = [ lotusC[0]+Math.cos(an)*rr, lotusC[1]+(rnd(i+521)-0.5)*7, lotusC[2]+Math.sin(an)*rr*0.6 ];
+    pos.push(p[0],p[1],p[2]);
+    seed.push(rnd(i+531)*6.28, 0.15+rnd(i+541)*0.35, 0.04+rnd(i+551)*0.05, rnd(i+561));
+  }
+  scene.points.push(makePoints(pos, seed, { drift:[0.7,0.6,0.7], alpha:0.4 }));
+}
+
+/* слово MAI SPA: сэмплируем текст в точки (0..1, aspect 1024:300) */
+function sampleWord(n) {
+  var c = cnv(1024, 300), x = c.getContext('2d');
+  x.fillStyle = '#fff';
+  x.textAlign = 'center'; x.textBaseline = 'middle';
+  x.font = "170px 'Prata', Georgia, 'Times New Roman', serif";
+  x.fillText('MAI SPA', 512, 150);
+  var data = x.getImageData(0, 0, 1024, 300).data;
+  var cand = [];
+  for (var y = 0; y < 300; y += 2)
+    for (var xx = 0; xx < 1024; xx += 2)
+      if (data[(y * 1024 + xx) * 4 + 3] > 128) cand.push([xx / 1024, y / 300]);
+  var out = [], stride = Math.max(1, cand.length / n);
+  for (var f = 0; f < cand.length; f += stride) out.push(cand[Math.floor(f)]);
+  return out;
+}
+
+/* лотос: сэмплируем 2D-рисунок в точки (0..1) */
+function sampleLotus(n) {
+  var c = cnv(360, 360), x = c.getContext('2d');
+  x.fillStyle = '#fff';
+  x.save(); x.translate(180, 198);
+  var R = 122;
+  function petal(L, wdt) {
+    x.beginPath(); x.moveTo(0,0);
+    x.bezierCurveTo(wdt,-L*0.35,wdt*0.45,-L*0.9,0,-L);
+    x.bezierCurveTo(-wdt*0.45,-L*0.9,-wdt,-L*0.35,0,0);
+    x.fill();
+  }
+  var back = [-0.85,-0.42,0,0.42,0.85];
+  for (var i=0;i<back.length;i++){ x.save(); x.rotate(back[i]); petal(R*1.12,R*0.34); x.restore(); }
+  var front = [-0.62,-0.2,0.2,0.62];
+  for (i=0;i<front.length;i++){ x.save(); x.rotate(front[i]); petal(R*0.82,R*0.30); x.restore(); }
+  x.beginPath(); x.ellipse(0, R*0.06, R*0.62, R*0.16, 0, 0, Math.PI); x.fill();
+  x.restore();
+  var data = x.getImageData(0,0,360,360).data;
+  var cand = [];
+  for (var y=0;y<360;y+=2) for (var xx=0;xx<360;xx+=2)
+    if (data[(y*360+xx)*4+3] > 128) cand.push([xx/360, y/360]);
+  var out = [], stride = Math.max(1, cand.length/n);
+  for (var f=0; f<cand.length; f+=stride) out.push(cand[Math.floor(f)]);
+  return out;
+}
+
+/* ---------- квады (строятся после загрузки шрифтов) ---------- */
+function buildQuads() {
+  scene.quads = [];
+  var i;
+
+  // логотип в глубине тоннеля
+  var lb = basisAt(0.16);
+  var lp2 = add(lb.P, scale(lb.T, 12));
+  scene.quads.push({
+    tex: texLogo(), pos: lp2, R: lb.R, U: lb.U, F: scale(lb.T,-1),
+    sx: 7.5, sy: 3.75, alpha: 1, additive: true, pulse: true
+  });
+
+  // кольцо из 6 карточек услуг
+  var rb = basisAt(ROOM_T[1] + 0.035);
+  var ringC = rb.P;
+  var RAD = 6.8;
+  for (i=0;i<6;i++){
+    var a = i/6*6.283 + 0.5236; // смещение, чтобы карта не была ровно сверху/снизу
+    var off = add(scale(rb.R, Math.cos(a)*RAD), scale(rb.U, Math.sin(a)*RAD*0.72 + 0.6));
+    scene.quads.push({
+      tex: texCard(SERVICES[i][0], SERVICES[i][1], SERVICES[i][2]),
+      pos: add(ringC, off), R: rb.R, U: rb.U, F: scale(rb.T,-1),
+      sx: 1.5, sy: 1.87, alpha: 0.98, additive: false, hoverAmt: 0,
+      bob: i, card: i, ring: { c: ringC, R: rb.R, U: rb.U, rad: RAD, a0: a }
+    });
+  }
+
+  // тёплое свечение под хаммамом
+  var st = basisAt(ROOM_T[2]);
+  var stC = add(st.P, scale(st.T, 7));
+  scene.quads.push({
+    tex: texGlow('rgba(255,150,60,0.55)','rgba(255,150,60,0)'),
+    pos: [stC[0], stC[1]-2.4, stC[2]], R: st.R, U: st.U, F: scale(st.T,-1),
+    sx: 12, sy: 6, alpha: 0.8, additive: true, pulse: true
+  });
+
+  // сад орхидей: цветы-билборды вокруг центра петли — видны с любой стороны облёта
+  var GARDEN = [0, 2.4, -80];
+  var orchidPink = texOrchid(216, 146, 196);
+  var orchidCream = texOrchid(238, 214, 188);
+  var orchidGlow = texGlow('rgba(216,146,196,0.4)','rgba(216,146,196,0)');
+  var ORCHIDS = [
+    // кольцо сада вокруг камеры (радиус ~9-12, разные высоты)
+    [ 10.0, 2.6, -80.0, 1.8, 0], [  7.1, 1.3, -72.9, 1.5, 1], [  0.0, 3.6, -70.0, 1.7, 0],
+    [ -7.1, 2.0, -72.9, 1.4, 1], [-10.0, 3.2, -80.0, 1.9, 0], [ -7.1, 1.1, -87.1, 1.5, 1],
+    [  0.0, 2.2, -90.5, 1.7, 0], [  7.1, 3.4, -87.1, 1.6, 1],
+    // второй ярус — выше и дальше
+    [  8.5, 4.8, -71.5, 1.2, 1], [ -9.0, 5.0, -88.0, 1.3, 0],
+    [ -2.5, 5.4, -73.0, 1.1, 1], [  3.0, 0.4, -89.0, 1.2, 0]
+  ];
+  for (i=0;i<ORCHIDS.length;i++){
+    var oc = ORCHIDS[i];
+    var opos = [oc[0], oc[1], oc[2]];
+    scene.quads.push({ tex: orchidGlow, pos: opos, billboard: true,
+      R: [1,0,0], U: [0,1,0], F: [0,0,1],
+      sx: oc[3]*2.0, sy: oc[3]*2.0, alpha: 0.7, additive: true, pulse: true, sway: i*1.3 });
+    scene.quads.push({ tex: oc[4] ? orchidCream : orchidPink, pos: opos, billboard: true,
+      R: [1,0,0], U: [0,1,0], F: [0,0,1],
+      sx: oc[3], sy: oc[3], alpha: 0.96, additive: false, sway: i*1.3 });
+  }
+
+  // светлячки (позиции обновляются в кадре)
+  scene.fireTex = texGlow('rgba(255,224,150,0.95)','rgba(255,224,150,0)');
+  scene.fireflies = [];
+  for (i=0;i<4;i++) scene.fireflies.push({ p: add(splineP(0), [i-2, 1, -2]), s: i });
+
+  // три портала мастеров
+  var mb = basisAt(ROOM_T[4]);
+  var mC = add(mb.P, scale(mb.T, 13.5));
+  var ringTex = texPortalRing();
+  var glowTex = texGlow('rgba(232,192,136,0.5)','rgba(232,192,136,0)');
+  for (i=0;i<3;i++){
+    var offR = (i-1) * 5.6;
+    var pp = add(mC, scale(mb.R, offR));
+    scene.quads.push({ tex: glowTex, pos: pp, R: mb.R, U: mb.U, F: scale(mb.T,-1),
+      sx: 3.6, sy: 3.6, alpha: 0.8, additive: true, pulse: true });
+    if (MASTER_IMGS[i]) {
+      scene.quads.push({ tex: texPhotoCircle(MASTER_IMGS[i]), pos: pp,
+        R: mb.R, U: mb.U, F: scale(mb.T,-1),
+        sx: 1.62, sy: 1.62, alpha: 1, additive: false });
+    }
+    scene.quads.push({ tex: ringTex, pos: pp, R: mb.R, U: mb.U, F: scale(mb.T,-1),
+      sx: 2.1, sy: 2.1, alpha: 0.95, additive: true });
+    scene.quads.push({ tex: texName(MASTERS[i]), pos: add(pp, [0,-2.9,0]),
+      R: mb.R, U: mb.U, F: scale(mb.T,-1), sx: 2.2, sy: 0.82, alpha: 0.95, additive: true });
+  }
+  scene.cardQuads = scene.quads.filter(function (q) { return q.card != null; });
+  texturesReady = true;
+}
+
+buildScene();
+// текстуры со шрифтами — после загрузки шрифтов (или сразу по таймауту)
+var fontsDone = false;
+function tryBuildQuads(){ if (!fontsDone) { fontsDone = true; buildQuads(); } }
+if (document.fonts && document.fonts.ready) {
+  document.fonts.ready.then(tryBuildQuads);
+  setTimeout(tryBuildQuads, 700);
+} else tryBuildQuads();
+
+/* ============================================================
+   ВХОД + ЗВУК (генеративный WebAudio: дрон, вода, гонг)
+   ============================================================ */
+var entered = false;
+var enterEl = document.getElementById('enter');
+var enterBtn = document.getElementById('enterBtn');
+var muteBtn = document.getElementById('muteBtn');
+var AC = null, master = null;
+var mutedFlag = false;
+try { mutedFlag = localStorage.getItem('maispa-muted') === '1'; } catch (e) {}
+
+document.documentElement.style.overflow = 'hidden'; // до входа не листается
+
+function unlockPlayback() {
+  // iOS: тихий <audio> переводит аудиосессию в playback —
+  // WebAudio слышно даже с выключателем беззвучного режима
+  try {
+    var sr = 8000, n = 800; // 0.1s
+    var ab = new ArrayBuffer(44 + n * 2), v = new DataView(ab);
+    function wstr(o, str) { for (var i = 0; i < str.length; i++) v.setUint8(o + i, str.charCodeAt(i)); }
+    wstr(0, 'RIFF'); v.setUint32(4, 36 + n * 2, true); wstr(8, 'WAVE');
+    wstr(12, 'fmt '); v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true);
+    v.setUint32(24, sr, true); v.setUint32(28, sr * 2, true); v.setUint16(32, 2, true); v.setUint16(34, 16, true);
+    wstr(36, 'data'); v.setUint32(40, n * 2, true);
+    var el = document.createElement('audio');
+    el.src = URL.createObjectURL(new Blob([ab], { type: 'audio/wav' }));
+    el.loop = true; el.setAttribute('playsinline', ''); el.volume = 0.01;
+    var pr = el.play(); if (pr && pr.catch) pr.catch(function () {});
+  } catch (e) {}
+}
+function startAudio() {
+  if (AC) return;
+  unlockPlayback();
+  try { AC = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { return; }
+  if (AC.state === 'suspended') AC.resume();
+  master = AC.createGain();
+  master.gain.value = mutedFlag ? 0 : 1;
+  master.connect(AC.destination);
+  var amb = AC.createGain(); amb.gain.value = 0.08; amb.connect(master);
+  // тёплый дрон (ре-минорная пятерня)
+  [[73.42,'triangle',1],[110,'sine',0.7],[146.83,'sine',0.32]].forEach(function (cfg, i) {
+    var o = AC.createOscillator(); o.type = cfg[1]; o.frequency.value = cfg[0]; o.detune.value = (i - 1) * 5;
+    var g = AC.createGain(); g.gain.value = 0.11 * cfg[2];
+    var lfo = AC.createOscillator(); lfo.frequency.value = 0.05 + i * 0.041;
+    var lg = AC.createGain(); lg.gain.value = 0.045 * cfg[2];
+    lfo.connect(lg); lg.connect(g.gain);
+    o.connect(g); g.connect(amb); o.start(); lfo.start();
+  });
+  // вода: шум через плавающий bandpass
+  var len = AC.sampleRate * 2, buf = AC.createBuffer(1, len, AC.sampleRate), d = buf.getChannelData(0);
+  for (var i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+  var src = AC.createBufferSource(); src.buffer = buf; src.loop = true;
+  var bp = AC.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 620; bp.Q.value = 0.85;
+  var ng = AC.createGain(); ng.gain.value = 0.014;
+  var nlfo = AC.createOscillator(); nlfo.frequency.value = 0.1;
+  var nlg = AC.createGain(); nlg.gain.value = 190;
+  nlfo.connect(nlg); nlg.connect(bp.frequency);
+  src.connect(bp); bp.connect(ng); ng.connect(amb);
+  src.start(); nlfo.start();
+}
+function gong(base, vol) {
+  if (!AC || mutedFlag) return;
+  if (AC.state === 'suspended') AC.resume();
+  var t0 = AC.currentTime; vol = vol || 1;
+  [1, 1.503, 2.12, 2.76, 3.51].forEach(function (m, i) {
+    var o = AC.createOscillator(); o.type = 'sine';
+    o.frequency.value = base * m * (1 + (Math.random() - 0.5) * 0.004);
+    var g = AC.createGain();
+    var v = vol * 0.22 / Math.pow(i + 1, 1.2);
+    g.gain.setValueAtTime(0, t0);
+    g.gain.linearRampToValueAtTime(v, t0 + 0.012);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + 2.6 + i * 0.35);
+    o.connect(g); g.connect(master);
+    o.start(t0); o.stop(t0 + 3.4 + i * 0.35);
+  });
+}
+var lastRoom = -1;
+function doEnter(withSound) {
+  if (entered) return;
+  entered = true;
+  document.body.classList.add('entered');
+  enterEl.classList.add('is-gone');
+  document.documentElement.style.overflow = '';
+  if (withSound && !REDUCED) { startAudio(); gong(140, 1.1); }
+  lastRoom = 0;
+  // deep-link: короткий подлёт к комнате из хэша
+  var hr = HASH_ROOMS[location.hash];
+  if (hr != null && hr > 0) {
+    var ht = ROOM_T[hr];
+    scrollTo(0, ht * maxScroll);
+    tCur = Math.max(0, ht - 0.05);
+    tTarget = ht;
+    lastRoom = hr;
+  }
+}
+addEventListener('hashchange', function () {
+  var hr = HASH_ROOMS[location.hash];
+  if (hr != null && entered) flyTo(ROOM_T[hr]);
+});
+document.querySelector('.brand').addEventListener('click', function (e) {
+  e.preventDefault();
+  if (entered) flyTo(0);
+});
+enterBtn.addEventListener('click', function () { doEnter(true); });
+muteBtn.addEventListener('click', function () {
+  mutedFlag = !mutedFlag;
+  try { localStorage.setItem('maispa-muted', mutedFlag ? '1' : '0'); } catch (e) {}
+  if (master) master.gain.value = mutedFlag ? 0 : 1;
+  muteBtn.textContent = mutedFlag ? '🔇' : '🔊';
+document.addEventListener('visibilitychange', function () {
+  if (!document.hidden && AC && AC.state === 'suspended') AC.resume();
+});
+});
+muteBtn.textContent = mutedFlag ? '🔇' : '🔊';
+document.addEventListener('visibilitychange', function () {
+  if (!document.hidden && AC && AC.state === 'suspended') AC.resume();
+});
+
+/* ============================================================
+   ФОКУС НА КАРТОЧКЕ УСЛУГИ (клик — подлёт камеры)
+   ============================================================ */
+var focus = { active: false, anim: 0, q: null };
+var camState = null;   // текущее состояние камеры для рейкаста
+var hoverQ = null;
+var focusPanel = document.getElementById('focusPanel');
+var fpTitle = document.getElementById('fpTitle');
+var fpDur = document.getElementById('fpDur');
+var fpDesc = document.getElementById('fpDesc');
+
+function raycastCards(mx, my) {
+  if (!camState || !scene.cardQuads || !scene.cardQuads.length) return null;
+  var nx = (mx / W) * 2 - 1, ny = -((my / H) * 2 - 1);
+  var tanV = 0.5774, tanH = tanV * (W / H);
+  var d = norm(add(add(camState.fw, scale(camState.rt, nx * tanH)), scale(camState.up, ny * tanV)));
+  var bestQ = null, bestT = 1e9;
+  for (var i = 0; i < scene.cardQuads.length; i++) {
+    var q = scene.cardQuads[i];
+    if (!q.curPos) continue;
+    var denom = d[0]*q.F[0] + d[1]*q.F[1] + d[2]*q.F[2];
+    if (Math.abs(denom) < 1e-4) continue;
+    var w0 = sub(q.curPos, camState.eye);
+    var tt = (w0[0]*q.F[0] + w0[1]*q.F[1] + w0[2]*q.F[2]) / denom;
+    if (tt < 0.5 || tt > bestT) continue;
+    var hit = add(camState.eye, scale(d, tt));
+    var loc = sub(hit, q.curPos);
+    var hx = (loc[0]*q.R[0] + loc[1]*q.R[1] + loc[2]*q.R[2]) / q.sx;
+    var hy = (loc[0]*q.U[0] + loc[1]*q.U[1] + loc[2]*q.U[2]) / q.sy;
+    if (Math.abs(hx) <= 1.03 && Math.abs(hy) <= 1.03) { bestQ = q; bestT = tt; }
+  }
+  return bestQ;
+}
+function openFocus(q) {
+  focus.active = true; focus.q = q;
+  var svc = SERVICES[q.card];
+  fpDur.textContent = svc[2];
+  fpTitle.textContent = svc[1];
+  fpDesc.textContent = svc[3];
+  focusPanel.classList.add('is-on');
+  focusPanel.setAttribute('aria-hidden', 'false');
+  gong(300 + q.card * 24, 0.35);
+}
+function closeFocus() {
+  if (!focus.active) return;
+  focus.active = false;
+  focusPanel.classList.remove('is-on');
+  focusPanel.setAttribute('aria-hidden', 'true');
+}
+document.getElementById('focusClose').addEventListener('click', closeFocus);
+addEventListener('wheel', function () { if (focus.active) closeFocus(); }, { passive: true });
+addEventListener('touchmove', function () { if (focus.active) closeFocus(); }, { passive: true });
+document.addEventListener('click', function (e) {
+  if (e.target.closest('a, button, .focus-panel, .rail')) return;
+  if (!entered) return;
+  var q = raycastCards(e.clientX, e.clientY);
+  if (q) openFocus(q);
+  else closeFocus();
+});
+document.addEventListener('mousemove', function (e) {
+  if (!entered || focus.active) { hoverQ = null; return; }
+  hoverQ = raycastCards(e.clientX, e.clientY);
+  document.body.style.cursor = hoverQ ? 'pointer' : '';
+});
+
+/* ============================================================
+   ОСМОТРЕТЬСЯ: зажать и потянуть (мышь/палец)
+   ============================================================ */
+var isDragging = false, dragX = 0, dragY = 0;
+var yawT = 0, pitchT = 0, lookYaw = 0, lookPitch = 0;
+document.addEventListener('mousedown', function (e) {
+  if (e.target.closest('a, button, .focus-panel, .rail, .enter')) return;
+  if (!entered || focus.active) return;
+  isDragging = true; dragX = e.clientX; dragY = e.clientY;
+  document.body.style.cursor = 'grabbing';
+});
+document.addEventListener('mousemove', function (e) {
+  if (!isDragging) return;
+  yawT = clamp(yawT - (e.clientX - dragX) * 0.0024, -0.7, 0.7);
+  pitchT = clamp(pitchT + (e.clientY - dragY) * 0.0018, -0.4, 0.4);
+  dragX = e.clientX; dragY = e.clientY;
+});
+addEventListener('mouseup', function () {
+  if (isDragging) { isDragging = false; document.body.style.cursor = ''; }
+});
+// палец: горизонтальный свайп — осмотр, вертикальный остаётся скроллом
+var tchX = 0, tchY = 0, tchLook = false;
+document.addEventListener('touchstart', function (e) {
+  if (e.touches.length !== 1) return;
+  tchX = e.touches[0].clientX; tchY = e.touches[0].clientY; tchLook = false;
+}, { passive: true });
+document.addEventListener('touchmove', function (e) {
+  if (e.touches.length !== 1 || !entered || focus.active) return;
+  var dx = e.touches[0].clientX - tchX, dy = e.touches[0].clientY - tchY;
+  if (!tchLook && Math.abs(dx) > Math.abs(dy) * 1.4 && Math.abs(dx) > 6) tchLook = true;
+  if (tchLook) yawT = clamp(yawT - dx * 0.003, -0.7, 0.7);
+  tchX = e.touches[0].clientX; tchY = e.touches[0].clientY;
+}, { passive: true });
+addEventListener('touchend', function () { tchLook = false; });
+
+/* ============================================================
+   DEEP-LINKS: #rituals / #steam / #orchids / #masters / #contacts
+   ============================================================ */
+var HASH_ROOMS = { '#entrance': 0, '#rituals': 1, '#services': 1, '#steam': 2,
+                   '#orchids': 3, '#masters': 4, '#contacts': 5 };
+
+/* ============================================================
+   Скролл → полёт камеры
+   ============================================================ */
+var tCur = 0, tTarget = 0;
+var maxScroll = 1;
+function measure(){ maxScroll = Math.max(1, document.documentElement.scrollHeight - innerHeight); }
+measure();
+
+addEventListener('scroll', function(){
+  if (DEBUG_P != null) return; // в debug-режиме камера зафиксирована
+  tTarget = clamp(scrollY / maxScroll, 0, 1);
+  if (scrollY > 30) hintEl.classList.add('is-hidden');
+}, { passive: true });
+
+/* параллакс за курсором / гироскопом */
+var px = 0, py = 0, pxT = 0, pyT = 0;
+addEventListener('mousemove', function(e){
+  pxT = (e.clientX / innerWidth - 0.5) * 2;
+  pyT = (e.clientY / innerHeight - 0.5) * 2;
+});
+addEventListener('deviceorientation', function(e){
+  if (e.gamma == null) return;
+  pxT = clamp(e.gamma / 30, -1, 1);
+  pyT = clamp((e.beta - 45) / 40, -1, 1);
+});
+
+/* прогресс-рейл */
+var dots = [];
+(function(){
+  for (var i=0;i<ROOM_T.length;i++){
+    if (i>0){ var ln = document.createElement('i'); ln.className='rail__line'; railEl.appendChild(ln); }
+    var d = document.createElement('button');
+    d.className = 'rail__dot'; d.type = 'button';
+    d.setAttribute('aria-label', ROOM_NAMES[i]);
+    d.title = ROOM_NAMES[i];
+    (function(idx){ d.addEventListener('click', function(){ flyTo(ROOM_T[idx]); }); })(i);
+    railEl.appendChild(d); dots.push(d);
+  }
+})();
+var flyAnim = null;
+function flyTo(t) {
+  var from = scrollY, to = t * maxScroll, start = performance.now(), dur = 1600;
+  if (flyAnim) cancelAnimationFrame(flyAnim);
+  (function step(now){
+    var p = clamp((now - start) / dur, 0, 1);
+    var e = p<0.5 ? 4*p*p*p : 1-Math.pow(-2*p+2,3)/2;
+    scrollTo(0, from + (to-from)*e);
+    if (p<1) flyAnim = requestAnimationFrame(step);
+  })(start);
+}
+
+/* оверлеи */
+function updateOverlays(t) {
+  for (var i=0;i<spaces.length;i++){
+    var el = spaces[i];
+    var c = parseFloat(el.dataset.c), w = parseFloat(el.dataset.w);
+    var vis = Math.exp(-((t-c)*(t-c)) / (2*w*w)) * (1 - focus.anim);
+    el.style.opacity = vis.toFixed(3);
+    el.style.transform = 'translateY(' + ((1-vis)*26).toFixed(1) + 'px)';
+    el.style.pointerEvents = vis > 0.45 ? 'auto' : 'none';
+  }
+  var best = 0, bd = 1e9;
+  for (i=0;i<ROOM_T.length;i++){ var d = Math.abs(t-ROOM_T[i]); if (d<bd){bd=d;best=i;} }
+  for (i=0;i<dots.length;i++) dots[i].classList.toggle('is-active', i===best);
+  if (entered && best !== lastRoom) { gong(150 + best * 24, 0.85); lastRoom = best; }
+}
+
+/* ---------- размер ---------- */
+var W=0,H=0,DPR=1, proj;
+function resize(){
+  DPR = Math.min(devicePixelRatio||1, 2);
+  W = innerWidth; H = innerHeight;
+  canvas.width = W*DPR; canvas.height = H*DPR;
+  gl.viewport(0,0,canvas.width,canvas.height);
+  proj = mat4Perspective(60*Math.PI/180, W/H, 0.1, 240);
+  measure();
+}
+addEventListener('resize', resize);
+resize();
+
+/* ---------- debug: ?p=0.5 ---------- */
+if (DEBUG_P != null || DEBUG_FOCUS != null) {
+  if (DEBUG_P != null) tCur = tTarget = clamp(DEBUG_P, 0, 1);
+  doEnter(false); // автовход без звука для скриншотов
+  if (DEBUG_FOCUS != null) {
+    var focusWait = setInterval(function () {
+      if (scene.cardQuads && scene.cardQuads[DEBUG_FOCUS] && scene.cardQuads[DEBUG_FOCUS].curPos) {
+        openFocus(scene.cardQuads[DEBUG_FOCUS]);
+        clearInterval(focusWait);
+      }
+    }, 300);
+  }
+}
+
+/* ============================================================
+   Кадр
+   ============================================================ */
+gl.enable(gl.BLEND);
+gl.clearColor(BG[0], BG[1], BG[2], 1);
+var t0 = performance.now();
+var prevNow = t0, ringClock = 0;
+
+function frame(now) {
+  var time = (now - t0) / 1000;
+  var dt = Math.min(0.05, (now - prevNow) / 1000); prevNow = now;
+  if (!focus.active) ringClock += dt;            // кольцо замирает при фокусе
+  focus.anim += ((focus.active ? 1 : 0) - focus.anim) * 0.06;
+  tCur += (tTarget - tCur) * 0.055;              // демпфирование полёта
+  px += (pxT - px) * 0.04; py += (pyT - py) * 0.04;
+
+  var camT = clamp(tCur, 0, 1);
+  var eye = splineP(camT);
+  var lookT = clamp(camT + 0.035, 0, 1);
+  var target = splineP(lookT);
+
+  // в финале взгляд поднимается к лотосу
+  if (scene.lotusPos) {
+    var wgt = clamp((camT - 0.88) / 0.09, 0, 1);
+    wgt = wgt*wgt*(3-2*wgt);
+    target = [ lerp(target[0], scene.lotusPos[0], wgt * 0.85),
+               lerp(target[1], scene.lotusPos[1] * 0.8, wgt * 0.85),
+               lerp(target[2], scene.lotusPos[2], wgt * 0.85) ];
+  }
+
+  // осмотр: поворот взгляда (зажать и потянуть)
+  if (!isDragging) { yawT *= 0.95; pitchT *= 0.95; }
+  lookYaw += (yawT - lookYaw) * 0.09;
+  lookPitch += (pitchT - lookPitch) * 0.09;
+
+  // параллакс: смещаем глаз в базисе камеры
+  var fw = norm(sub(target, eye));
+  var rt = norm(cross(fw, [0,1,0]));
+  var up = cross(rt, fw);
+  if (Math.abs(lookYaw) > 0.001 || Math.abs(lookPitch) > 0.001) {
+    var d1 = add(scale(fw, Math.cos(lookYaw)), scale(rt, Math.sin(lookYaw)));
+    var d2 = norm(add(scale(d1, Math.cos(lookPitch)), scale(up, Math.sin(lookPitch))));
+    target = add(eye, scale(d2, 10));
+    fw = d2;
+    rt = norm(cross(fw, [0,1,0]));
+    up = cross(rt, fw);
+  }
+  eye = add(eye, add(scale(rt, px*0.55), scale(up, -py*0.35)));
+
+  camState = { eye: eye, fw: fw, rt: rt, up: up };
+
+  // подлёт камеры к карточке услуги
+  if (focus.anim > 0.001 && focus.q && focus.q.curPos) {
+    var fq = focus.q;
+    var fEye = add(add(fq.curPos, scale(fq.F, MOBILE ? 5.6 : 4.4)), scale(fq.U, 0.12));
+    var fa = focus.anim * focus.anim * (3 - 2 * focus.anim);
+    eye = [lerp(eye[0], fEye[0], fa), lerp(eye[1], fEye[1], fa), lerp(eye[2], fEye[2], fa)];
+    target = [lerp(target[0], fq.curPos[0], fa), lerp(target[1], fq.curPos[1], fa), lerp(target[2], fq.curPos[2], fa)];
+  }
+
+  var view = mat4LookAt(eye, target, [0,1,0]);
+
+  gl.clear(gl.COLOR_BUFFER_BIT);
+
+  // мерцание "свечей"
+  var flick = 0.86 + 0.10*Math.sin(time*7.3) * Math.sin(time*3.1) + 0.04*Math.sin(time*13.7);
+
+  // финал: хаос -> лотос -> слово MAI SPA (как в классической версии)
+  if (scene.finSys) {
+    function sstep(a, b, x) { x = clamp((x - a) / (b - a), 0, 1); return x * x * (3 - 2 * x); }
+    scene.finSys.assembleVal = sstep(0.865, 0.945, camT);
+    scene.finSys.morphVal = sstep(0.958, 0.99, camT);
+  }
+
+  // квады
+  if (texturesReady) {
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+    for (var i=0;i<scene.quads.length;i++){
+      var q = scene.quads[i];
+      var pos = q.pos;
+      if (q.ring) { // лёгкое вращение кольца карточек + покачивание
+        var a = q.ring.a0 + ringClock*0.07;
+        var off = add(scale(q.ring.R, Math.cos(a)*q.ring.rad),
+                      scale(q.ring.U, Math.sin(a)*q.ring.rad*0.72 + 0.6 + Math.sin(ringClock*0.9+q.bob)*0.18));
+        pos = add(q.ring.c, off);
+      }
+      if (q.sway != null) pos = add(pos, scale(q.billboard ? [0,1,0] : q.U, Math.sin(time*0.7 + q.sway) * 0.12));
+      q.curPos = pos;
+      var qR = q.R, qU = q.U, qF = q.F;
+      if (q.billboard) { qR = rt; qU = up; qF = scale(fw, -1); }
+      if (q.card != null) { // hover: карточка мягко увеличивается
+        var hTgt = (hoverQ === q || focus.q === q && focus.active) ? 1 : 0;
+        q.hoverAmt += (hTgt - q.hoverAmt) * 0.1;
+      }
+      var hs = 1 + (q.hoverAmt || 0) * 0.09;
+      var m = mat4Basis(qR, qU, qF, pos, q.sx * hs, q.sy * hs);
+      var al = q.alpha * (q.pulse ? flick : 1);
+      if (q.additive) gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
+      else gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+      drawQuad(m, q.tex, al, q.additive, view, proj);
+    }
+  }
+
+  // частицы (premultiplied additive)
+  gl.blendFunc(gl.ONE, gl.ONE);
+  var pxScale = H * DPR * 0.866;
+  for (i=0;i<scene.points.length;i++) drawPoints(scene.points[i], time, view, proj, pxScale);
+
+  // светлячки — вьются за курсором перед камерой
+  if (scene.fireflies && scene.fireTex && entered) {
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
+    for (i=0;i<scene.fireflies.length;i++){
+      var ff = scene.fireflies[i];
+      var wob = [ Math.cos(time*(0.5+ff.s*0.13)+ff.s*2.1)*(0.8+ff.s*0.2),
+                  Math.sin(time*(0.7+ff.s*0.11)+ff.s*1.4)*0.55,
+                  Math.sin(time*(0.4+ff.s*0.09)+ff.s*3.2)*0.6 ];
+      var ft = add(add(add(eye, scale(fw, 4.6 + ff.s*0.5)),
+                   scale(rt, px*2.8 + wob[0])), scale(up, -py*2.0 + wob[1] + 0.3));
+      ft = add(ft, scale(fw, wob[2]));
+      var k = 0.02 + ff.s*0.007;
+      ff.p = [ lerp(ff.p[0], ft[0], k), lerp(ff.p[1], ft[1], k), lerp(ff.p[2], ft[2], k) ];
+      var fsz = 0.10 + 0.035*Math.sin(time*(2.2+ff.s*0.7)+ff.s*5.0);
+      var fm = mat4Basis(rt, up, scale(fw,-1), ff.p, fsz, fsz);
+      drawQuad(fm, scene.fireTex, 0.85, true, view, proj);
+    }
+  }
+
+  updateOverlays(camT);
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+
+})();
+</script>
+</body>
+</html>
