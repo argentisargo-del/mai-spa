@@ -92,6 +92,10 @@ h1,.h1{font-family:var(--serif);font-weight:400;font-size:clamp(2.2rem,7vw,4.8re
 .master b{font-family:var(--serif);font-weight:400;font-size:1.25rem;color:var(--ink)}
 .master .btn{padding:.62rem 1.5rem;font-size:.85rem}
 
+.master-photo{display:none}
+.flat .master-photo{display:block;width:128px;height:128px;border-radius:50%;object-fit:cover;
+  object-position:50% 20%;border:2px solid var(--brass);box-shadow:0 0 24px rgba(211,161,92,.35)}
+
 /* контакты */
 .contacts{display:flex;flex-direction:column;gap:.35rem;font-size:1.05rem}
 .contacts a{border-bottom:1px solid rgba(211,161,92,.35);transition:color .3s;pointer-events:auto}
@@ -209,9 +213,9 @@ html.no-js .space{opacity:1;transform:none}
       <h2 class="h2">Зал мастеров</h2>
       <p>Три мастера из Таиланда. Три техники. Одно чувство — руки, которые точно знают, что делают.</p>
       <div class="masters">
-        <div class="master"><b>Мисс Лауан</b><a class="btn" href="https://n1351412.yclients.com" target="_blank" rel="noopener">Записаться</a></div>
-        <div class="master"><b>Мисс Ванни</b><a class="btn" href="https://n1351412.yclients.com" target="_blank" rel="noopener">Записаться</a></div>
-        <div class="master"><b>Мисс Натсинее</b><a class="btn" href="https://n1351412.yclients.com" target="_blank" rel="noopener">Записаться</a></div>
+        <div class="master"><img class="master-photo" src="assets/img/master-lauan.jpg" alt="Мисс Лауан — мастер тайского массажа" loading="lazy" /><b>Мисс Лауан</b><a class="btn" href="https://n1351412.yclients.com" target="_blank" rel="noopener">Записаться</a></div>
+        <div class="master"><img class="master-photo" src="assets/img/master-vanni.jpg" alt="Мисс Ванни — мастер тайского массажа" loading="lazy" /><b>Мисс Ванни</b><a class="btn" href="https://n1351412.yclients.com" target="_blank" rel="noopener">Записаться</a></div>
+        <div class="master"><img class="master-photo" src="assets/img/master-natsinee.jpg" alt="Мисс Натсинее — мастер тайского массажа" loading="lazy" /><b>Мисс Натсинее</b><a class="btn" href="https://n1351412.yclients.com" target="_blank" rel="noopener">Записаться</a></div>
       </div>
     </div>
   </section>
@@ -651,6 +655,30 @@ function texGlow(inner, outer) {
   x.fillStyle = g; x.fillRect(0,0,256,256);
   return makeTexture(c);
 }
+function texPhotoCircle(img) {
+  var c = cnv(512, 512), x = c.getContext('2d');
+  // фото cover в круге
+  x.save();
+  x.beginPath(); x.arc(256, 256, 246, 0, 6.283); x.clip();
+  var sc = Math.max(512 / img.width, 512 / img.height);
+  var dw = img.width * sc, dh = img.height * sc;
+  x.drawImage(img, (512 - dw) / 2, -dh * 0.04, dw, dh); // верх кадра — лицо
+  // тёплая виньетка в тон сцены
+  var vg = x.createRadialGradient(256, 236, 120, 256, 256, 250);
+  vg.addColorStop(0, 'rgba(15,27,22,0)');
+  vg.addColorStop(1, 'rgba(15,27,22,0.55)');
+  x.fillStyle = vg; x.fillRect(0, 0, 512, 512);
+  x.restore();
+  // мягкое растворение края (под латунное кольцо)
+  x.globalCompositeOperation = 'destination-in';
+  var mg = x.createRadialGradient(256, 256, 180, 256, 256, 248);
+  mg.addColorStop(0, 'rgba(255,255,255,1)');
+  mg.addColorStop(0.86, 'rgba(255,255,255,1)');
+  mg.addColorStop(1, 'rgba(255,255,255,0)');
+  x.fillStyle = mg; x.fillRect(0, 0, 512, 512);
+  x.globalCompositeOperation = 'source-over';
+  return makeTexture(c);
+}
 function texName(name) {
   var c = cnv(512,192), x = c.getContext('2d');
   x.textAlign='center'; x.textBaseline='middle';
@@ -673,6 +701,16 @@ var SERVICES = [
   ['06','Thai Yoga','60 мин']
 ];
 var MASTERS = ['Мисс Лауан','Мисс Ванни','Мисс Натсинее'];
+var MASTER_IMGS = [null, null, null];
+['assets/img/master-lauan.jpg','assets/img/master-vanni.jpg','assets/img/master-natsinee.jpg']
+  .forEach(function (src, idx) {
+    var im = new Image();
+    im.onload = function () {
+      MASTER_IMGS[idx] = im;
+      if (fontsDone) buildQuads(); // перестроить с фото
+    };
+    im.src = src;
+  });
 
 var scene = { points: [], quads: [] };
 var texturesReady = false;
@@ -876,6 +914,11 @@ function buildQuads() {
     var pp = add(mC, scale(mb.R, offR));
     scene.quads.push({ tex: glowTex, pos: pp, R: mb.R, U: mb.U, F: scale(mb.T,-1),
       sx: 3.6, sy: 3.6, alpha: 0.8, additive: true, pulse: true });
+    if (MASTER_IMGS[i]) {
+      scene.quads.push({ tex: texPhotoCircle(MASTER_IMGS[i]), pos: pp,
+        R: mb.R, U: mb.U, F: scale(mb.T,-1),
+        sx: 1.62, sy: 1.62, alpha: 1, additive: false });
+    }
     scene.quads.push({ tex: ringTex, pos: pp, R: mb.R, U: mb.U, F: scale(mb.T,-1),
       sx: 2.1, sy: 2.1, alpha: 0.95, additive: true });
     scene.quads.push({ tex: texName(MASTERS[i]), pos: add(pp, [0,-2.9,0]),
