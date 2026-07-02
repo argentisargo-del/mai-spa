@@ -386,18 +386,21 @@ function makeTexture(cnv) {
 /* ---------- шейдер точек (аналог PointsMaterial + дрейф) ---------- */
 var PT_VS = [
 'attribute vec3 aPos;',
+'attribute vec3 aAlt;',      // вторая форма (морф)
+'attribute vec3 aScatter;',  // рассыпанное состояние
 'attribute vec4 aSeed;', // x: фаза, y: скорость, z: размер, w: цвет-микс
 'uniform mat4 uView, uProj;',
-'uniform float uTime, uPxScale, uRotY;',
+'uniform float uTime, uPxScale, uRotY, uAssemble, uMorph;',
 'uniform vec3 uDrift, uPivot;',
 'varying float vFog, vMix, vTw;',
 'void main(){',
-'  vec3 p = aPos - uPivot;',
+'  vec3 tgt = mix(aPos, aAlt, uMorph);',
+'  vec3 p = mix(aScatter, tgt, uAssemble) - uPivot;',
 '  float cy = cos(uRotY), sy = sin(uRotY);',
 '  p = vec3(p.x*cy + p.z*sy, p.y, -p.x*sy + p.z*cy) + uPivot;',
 '  p += vec3(sin(uTime*aSeed.y + aSeed.x),',
 '            cos(uTime*aSeed.y*0.83 + aSeed.x*1.7),',
-'            sin(uTime*aSeed.y*0.61 + aSeed.x*2.3)) * uDrift;',
+'            sin(uTime*aSeed.y*0.61 + aSeed.x*2.3)) * uDrift * (1.0 + (1.0 - uAssemble) * 4.0);',
 '  vec4 mv = uView * vec4(p, 1.0);',
 '  float dist = length(mv.xyz);',
 '  gl_Position = uProj * mv;',
@@ -450,6 +453,8 @@ var ptProg = makeProgram(PT_VS, PT_FS);
 var qdProg = makeProgram(QD_VS, QD_FS);
 var PT = {
   aPos: gl.getAttribLocation(ptProg,'aPos'), aSeed: gl.getAttribLocation(ptProg,'aSeed'),
+  aAlt: gl.getAttribLocation(ptProg,'aAlt'), aScatter: gl.getAttribLocation(ptProg,'aScatter'),
+  uAssemble: gl.getUniformLocation(ptProg,'uAssemble'), uMorph: gl.getUniformLocation(ptProg,'uMorph'),
   uView: gl.getUniformLocation(ptProg,'uView'), uProj: gl.getUniformLocation(ptProg,'uProj'),
   uTime: gl.getUniformLocation(ptProg,'uTime'), uPxScale: gl.getUniformLocation(ptProg,'uPxScale'),
   uDrift: gl.getUniformLocation(ptProg,'uDrift'), uColA: gl.getUniformLocation(ptProg,'uColA'),
@@ -477,8 +482,20 @@ function makePoints(positions, seeds, opts) {
   var sb = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, sb);
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(seeds), gl.STATIC_DRAW);
+  var ab = null, scb = null;
+  if (opts.alt) {
+    ab = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, ab);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(opts.alt), gl.STATIC_DRAW);
+  }
+  if (opts.scatter) {
+    scb = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, scb);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(opts.scatter), gl.STATIC_DRAW);
+  }
   return {
-    pb: pb, sb: sb, n: positions.length/3,
+    pb: pb, sb: sb, ab: ab, scb: scb, n: positions.length/3,
+    assembleVal: 1, morphVal: 0,
     drift: opts.drift || [0.3,0.3,0.3],
     colA: opts.colA || BRASS, colB: opts.colB || BRASS_L,
     alpha: opts.alpha != null ? opts.alpha : 0.8,
@@ -494,6 +511,24 @@ function drawPoints(sys, time, view, proj, pxScale) {
   gl.bindBuffer(gl.ARRAY_BUFFER, sys.sb);
   gl.enableVertexAttribArray(PT.aSeed);
   gl.vertexAttribPointer(PT.aSeed, 4, gl.FLOAT, false, 0, 0);
+  if (sys.ab) {
+    gl.bindBuffer(gl.ARRAY_BUFFER, sys.ab);
+    gl.enableVertexAttribArray(PT.aAlt);
+    gl.vertexAttribPointer(PT.aAlt, 3, gl.FLOAT, false, 0, 0);
+  } else {
+    gl.disableVertexAttribArray(PT.aAlt);
+    gl.vertexAttrib3f(PT.aAlt, 0, 0, 0);
+  }
+  if (sys.scb) {
+    gl.bindBuffer(gl.ARRAY_BUFFER, sys.scb);
+    gl.enableVertexAttribArray(PT.aScatter);
+    gl.vertexAttribPointer(PT.aScatter, 3, gl.FLOAT, false, 0, 0);
+  } else {
+    gl.disableVertexAttribArray(PT.aScatter);
+    gl.vertexAttrib3f(PT.aScatter, 0, 0, 0);
+  }
+  gl.uniform1f(PT.uAssemble, sys.ab ? sys.assembleVal : 1);
+  gl.uniform1f(PT.uMorph, sys.ab ? sys.morphVal : 0);
   gl.uniformMatrix4fv(PT.uView, false, view);
   gl.uniformMatrix4fv(PT.uProj, false, proj);
   gl.uniform1f(PT.uTime, time);
@@ -502,7 +537,7 @@ function drawPoints(sys, time, view, proj, pxScale) {
   gl.uniform3fv(PT.uColA, sys.colA);
   gl.uniform3fv(PT.uColB, sys.colB);
   gl.uniform1f(PT.uAlpha, sys.alpha);
-  gl.uniform1f(PT.uRotY, sys.rotSpeed ? Math.sin(time * 0.35) * 0.45 : 0);
+  gl.uniform1f(PT.uRotY, sys.rotSpeed ? Math.sin(time * 0.35) * 0.22 : 0);
   gl.uniform3fv(PT.uPivot, sys.pivot);
   gl.drawArrays(gl.POINTS, 0, sys.n);
 }
@@ -703,19 +738,39 @@ function buildScene() {
   /* --- 5. лотос из частиц --- */
   var fb = basisAt(0.995);
   var lotusC = add(add(fb.P, scale(fb.T, 15)), [0,5.5,0]);
-  var lp = sampleLotus(MOBILE ? 1400 : 2400);
+  var N_FIN = MOBILE ? 1400 : 2400;
+  var lp = sampleLotus(N_FIN);
+  var wp = sampleWord(N_FIN);
+  var nFin = Math.min(lp.length, wp.length);
   pos = []; seed = [];
-  var LS = 10.5; // мировой размер
-  for (i=0;i<lp.length;i++){
+  var alt = [], scat = [];
+  var LS = 10.5;                 // мировой размер лотоса
+  var LW = 14.5;                 // ширина слова MAI SPA
+  for (i=0;i<nFin;i++){
+    // форма A — лотос
     var lx = (lp[i][0]-0.5)*LS, ly = (0.62-lp[i][1])*LS, lz = (rnd(i+401)-0.5)*1.6;
     p = add(add(add(lotusC, scale(fb.R, lx)), scale(fb.U, ly)), scale(fb.T, lz));
     pos.push(p[0],p[1],p[2]);
+    // форма B — слово MAI SPA (та же плоскость)
+    var wx = (wp[i][0]-0.5)*LW, wy = (0.5-wp[i][1])*LW*300/1024, wz = (rnd(i+405)-0.5)*1.2;
+    var q = add(add(add(lotusC, scale(fb.R, wx)), scale(fb.U, wy)), scale(fb.T, wz));
+    alt.push(q[0],q[1],q[2]);
+    // рассыпанное состояние — облако вокруг
+    scat.push(
+      lotusC[0] + (rnd(i+461)-0.5)*22,
+      lotusC[1] + (rnd(i+471)-0.5)*14,
+      lotusC[2] + (rnd(i+481)-0.5)*18
+    );
     seed.push(rnd(i+411)*6.28, 0.2+rnd(i+421)*0.5, 0.055+rnd(i+431)*0.075, 0.35+rnd(i+441)*0.65);
   }
-  scene.points.push(makePoints(pos, seed, {
+  var finSys = makePoints(pos, seed, {
     drift:[0.08,0.1,0.08], alpha:0.95,
-    pivot: lotusC, rotSpeed: 0.12
-  }));
+    pivot: lotusC, rotSpeed: 0.12,
+    alt: alt, scatter: scat
+  });
+  finSys.assembleVal = 0;
+  scene.points.push(finSys);
+  scene.finSys = finSys;
   scene.lotusPos = lotusC;
 
   // ореол вокруг лотоса
@@ -728,6 +783,23 @@ function buildScene() {
     seed.push(rnd(i+531)*6.28, 0.15+rnd(i+541)*0.35, 0.04+rnd(i+551)*0.05, rnd(i+561));
   }
   scene.points.push(makePoints(pos, seed, { drift:[0.7,0.6,0.7], alpha:0.4 }));
+}
+
+/* слово MAI SPA: сэмплируем текст в точки (0..1, aspect 1024:300) */
+function sampleWord(n) {
+  var c = cnv(1024, 300), x = c.getContext('2d');
+  x.fillStyle = '#fff';
+  x.textAlign = 'center'; x.textBaseline = 'middle';
+  x.font = "170px 'Prata', Georgia, 'Times New Roman', serif";
+  x.fillText('MAI SPA', 512, 150);
+  var data = x.getImageData(0, 0, 1024, 300).data;
+  var cand = [];
+  for (var y = 0; y < 300; y += 2)
+    for (var xx = 0; xx < 1024; xx += 2)
+      if (data[(y * 1024 + xx) * 4 + 3] > 128) cand.push([xx / 1024, y / 300]);
+  var out = [], stride = Math.max(1, cand.length / n);
+  for (var f = 0; f < cand.length; f += stride) out.push(cand[Math.floor(f)]);
+  return out;
 }
 
 /* лотос: сэмплируем 2D-рисунок в точки (0..1) */
@@ -943,6 +1015,13 @@ function frame(now) {
 
   // мерцание "свечей"
   var flick = 0.86 + 0.10*Math.sin(time*7.3) * Math.sin(time*3.1) + 0.04*Math.sin(time*13.7);
+
+  // финал: хаос -> лотос -> слово MAI SPA (как в классической версии)
+  if (scene.finSys) {
+    function sstep(a, b, x) { x = clamp((x - a) / (b - a), 0, 1); return x * x * (3 - 2 * x); }
+    scene.finSys.assembleVal = sstep(0.865, 0.945, camT);
+    scene.finSys.morphVal = sstep(0.958, 0.99, camT);
+  }
 
   // квады
   if (texturesReady) {
