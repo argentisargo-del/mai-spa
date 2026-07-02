@@ -1,303 +1,980 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" class="no-js">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MAI SPA — премиальный тайский SPA в Йошкар-Оле</title>
-  <meta name="description" content="MAI SPA — премиальный тайский SPA-салон в Йошкар-Оле. Мастера из Таиланда, аутентичный тайский массаж, аромамасла и травяные мешочки. 30 минут массажа в подарок." />
-  <meta name="theme-color" content="#0d1210" />
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>MAI SPA — премиальный тайский SPA в Йошкар-Оле</title>
+<meta name="description" content="MAI SPA — иммерсивное путешествие: тайский массаж, oil-ритуалы, хаммам и чайная церемония. Первомайская 80, Йошкар-Ола. Запись: 696-696." />
+<meta name="theme-color" content="#0F1B16" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Prata&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+/* ============================================================
+   MAI SPA — иммерсивный 3D-сайт
+   Палитра: нефрит #0F1B16 · латунь #D3A15C · свет #E8C088 · текст #F3EBDD
+   ============================================================ */
+:root{
+  --bg:#0F1B16;
+  --brass:#D3A15C;
+  --brass-l:#E8C088;
+  --ink:#F3EBDD;
+  --ink-soft:#c9c0ae;
+  --line:rgba(211,161,92,.28);
+  --serif:'Prata', Georgia, 'Times New Roman', serif;
+  --sans:'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --ease:cubic-bezier(.22,1,.36,1);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  background:var(--bg);color:var(--ink);font-family:var(--sans);
+  line-height:1.6;overflow-x:hidden;-webkit-font-smoothing:antialiased;
+}
+a{color:inherit;text-decoration:none}
+::selection{background:var(--brass);color:var(--bg)}
 
-  <!-- Fonts (грузятся на реальном хостинге; есть системный fallback) -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+/* ---------- WebGL-холст ---------- */
+#gl{position:fixed;inset:0;width:100%;height:100%;display:block;z-index:1}
+.vignette{position:fixed;inset:0;z-index:2;pointer-events:none;
+  background:radial-gradient(120% 90% at 50% 50%,transparent 55%,rgba(5,10,8,.55) 100%)}
 
-  <link rel="stylesheet" href="assets/css/style.css" />
+/* ---------- Скролл-простор ---------- */
+.spacer{height:700vh;position:relative;z-index:0}
+
+/* ---------- Оверлеи-пространства ---------- */
+.overlay{position:fixed;inset:0;z-index:5;pointer-events:none}
+.space{
+  position:absolute;inset:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;text-align:center;
+  padding:0 clamp(1.2rem,6vw,4rem);
+}
+.js .space{opacity:0;transform:translateY(26px)}
+.space .inner{max-width:760px;display:flex;flex-direction:column;align-items:center;gap:1.1rem}
+.eyebrow{font-size:.7rem;letter-spacing:.34em;text-transform:uppercase;color:var(--brass);font-weight:600}
+h1,.h1{font-family:var(--serif);font-weight:400;font-size:clamp(2.2rem,7vw,4.8rem);line-height:1.08;text-wrap:balance;
+  text-shadow:0 2px 30px rgba(5,10,8,.8)}
+.h2{font-family:var(--serif);font-weight:400;font-size:clamp(1.9rem,5.4vw,3.6rem);line-height:1.1;text-wrap:balance;
+  text-shadow:0 2px 30px rgba(5,10,8,.8)}
+.space p{color:var(--ink-soft);max-width:56ch;font-weight:300;font-size:clamp(.98rem,1.5vw,1.15rem);
+  text-shadow:0 1px 18px rgba(5,10,8,.9)}
+.em{color:var(--brass-l);font-style:italic}
+
+.btn{
+  pointer-events:auto;display:inline-flex;align-items:center;gap:.55em;
+  padding:.95rem 2.1rem;border-radius:100px;font-weight:600;font-size:.95rem;
+  background:linear-gradient(135deg,var(--brass-l),var(--brass));color:#241a0d;
+  box-shadow:0 12px 34px -12px rgba(211,161,92,.65);
+  transition:transform .45s var(--ease),box-shadow .45s var(--ease);
+  position:relative;overflow:hidden;border:0;cursor:pointer;
+}
+.btn::after{content:"";position:absolute;inset:0;transform:translateX(-130%);
+  background:linear-gradient(105deg,transparent 30%,rgba(255,255,255,.5) 50%,transparent 70%);
+  transition:transform .7s var(--ease)}
+.btn:hover::after{transform:translateX(130%)}
+.btn:hover{transform:translateY(-3px);box-shadow:0 18px 44px -14px rgba(232,192,136,.8)}
+.btn:focus-visible{outline:2px solid var(--brass-l);outline-offset:3px}
+.btn--ghost{background:transparent;color:var(--ink);border:1px solid var(--line);box-shadow:none}
+.btn--ghost:hover{border-color:var(--brass);color:var(--brass-l)}
+.btn-row{display:flex;gap:.9rem;flex-wrap:wrap;justify-content:center}
+
+/* услуги (DOM-версия для SEO; в сцене — карточки) */
+.services-list{list-style:none;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:.5rem 2.4rem;margin-top:.4rem;text-align:left}
+.services-list li{display:flex;justify-content:space-between;gap:1.2rem;padding:.5rem 0;
+  border-bottom:1px solid rgba(211,161,92,.16);font-size:.95rem}
+.services-list b{font-weight:500;color:var(--ink)}
+.services-list span{color:var(--brass);white-space:nowrap;font-size:.85rem;letter-spacing:.04em}
+
+/* мастера */
+.masters{display:flex;gap:clamp(1rem,4vw,2.6rem);flex-wrap:wrap;justify-content:center;margin-top:.6rem}
+.master{display:flex;flex-direction:column;align-items:center;gap:.7rem}
+.master b{font-family:var(--serif);font-weight:400;font-size:1.25rem;color:var(--ink)}
+.master .btn{padding:.62rem 1.5rem;font-size:.85rem}
+
+/* контакты */
+.contacts{display:flex;flex-direction:column;gap:.35rem;font-size:1.05rem}
+.contacts a{border-bottom:1px solid rgba(211,161,92,.35);transition:color .3s;pointer-events:auto}
+.contacts a:hover{color:var(--brass-l)}
+
+/* ---------- Прогресс-путь ---------- */
+.rail{position:fixed;right:clamp(.9rem,3vw,2.2rem);top:50%;transform:translateY(-50%);
+  z-index:10;display:flex;flex-direction:column;align-items:center;gap:0}
+.rail__line{width:1px;height:46px;background:linear-gradient(var(--line),var(--line))}
+.rail__dot{width:9px;height:9px;border-radius:50%;border:1px solid var(--brass);
+  background:transparent;cursor:pointer;padding:0;flex:none;
+  transition:background .4s,box-shadow .4s,transform .4s var(--ease)}
+.rail__dot:hover{transform:scale(1.35)}
+.rail__dot.is-active{background:var(--brass-l);box-shadow:0 0 12px rgba(232,192,136,.8)}
+.rail__dot:focus-visible{outline:2px solid var(--brass-l);outline-offset:3px}
+
+/* ---------- Подсказка ---------- */
+.hint{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%);z-index:10;
+  display:flex;flex-direction:column;align-items:center;gap:.55rem;
+  font-size:.68rem;letter-spacing:.3em;text-transform:uppercase;color:var(--ink-soft);
+  transition:opacity .8s var(--ease);pointer-events:none}
+.hint i{width:1px;height:40px;background:linear-gradient(var(--brass),transparent);position:relative;overflow:hidden}
+.hint i::after{content:"";position:absolute;top:0;left:0;width:100%;height:40%;background:var(--brass-l);
+  animation:hintdot 1.9s var(--ease) infinite}
+@keyframes hintdot{0%{transform:translateY(-100%)}100%{transform:translateY(260%)}}
+.hint.is-hidden{opacity:0}
+
+/* ---------- Брендинг в углу ---------- */
+.brand{position:fixed;top:1.4rem;left:clamp(1.2rem,4vw,2.4rem);z-index:10;
+  font-family:var(--serif);font-size:1.25rem;letter-spacing:.08em;color:var(--ink);
+  text-shadow:0 1px 14px rgba(5,10,8,.8)}
+.brand em{font-style:italic;color:var(--brass-l)}
+.brand .mark{color:var(--brass)}
+
+/* ============================================================
+   ПЛОСКИЙ ФОЛБЭК (нет WebGL / prefers-reduced-motion / ?flat)
+   ============================================================ */
+@media (prefers-reduced-motion:reduce){
+  .hint i::after{animation:none}
+}
+.flat #gl,.flat .vignette,.flat .spacer,.flat .rail,.flat .hint{display:none}
+.flat .overlay{position:static;pointer-events:auto}
+.flat .space{position:static;opacity:1 !important;transform:none !important;
+  min-height:auto;padding:clamp(3.4rem,9vh,6.5rem) clamp(1.2rem,6vw,4rem);
+  border-bottom:1px solid rgba(211,161,92,.14)}
+.flat .space:nth-child(odd){background:#12211a}
+.flat .space .inner{gap:1.2rem}
+.flat .flat-photo{display:block;width:min(420px,86vw);border-radius:14px;
+  border:1px solid var(--line);margin-top:.6rem}
+.flat-photo{display:none}
+html.no-js .space{opacity:1;transform:none}
+
+@media (max-width:640px){
+  .services-list{grid-template-columns:1fr}
+  .rail{right:.6rem}
+  .eyebrow{letter-spacing:.18em}
+  .space p{max-width:100%}
+  .brand{font-size:1.05rem}
+}
+</style>
 </head>
 <body>
 
-  <!-- Прелоадер -->
-  <div class="preloader" id="preloader" aria-hidden="true">
-    <div class="preloader__mark">
-      <span class="preloader__lotus">✦</span>
-      <span class="preloader__name">MAI&nbsp;SPA</span>
+<canvas id="gl" aria-hidden="true"></canvas>
+<div class="vignette" aria-hidden="true"></div>
+<div class="spacer" aria-hidden="true"></div>
+
+<a class="brand" href="#top" aria-label="MAI SPA — наверх"><span class="mark">✦</span> MAI <em>SPA</em></a>
+
+<!-- ================= ОВЕРЛЕИ 5 ПРОСТРАНСТВ ================= -->
+<main class="overlay" id="top">
+
+  <!-- 1. Вход -->
+  <section class="space" data-c="0.045" data-w="0.055" aria-label="Вход">
+    <div class="inner">
+      <p class="eyebrow">MAI SPA · тайский SPA · Йошкар-Ола</p>
+      <h1>Вечер, который<br><span class="em">тело запомнит</span></h1>
+      <p>Скролл ведёт вас сквозь пространства нашего SPA — от золотого тоннеля до парящего лотоса.</p>
+      <a class="btn" href="https://n1351412.yclients.com" target="_blank" rel="noopener">Записаться</a>
     </div>
-    <div class="preloader__bar"><i></i></div>
-  </div>
+  </section>
 
-  <!-- Кастомный курсор -->
-  <div class="cursor" id="cursor" aria-hidden="true"></div>
-  <div class="cursor-dot" id="cursorDot" aria-hidden="true"></div>
+  <!-- 2. Зал ритуалов -->
+  <section class="space" data-c="0.30" data-w="0.055" aria-label="Зал ритуалов">
+    <div class="inner">
+      <p class="eyebrow">Пространство второе</p>
+      <h2 class="h2">Зал ритуалов</h2>
+      <p>Шесть программ парят вокруг вас. Каждая — путь к балансу, подобранный под ваше состояние.</p>
+      <ul class="services-list">
+        <li><b>Тайский массаж</b><span>60–90 мин</span></li>
+        <li><b>Oil-массаж</b><span>60–90 мин</span></li>
+        <li><b>SPA для одного</b><span>90–120 мин</span></li>
+        <li><b>SPA для двоих</b><span>90–180 мин</span></li>
+        <li><b>VIP-ритуалы</b><span>120–180 мин</span></li>
+        <li><b>Thai Yoga</b><span>60 мин</span></li>
+      </ul>
+      <img class="flat-photo" src="assets/img/massage.jpg" alt="Мастерица MAI SPA делает массаж гостье при тёплом свете свечей" loading="lazy" />
+    </div>
+  </section>
 
-  <!-- Прогресс скролла -->
-  <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
+  <!-- 3. Пространство пара -->
+  <section class="space" data-c="0.52" data-w="0.055" aria-label="Пространство пара">
+    <div class="inner">
+      <p class="eyebrow">Пространство третье</p>
+      <h2 class="h2">Пространство пара</h2>
+      <p>Тёплый мрамор хаммама, кедровая <span class="em">фитобочка</span> и медленный пар, который забирает усталость.
+      После — чайная церемония: улун, тишина и время, принадлежащее только вам.</p>
+    </div>
+  </section>
 
-  <!-- Навигация -->
-  <header class="nav" id="nav">
-    <a href="#hero" class="nav__brand" data-magnetic>
-      <span class="nav__lotus">✦</span> MAI <em>SPA</em>
-    </a>
-    <nav class="nav__links" aria-label="Основная навигация">
-      <a href="#philosophy" data-magnetic>Философия</a>
-      <a href="#ritual" data-magnetic>Ритуал</a>
-      <a href="#services" data-magnetic>Услуги</a>
-      <a href="#gift" data-magnetic>Сертификаты</a>
-      <a href="#contact" data-magnetic>Контакты</a>
-    </nav>
-    <a href="#contact" class="btn btn--primary nav__cta" data-magnetic>Записаться</a>
-    <button class="nav__burger" id="burger" aria-label="Меню"><span></span><span></span></button>
-  </header>
-
-  <!-- Мобильное меню -->
-  <div class="mobile-menu" id="mobileMenu" aria-hidden="true">
-    <a href="#philosophy">Философия</a>
-    <a href="#ritual">Ритуал</a>
-    <a href="#services">Услуги</a>
-    <a href="#gift">Сертификаты</a>
-    <a href="#contact">Контакты</a>
-    <a href="#contact" class="btn btn--primary">Записаться</a>
-  </div>
-
-  <main id="smooth-content">
-
-    <!-- ================= HERO ================= -->
-    <section class="hero" id="hero">
-      <canvas class="hero__canvas" id="heroCanvas" aria-hidden="true"></canvas>
-      <div class="hero__glow" aria-hidden="true"></div>
-
-      <div class="hero__inner">
-        <p class="label label--center reveal">Йошкар-Ола · Тайский SPA</p>
-        <h1 class="hero__title">
-          <span class="reveal" style="--d:.05s">Искусство</span>
-          <span class="reveal hero__title-em" style="--d:.15s">тайского прикосновения</span>
-        </h1>
-        <p class="hero__sub reveal" style="--d:.3s">
-          Премиальный SPA-ритуал с мастерами из Таиланда. Тёплое масло, травяные мешочки
-          и тишина, в которой тело вспоминает, что значит покой.
-        </p>
-        <div class="hero__actions reveal" style="--d:.45s">
-          <a href="#contact" class="btn btn--primary" data-magnetic>Записаться на сеанс</a>
-          <a href="#services" class="btn btn--ghost" data-magnetic>Программы и цены</a>
-        </div>
+  <!-- 4. Зал мастеров -->
+  <section class="space" data-c="0.74" data-w="0.055" aria-label="Зал мастеров">
+    <div class="inner">
+      <p class="eyebrow">Пространство четвёртое</p>
+      <h2 class="h2">Зал мастеров</h2>
+      <p>Три мастера из Таиланда. Три техники. Одно чувство — руки, которые точно знают, что делают.</p>
+      <div class="masters">
+        <div class="master"><b>Мисс Лауан</b><a class="btn" href="https://n1351412.yclients.com" target="_blank" rel="noopener">Записаться</a></div>
+        <div class="master"><b>Мисс Ванни</b><a class="btn" href="https://n1351412.yclients.com" target="_blank" rel="noopener">Записаться</a></div>
+        <div class="master"><b>Мисс Натсинее</b><a class="btn" href="https://n1351412.yclients.com" target="_blank" rel="noopener">Записаться</a></div>
       </div>
+    </div>
+  </section>
 
-      <a href="#philosophy" class="hero__scroll" aria-label="Листайте вниз">
-        <span>Листайте</span>
-        <i></i>
-      </a>
-    </section>
-
-    <!-- ================= ФИЛОСОФИЯ ================= -->
-    <section class="section philosophy" id="philosophy">
-      <div class="wrap philosophy__grid">
-        <div class="philosophy__text">
-          <p class="label reveal">Философия</p>
-          <h2 class="h2 reveal" style="--d:.1s">
-            Не процедура.<br><em>Ритуал возвращения к себе.</em>
-          </h2>
-          <p class="lead reveal" style="--d:.2s">
-            В MAI SPA массаж — это язык, на котором тело разговаривает с покоем.
-            Наши мастера приехали из Таиланда и хранят традицию, которой сотни лет:
-            точное давление, дыхание, тёплое масло и травы.
-          </p>
-          <p class="reveal" style="--d:.3s">
-            Мы возвращаем баланс за один сеанс — снимаем усталость, восстанавливаем тело
-            после нагрузок и травм, возвращаем лёгкость и ясность. Вы приходите уставшим —
-            уходите обновлённым.
-          </p>
-          <div class="stats reveal" style="--d:.4s">
-            <div class="stat"><b data-count="12">0</b><span>лет практики</span></div>
-            <div class="stat"><b data-count="8">0</b><span>мастеров из Таиланда</span></div>
-            <div class="stat"><b data-count="15000" data-suffix="+">0</b><span>счастливых гостей</span></div>
-          </div>
-        </div>
-        <div class="philosophy__art reveal" style="--d:.2s">
-          <div class="art-card" data-parallax="0.12" data-photo>
-            <canvas class="art-card__canvas" id="photoCanvas" aria-label="Две мастерицы делают массаж гостье — сцена из частиц" role="img"></canvas>
-            <span class="art-card__cap">ритуал в четыре руки</span>
-          </div>
-        </div>
+  <!-- 5. Финал -->
+  <section class="space" data-c="0.965" data-w="0.075" aria-label="Контакты">
+    <div class="inner">
+      <p class="eyebrow">MAI SPA · Йошкар-Ола</p>
+      <h2 class="h2">До встречи<br>в <span class="em">тишине</span></h2>
+      <div class="contacts">
+        <span>Первомайская 80</span>
+        <a href="tel:+78362696696">696-696</a>
+        <a href="mailto:maitaispa12@gmail.com">maitaispa12@gmail.com</a>
       </div>
-    </section>
-
-    <!-- ================= PARTICLE RITUAL (главная фишка) ================= -->
-    <section class="ritual" id="ritual">
-      <div class="ritual__sticky">
-        <canvas class="ritual__canvas" id="ritualCanvas" aria-hidden="true"></canvas>
-        <div class="ritual__captions">
-          <p class="label label--center ritual__label" data-step="0">Из хаоса</p>
-          <p class="label label--center ritual__label" data-step="1">— рождается форма</p>
-          <p class="label label--center ritual__label" data-step="2">— и снова покой</p>
-        </div>
-        <div class="ritual__hint">↕ листайте — частицы соберутся в единое целое и рассыпутся вновь</div>
+      <div class="btn-row">
+        <a class="btn" href="https://n1351412.yclients.com" target="_blank" rel="noopener">Записаться</a>
+        <a class="btn btn--ghost" href="https://n1351412.yclients.com" target="_blank" rel="noopener">Подарить сертификат</a>
       </div>
-      <div class="ritual__spacer"></div>
-    </section>
+    </div>
+  </section>
 
-    <!-- ================= УСЛУГИ ================= -->
-    <section class="section services" id="services">
-      <div class="wrap">
-        <div class="section__head">
-          <p class="label reveal">Программы</p>
-          <h2 class="h2 reveal" style="--d:.1s">Тайские ритуалы MAI SPA</h2>
-          <p class="lead lead--center reveal" style="--d:.2s">
-            Каждая программа — авторская. Подберём под ваше состояние: расслабиться,
-            восстановиться или проснуться.
-          </p>
-        </div>
+</main>
 
-        <div class="cards">
-          <article class="card reveal" data-tilt style="--d:.05s">
-            <span class="card__num">01</span>
-            <h3 class="card__title">Классический тайский</h3>
-            <p class="card__desc">Аутентичная работа по энергетическим линиям: растяжки, точечное давление, глубокое расслабление.</p>
-            <div class="card__meta"><span>60 / 90 мин</span><b>от 3 500 ₽</b></div>
-          </article>
+<!-- ================= ПРОГРЕСС-ПУТЬ ================= -->
+<nav class="rail" aria-label="Путь по пространствам" id="rail"></nav>
 
-          <article class="card reveal" data-tilt style="--d:.12s">
-            <span class="card__num">02</span>
-            <h3 class="card__title">Аромамасляный</h3>
-            <p class="card__desc">Мягкие обволакивающие движения с тёплым ароматическим маслом. Снимает стресс и напряжение.</p>
-            <div class="card__meta"><span>60 / 90 мин</span><b>от 4 200 ₽</b></div>
-          </article>
+<div class="hint" id="hint" aria-hidden="true"><span>Листайте</span><i></i></div>
 
-          <article class="card reveal" data-tilt style="--d:.19s">
-            <span class="card__num">03</span>
-            <h3 class="card__title">Травяные мешочки</h3>
-            <p class="card__desc">Горячие компрессы с тайскими травами прогревают мышцы и суставы, дарят глубокое тепло.</p>
-            <div class="card__meta"><span>90 мин</span><b>от 5 000 ₽</b></div>
-          </article>
+<noscript><style>#gl,.vignette,.spacer,.rail,.hint{display:none}.overlay{position:static}.space{position:static;min-height:auto;padding:4rem 1.5rem}</style></noscript>
 
-          <article class="card reveal" data-tilt style="--d:.05s">
-            <span class="card__num">04</span>
-            <h3 class="card__title">Стоун-терапия</h3>
-            <p class="card__desc">Массаж горячими вулканическими камнями. Расслабляет глубокие слои мышц, восстанавливает силы.</p>
-            <div class="card__meta"><span>75 мин</span><b>от 4 800 ₽</b></div>
-          </article>
+<script>
+/* ============================================================
+   MAI SPA — Immersive Experience
+   Полёт камеры по Catmull-Rom-кривой через 5 пространств.
+   Чистый WebGL (без зависимостей): движок ~ поведение
+   Three.js (FogExp2, BufferGeometry-частицы) + скролл-драйв.
+   ============================================================ */
+(function () {
+'use strict';
+document.documentElement.classList.remove('no-js');
+document.documentElement.classList.add('js');
 
-          <article class="card reveal" data-tilt style="--d:.12s">
-            <span class="card__num">05</span>
-            <h3 class="card__title">Массаж стоп</h3>
-            <p class="card__desc">Рефлекторная проработка стоп по тайской традиции. Лёгкость во всём теле уже после первого сеанса.</p>
-            <div class="card__meta"><span>45 мин</span><b>от 2 500 ₽</b></div>
-          </article>
+var REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
+var FLAT_QS = /[?&]flat=1/.test(location.search);
+var DEBUG_P = (function(){ var m = location.search.match(/[?&]p=([\d.]+)/); return m ? parseFloat(m[1]) : null; })();
+var MOBILE = innerWidth < 760;
 
-          <article class="card reveal" data-tilt style="--d:.19s">
-            <span class="card__num">06</span>
-            <h3 class="card__title">SPA-ритуал для двоих</h3>
-            <p class="card__desc">Парная программа в отдельном кабинете: масло, травы, чай. Особенный вечер вдвоём.</p>
-            <div class="card__meta"><span>120 мин</span><b>от 9 800 ₽</b></div>
-          </article>
-        </div>
+/* ---------- палитра ---------- */
+var BG = [15/255, 27/255, 22/255];          // #0F1B16
+var BRASS = [211/255, 161/255, 92/255];     // #D3A15C
+var BRASS_L = [232/255, 192/255, 136/255];  // #E8C088
+var JADE_GLOW = [95/255, 158/255, 127/255];
 
-        <p class="services__note reveal">
-          Первым гостям — <b>30 минут массажа в подарок</b> при записи на любую программу.
-        </p>
-      </div>
-    </section>
+/* ---------- DOM ---------- */
+var canvas = document.getElementById('gl');
+var spaces = [].slice.call(document.querySelectorAll('.space'));
+var railEl = document.getElementById('rail');
+var hintEl = document.getElementById('hint');
 
-    <!-- ================= ГАЛЕРЕЯ ================= -->
-    <section class="section gallery" id="gallery">
-      <div class="wrap">
-        <div class="section__head">
-          <p class="label reveal">Атмосфера</p>
-          <h2 class="h2 reveal" style="--d:.1s">Пространство тишины</h2>
-        </div>
-      </div>
-      <div class="gallery__grid">
-        <figure class="gtile gtile--tall reveal" data-parallax="0.1" data-photo><span>Кабинет</span></figure>
-        <figure class="gtile reveal" data-parallax="0.16" data-photo style="--d:.08s"><span>Свечи</span></figure>
-        <figure class="gtile reveal" data-parallax="0.2" data-photo style="--d:.16s"><span>Орхидея</span></figure>
-        <figure class="gtile gtile--wide reveal" data-parallax="0.12" data-photo style="--d:.1s"><span>Чайная церемония</span></figure>
-        <figure class="gtile reveal" data-parallax="0.18" data-photo style="--d:.2s"><span>Масла</span></figure>
-      </div>
-    </section>
+/* ---------- фолбэк ---------- */
+function goFlat() { document.body.classList.add('flat'); }
+var gl = null;
+try {
+  gl = canvas.getContext('webgl', { antialias: true, alpha: false, powerPreference: 'high-performance' })
+    || canvas.getContext('experimental-webgl');
+} catch (e) { gl = null; }
+if (!gl || REDUCED || FLAT_QS) { goFlat(); return; }
 
-    <!-- ================= СЕРТИФИКАТЫ ================= -->
-    <section class="section gift" id="gift">
-      <div class="wrap gift__inner reveal">
-        <div class="gift__card" data-tilt>
-          <div class="gift__shine"></div>
-          <p class="label">Подарочный сертификат</p>
-          <div class="gift__value">MAI <em>SPA</em></div>
-          <p class="gift__desc">Электронный или бумажный. На любую сумму и программу.</p>
-          <div class="gift__foot"><span>✦ вручную оформленный</span></div>
-        </div>
-        <div class="gift__text">
-          <p class="label reveal">Лучший подарок</p>
-          <h2 class="h2 reveal" style="--d:.1s">Подарите <em>отдых</em>, а не вещь</h2>
-          <p class="lead reveal" style="--d:.2s">
-            Сертификат MAI SPA — это вечер тепла, тишины и заботы для близкого человека.
-            Оформим красиво: в электронном виде за минуту или на плотной бумаге с орнаментом.
-          </p>
-          <a href="#contact" class="btn btn--primary reveal" style="--d:.3s" data-magnetic>Заказать сертификат</a>
-        </div>
-      </div>
-    </section>
+/* ============================================================
+   Мини-математика
+   ============================================================ */
+function v3(x,y,z){ return [x,y,z]; }
+function add(a,b){ return [a[0]+b[0],a[1]+b[1],a[2]+b[2]]; }
+function sub(a,b){ return [a[0]-b[0],a[1]-b[1],a[2]-b[2]]; }
+function scale(a,s){ return [a[0]*s,a[1]*s,a[2]*s]; }
+function norm(a){ var l=Math.hypot(a[0],a[1],a[2])||1; return [a[0]/l,a[1]/l,a[2]/l]; }
+function cross(a,b){ return [a[1]*b[2]-a[2]*b[1], a[2]*b[0]-a[0]*b[2], a[0]*b[1]-a[1]*b[0]]; }
+function lerp(a,b,t){ return a+(b-a)*t; }
+function clamp(v,a,b){ return v<a?a:(v>b?b:v); }
 
-    <!-- ================= КОНТАКТЫ ================= -->
-    <section class="section contact" id="contact">
-      <div class="wrap contact__grid">
-        <div class="contact__text">
-          <p class="label reveal">Контакты</p>
-          <h2 class="h2 reveal" style="--d:.1s">Запишитесь<br>на ваш ритуал</h2>
-          <p class="lead reveal" style="--d:.2s">
-            Позвоните или напишите — подберём удобное время и подходящую программу.
-          </p>
+function mat4Perspective(fov, aspect, near, far) {
+  var f = 1/Math.tan(fov/2), nf = 1/(near-far);
+  return [f/aspect,0,0,0, 0,f,0,0, 0,0,(far+near)*nf,-1, 0,0,2*far*near*nf,0];
+}
+function mat4LookAt(eye, target, up) {
+  var z = norm(sub(eye,target));
+  var x = norm(cross(up,z));
+  var y = cross(z,x);
+  return [x[0],y[0],z[0],0, x[1],y[1],z[1],0, x[2],y[2],z[2],0,
+    -(x[0]*eye[0]+x[1]*eye[1]+x[2]*eye[2]),
+    -(y[0]*eye[0]+y[1]*eye[1]+y[2]*eye[2]),
+    -(z[0]*eye[0]+z[1]*eye[1]+z[2]*eye[2]), 1];
+}
+function mat4Mul(a,b){ // a*b
+  var o = new Array(16);
+  for (var c=0;c<4;c++) for (var r=0;r<4;r++) {
+    o[c*4+r] = a[r]*b[c*4] + a[4+r]*b[c*4+1] + a[8+r]*b[c*4+2] + a[12+r]*b[c*4+3];
+  }
+  return o;
+}
+// модельная матрица из базиса (right,up,forward) + позиции + масштаба
+function mat4Basis(R,U,F,P,sx,sy){
+  return [R[0]*sx,R[1]*sx,R[2]*sx,0, U[0]*sy,U[1]*sy,U[2]*sy,0, F[0],F[1],F[2],0, P[0],P[1],P[2],1];
+}
 
-          <ul class="contact__list reveal" style="--d:.3s">
-            <li>
-              <span class="contact__k">Телефон</span>
-              <a href="tel:+78362000000" class="contact__v" data-magnetic>+7 (8362) 00-00-00</a>
-            </li>
-            <li>
-              <span class="contact__k">Адрес</span>
-              <span class="contact__v">Йошкар-Ола, ул. ——, д. —</span>
-            </li>
-            <li>
-              <span class="contact__k">Часы</span>
-              <span class="contact__v">Ежедневно · 10:00 — 22:00</span>
-            </li>
-          </ul>
+/* ---------- Catmull-Rom сплайн (аналог THREE.CatmullRomCurve3) ---------- */
+var CTRL = [
+  v3(0, 2.0, 84), v3(0, 2.0, 60), v3(0, 2.0, 36), v3(0, 2.0, 14),
+  v3(0, 2.0, -2), v3(6, 1.8, -15), v3(13, 1.6, -30), v3(5, 1.9, -44),
+  v3(-12, 2.2, -58), v3(-7, 4.6, -72), v3(0, 9.0, -86)
+];
+function splineP(t) {
+  t = clamp(t, 0, 1);
+  var n = CTRL.length - 1;
+  var f = t * n;
+  var i = Math.min(Math.floor(f), n - 1);
+  var s = f - i;
+  var p0 = CTRL[Math.max(i-1,0)], p1 = CTRL[i], p2 = CTRL[Math.min(i+1,n)], p3 = CTRL[Math.min(i+2,n)];
+  var out = [0,0,0];
+  for (var k=0;k<3;k++){
+    var a = p1[k], b2 = 0.5*(p2[k]-p0[k]),
+        c = 0.5*(2*p0[k]-5*p1[k]+4*p2[k]-p3[k]),
+        d = 0.5*(-p0[k]+3*p1[k]-3*p2[k]+p3[k]);
+    out[k] = a + b2*s + c*s*s + d*s*s*s;
+  }
+  return out;
+}
+function splineT(t){ // касательная
+  var e = 0.001;
+  return norm(sub(splineP(Math.min(t+e,1)), splineP(Math.max(t-e,0))));
+}
+function basisAt(t){
+  var T = splineT(t);
+  var R = norm(cross(T, [0,1,0]));
+  var U = norm(cross(R, T));
+  return { T:T, R:R, U:U, P:splineP(t) };
+}
 
-          <div class="contact__socials reveal" style="--d:.4s">
-            <a href="#" data-magnetic>Telegram</a>
-            <a href="#" data-magnetic>WhatsApp</a>
-            <a href="#" data-magnetic>VK</a>
-          </div>
-        </div>
+/* ---------- якоря комнат ---------- */
+var ROOM_T = [0.045, 0.30, 0.52, 0.74, 0.965];
+var ROOM_NAMES = ['Вход','Зал ритуалов','Пространство пара','Зал мастеров','Контакты'];
 
-        <form class="contact__form reveal" style="--d:.2s" onsubmit="return false;">
-          <div class="field">
-            <input type="text" id="c-name" required placeholder=" " />
-            <label for="c-name">Ваше имя</label>
-          </div>
-          <div class="field">
-            <input type="tel" id="c-phone" required placeholder=" " />
-            <label for="c-phone">Телефон</label>
-          </div>
-          <div class="field">
-            <textarea id="c-msg" rows="3" placeholder=" "></textarea>
-            <label for="c-msg">Пожелания (необязательно)</label>
-          </div>
-          <button class="btn btn--primary btn--block" type="submit" data-magnetic>Отправить заявку</button>
-          <p class="contact__hint">Нажимая кнопку, вы соглашаетесь с обработкой персональных данных.</p>
-        </form>
-      </div>
-    </section>
+/* ============================================================
+   WebGL-хелперы
+   ============================================================ */
+function makeShader(type, src) {
+  var sh = gl.createShader(type);
+  gl.shaderSource(sh, src); gl.compileShader(sh);
+  if (!gl.getShaderParameter(sh, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(sh) + '\n' + src);
+  return sh;
+}
+function makeProgram(vs, fs) {
+  var p = gl.createProgram();
+  gl.attachShader(p, makeShader(gl.VERTEX_SHADER, vs));
+  gl.attachShader(p, makeShader(gl.FRAGMENT_SHADER, fs));
+  gl.linkProgram(p);
+  if (!gl.getProgramParameter(p, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(p));
+  return p;
+}
+function makeTexture(cnv) {
+  var tex = gl.createTexture();
+  gl.bindTexture(gl.TEXTURE_2D, tex);
+  gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, cnv);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+  return tex;
+}
 
-    <!-- ================= FOOTER ================= -->
-    <footer class="footer">
-      <div class="wrap footer__inner">
-        <a href="#hero" class="footer__brand"><span class="nav__lotus">✦</span> MAI <em>SPA</em></a>
-        <p class="footer__tag">Премиальный тайский SPA · Йошкар-Ола</p>
-        <p class="footer__copy">© <span id="year"></span> MAI SPA. Все права защищены.</p>
-      </div>
-    </footer>
+/* ---------- шейдер точек (аналог PointsMaterial + дрейф) ---------- */
+var PT_VS = [
+'attribute vec3 aPos;',
+'attribute vec4 aSeed;', // x: фаза, y: скорость, z: размер, w: цвет-микс
+'uniform mat4 uView, uProj;',
+'uniform float uTime, uPxScale, uRotY;',
+'uniform vec3 uDrift, uPivot;',
+'varying float vFog, vMix, vTw;',
+'void main(){',
+'  vec3 p = aPos - uPivot;',
+'  float cy = cos(uRotY), sy = sin(uRotY);',
+'  p = vec3(p.x*cy + p.z*sy, p.y, -p.x*sy + p.z*cy) + uPivot;',
+'  p += vec3(sin(uTime*aSeed.y + aSeed.x),',
+'            cos(uTime*aSeed.y*0.83 + aSeed.x*1.7),',
+'            sin(uTime*aSeed.y*0.61 + aSeed.x*2.3)) * uDrift;',
+'  vec4 mv = uView * vec4(p, 1.0);',
+'  float dist = length(mv.xyz);',
+'  gl_Position = uProj * mv;',
+'  gl_PointSize = clamp(aSeed.z * uPxScale / dist, 1.0, 170.0);',
+'  vFog = 1.0 - exp(-0.0009 * dist * dist);',
+'  vMix = aSeed.w;',
+'  vTw = 0.75 + 0.25 * sin(uTime * (1.2 + aSeed.y) + aSeed.x * 7.0);',
+'}'].join('\n');
+var PT_FS = [
+'precision mediump float;',
+'uniform vec3 uColA, uColB;',
+'uniform float uAlpha;',
+'varying float vFog, vMix, vTw;',
+'void main(){',
+'  vec2 uv = gl_PointCoord * 2.0 - 1.0;',
+'  float d = length(uv);',
+'  float a = smoothstep(1.0, 0.12, d) * uAlpha * vTw * (1.0 - vFog);',
+'  vec3 col = mix(uColA, uColB, vMix);',
+'  gl_FragColor = vec4(col * a, a);',   // premultiplied, blending ONE/ONE
+'}'].join('\n');
 
-  </main>
+/* ---------- шейдер текстурных квадов ---------- */
+var QD_VS = [
+'attribute vec2 aPos;',
+'uniform mat4 uModel, uView, uProj;',
+'varying vec2 vUV; varying float vFog;',
+'void main(){',
+'  vUV = aPos * 0.5 + 0.5;',
+'  vec4 w = uModel * vec4(aPos, 0.0, 1.0);',
+'  vec4 mv = uView * w;',
+'  gl_Position = uProj * mv;',
+'  vFog = 1.0 - exp(-0.0009 * dot(mv.xyz, mv.xyz));',
+'}'].join('\n');
+var QD_FS = [
+'precision mediump float;',
+'uniform sampler2D uTex;',
+'uniform float uAlpha, uAdditive;',
+'uniform vec3 uFogColor;',
+'varying vec2 vUV; varying float vFog;',
+'void main(){',
+'  vec4 t = texture2D(uTex, vUV);',
+'  if (uAdditive > 0.5) {',
+'    gl_FragColor = vec4(t.rgb, t.a * uAlpha * (1.0 - vFog));', // blend: SRC_ALPHA, ONE
+'  } else {',
+'    gl_FragColor = vec4(mix(t.rgb, uFogColor, vFog), t.a * uAlpha);', // обычное смешивание
+'  }',
+'}'].join('\n');
 
-  <script src="assets/js/particles.js" defer></script>
-  <script src="assets/js/app.js" defer></script>
+var ptProg = makeProgram(PT_VS, PT_FS);
+var qdProg = makeProgram(QD_VS, QD_FS);
+var PT = {
+  aPos: gl.getAttribLocation(ptProg,'aPos'), aSeed: gl.getAttribLocation(ptProg,'aSeed'),
+  uView: gl.getUniformLocation(ptProg,'uView'), uProj: gl.getUniformLocation(ptProg,'uProj'),
+  uTime: gl.getUniformLocation(ptProg,'uTime'), uPxScale: gl.getUniformLocation(ptProg,'uPxScale'),
+  uDrift: gl.getUniformLocation(ptProg,'uDrift'), uColA: gl.getUniformLocation(ptProg,'uColA'),
+  uColB: gl.getUniformLocation(ptProg,'uColB'), uAlpha: gl.getUniformLocation(ptProg,'uAlpha'),
+  uRotY: gl.getUniformLocation(ptProg,'uRotY'), uPivot: gl.getUniformLocation(ptProg,'uPivot')
+};
+var QD = {
+  aPos: gl.getAttribLocation(qdProg,'aPos'),
+  uModel: gl.getUniformLocation(qdProg,'uModel'), uView: gl.getUniformLocation(qdProg,'uView'),
+  uProj: gl.getUniformLocation(qdProg,'uProj'), uTex: gl.getUniformLocation(qdProg,'uTex'),
+  uAlpha: gl.getUniformLocation(qdProg,'uAlpha'), uAdditive: gl.getUniformLocation(qdProg,'uAdditive'),
+  uFogColor: gl.getUniformLocation(qdProg,'uFogColor')
+};
+
+/* квад-геометрия */
+var quadBuf = gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER, quadBuf);
+gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), gl.STATIC_DRAW);
+
+/* ---------- системы частиц (BufferGeometry-стиль) ---------- */
+function makePoints(positions, seeds, opts) {
+  var pb = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, pb);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
+  var sb = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, sb);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(seeds), gl.STATIC_DRAW);
+  return {
+    pb: pb, sb: sb, n: positions.length/3,
+    drift: opts.drift || [0.3,0.3,0.3],
+    colA: opts.colA || BRASS, colB: opts.colB || BRASS_L,
+    alpha: opts.alpha != null ? opts.alpha : 0.8,
+    pivot: opts.pivot || [0,0,0],
+    rotSpeed: opts.rotSpeed || 0
+  };
+}
+function drawPoints(sys, time, view, proj, pxScale) {
+  gl.useProgram(ptProg);
+  gl.bindBuffer(gl.ARRAY_BUFFER, sys.pb);
+  gl.enableVertexAttribArray(PT.aPos);
+  gl.vertexAttribPointer(PT.aPos, 3, gl.FLOAT, false, 0, 0);
+  gl.bindBuffer(gl.ARRAY_BUFFER, sys.sb);
+  gl.enableVertexAttribArray(PT.aSeed);
+  gl.vertexAttribPointer(PT.aSeed, 4, gl.FLOAT, false, 0, 0);
+  gl.uniformMatrix4fv(PT.uView, false, view);
+  gl.uniformMatrix4fv(PT.uProj, false, proj);
+  gl.uniform1f(PT.uTime, time);
+  gl.uniform1f(PT.uPxScale, pxScale);
+  gl.uniform3fv(PT.uDrift, sys.drift);
+  gl.uniform3fv(PT.uColA, sys.colA);
+  gl.uniform3fv(PT.uColB, sys.colB);
+  gl.uniform1f(PT.uAlpha, sys.alpha);
+  gl.uniform1f(PT.uRotY, sys.rotSpeed ? Math.sin(time * 0.35) * 0.45 : 0);
+  gl.uniform3fv(PT.uPivot, sys.pivot);
+  gl.drawArrays(gl.POINTS, 0, sys.n);
+}
+function drawQuad(model, tex, alpha, additive, view, proj) {
+  gl.useProgram(qdProg);
+  gl.bindBuffer(gl.ARRAY_BUFFER, quadBuf);
+  gl.enableVertexAttribArray(QD.aPos);
+  gl.vertexAttribPointer(QD.aPos, 2, gl.FLOAT, false, 0, 0);
+  gl.uniformMatrix4fv(QD.uModel, false, model);
+  gl.uniformMatrix4fv(QD.uView, false, view);
+  gl.uniformMatrix4fv(QD.uProj, false, proj);
+  gl.activeTexture(gl.TEXTURE0);
+  gl.bindTexture(gl.TEXTURE_2D, tex);
+  gl.uniform1i(QD.uTex, 0);
+  gl.uniform1f(QD.uAlpha, alpha);
+  gl.uniform1f(QD.uAdditive, additive ? 1 : 0);
+  gl.uniform3fv(QD.uFogColor, BG);
+  gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+}
+
+/* детерминированный рандом */
+function rnd(i){ var x = Math.sin(i*12.9898+78.233)*43758.5453; return x - Math.floor(x); }
+
+/* ============================================================
+   Канвас-текстуры (брендовые панели, надписи, порталы)
+   ============================================================ */
+function cnv(w,h){ var c = document.createElement('canvas'); c.width=w; c.height=h; return c; }
+var SERIF = "'Prata', Georgia, 'Times New Roman', serif";
+var SANS = "'Manrope', 'Segoe UI', sans-serif";
+
+function texLogo() {
+  var c = cnv(1024, 512), x = c.getContext('2d');
+  x.textAlign = 'center'; x.textBaseline = 'middle';
+  x.shadowColor = 'rgba(232,192,136,0.9)'; x.shadowBlur = 46;
+  x.fillStyle = '#E8C088';
+  x.font = '120px ' + SERIF;
+  x.fillText('MAI SPA', 512, 235);
+  x.shadowBlur = 0;
+  x.fillStyle = 'rgba(232,192,136,0.85)';
+  x.font = '600 26px ' + SANS;
+  var sub = 'Т А Й С К И Й   S P A';
+  x.fillText(sub, 512, 345);
+  return makeTexture(c);
+}
+function texCard(num, title, dur) {
+  var c = cnv(512, 640), x = c.getContext('2d');
+  // подложка
+  var g = x.createLinearGradient(0,0,0,640);
+  g.addColorStop(0,'#1a2822'); g.addColorStop(1,'#101b15');
+  x.fillStyle = g; roundRect(x, 6, 6, 500, 628, 22); x.fill();
+  // тёплый блик
+  var rg = x.createRadialGradient(256, 120, 10, 256, 120, 420);
+  rg.addColorStop(0,'rgba(211,161,92,0.20)'); rg.addColorStop(1,'rgba(211,161,92,0)');
+  x.fillStyle = rg; x.fillRect(0,0,512,640);
+  // рамка
+  x.strokeStyle = 'rgba(211,161,92,0.55)'; x.lineWidth = 3;
+  roundRect(x, 14, 14, 484, 612, 18); x.stroke();
+  x.strokeStyle = 'rgba(211,161,92,0.25)'; x.lineWidth = 1;
+  roundRect(x, 26, 26, 460, 588, 14); x.stroke();
+  // номер
+  x.fillStyle = 'rgba(211,161,92,0.9)';
+  x.textAlign = 'center';
+  x.font = '34px ' + SERIF;
+  x.fillText(num, 256, 96);
+  // лотос-марка
+  x.fillStyle = 'rgba(232,192,136,0.85)';
+  x.font = '44px serif';
+  x.fillText('✦', 256, 168);
+  // название (перенос по словам)
+  x.fillStyle = '#F3EBDD';
+  x.font = '52px ' + SERIF;
+  var words = title.split(' ');
+  var lines = [], cur = '';
+  for (var i=0;i<words.length;i++){
+    var test = cur ? cur + ' ' + words[i] : words[i];
+    if (x.measureText(test).width > 420 && cur) { lines.push(cur); cur = words[i]; }
+    else cur = test;
+  }
+  lines.push(cur);
+  var y0 = 320 - (lines.length-1)*34;
+  for (var j=0;j<lines.length;j++) x.fillText(lines[j], 256, y0 + j*68);
+  // длительность
+  x.fillStyle = 'rgba(211,161,92,0.95)';
+  x.font = '600 30px ' + SANS;
+  x.fillText(dur, 256, 520);
+  x.strokeStyle = 'rgba(211,161,92,0.4)';
+  x.beginPath(); x.moveTo(160,470); x.lineTo(352,470); x.stroke();
+  return makeTexture(c);
+}
+function roundRect(x, a,b,w,h,r){
+  x.beginPath();
+  x.moveTo(a+r,b); x.arcTo(a+w,b,a+w,b+h,r); x.arcTo(a+w,b+h,a,b+h,r);
+  x.arcTo(a,b+h,a,b,r); x.arcTo(a,b,a+w,b,r); x.closePath();
+}
+function texPortalRing() {
+  var c = cnv(512,512), x = c.getContext('2d');
+  var cx=256, cy=256;
+  for (var i=0;i<3;i++){
+    var r = 190 - i*10;
+    x.strokeStyle = i===1 ? 'rgba(232,192,136,0.95)' : 'rgba(211,161,92,0.5)';
+    x.lineWidth = i===1 ? 10 : 2.5;
+    x.shadowColor = 'rgba(232,192,136,0.9)'; x.shadowBlur = i===1?30:8;
+    x.beginPath(); x.arc(cx,cy,r,0,6.283); x.stroke();
+  }
+  return makeTexture(c);
+}
+function texGlow(inner, outer) {
+  var c = cnv(256,256), x = c.getContext('2d');
+  var g = x.createRadialGradient(128,128,4,128,128,126);
+  g.addColorStop(0, inner); g.addColorStop(1, outer);
+  x.fillStyle = g; x.fillRect(0,0,256,256);
+  return makeTexture(c);
+}
+function texName(name) {
+  var c = cnv(512,192), x = c.getContext('2d');
+  x.textAlign='center'; x.textBaseline='middle';
+  x.shadowColor = 'rgba(232,192,136,0.75)'; x.shadowBlur = 22;
+  x.fillStyle = '#F3EBDD';
+  x.font = '56px ' + SERIF;
+  x.fillText(name, 256, 96);
+  return makeTexture(c);
+}
+
+/* ============================================================
+   Построение сцены
+   ============================================================ */
+var SERVICES = [
+  ['01','Тайский массаж','60–90 мин'],
+  ['02','Oil-массаж','60–90 мин'],
+  ['03','SPA для одного','90–120 мин'],
+  ['04','SPA для двоих','90–180 мин'],
+  ['05','VIP-ритуалы','120–180 мин'],
+  ['06','Thai Yoga','60 мин']
+];
+var MASTERS = ['Мисс Лауан','Мисс Ванни','Мисс Натсинее'];
+
+var scene = { points: [], quads: [] };
+var texturesReady = false;
+
+function buildScene() {
+  var i, p, s;
+
+  /* --- глобальная золотая пыль вдоль всего пути --- */
+  var dustN = MOBILE ? 500 : 1000;
+  var pos = [], seed = [];
+  for (i=0;i<dustN;i++){
+    var t = rnd(i);
+    var base = splineP(t);
+    var b = basisAt(t);
+    var r1 = (rnd(i+11)-0.5)*22, r2 = (rnd(i+23)-0.5)*14;
+    p = add(add(base, scale(b.R, r1)), scale(b.U, r2 + 2));
+    pos.push(p[0],p[1],p[2]);
+    seed.push(rnd(i+31)*6.28, 0.15+rnd(i+41)*0.4, 0.05+rnd(i+53)*0.09, rnd(i+61));
+  }
+  scene.points.push(makePoints(pos, seed, { drift:[0.5,0.4,0.5], alpha:0.4 }));
+
+  /* --- 1. тоннель из золотых частиц (t 0..0.24) --- */
+  var tunN = MOBILE ? 900 : 1700;
+  pos = []; seed = [];
+  for (i=0;i<tunN;i++){
+    var tt = rnd(i+101)*0.24;
+    var bb = basisAt(tt);
+    var ang = rnd(i+113)*6.283;
+    var rad = 2.6 + rnd(i+127)*4.4;
+    p = add(add(bb.P, scale(bb.R, Math.cos(ang)*rad)), scale(bb.U, Math.sin(ang)*rad));
+    pos.push(p[0],p[1],p[2]);
+    seed.push(rnd(i+131)*6.28, 0.2+rnd(i+141)*0.5, 0.05+rnd(i+151)*0.08, rnd(i+161));
+  }
+  scene.points.push(makePoints(pos, seed, { drift:[0.35,0.3,0.35], alpha:0.55 }));
+
+  /* --- 3. пар хаммама --- */
+  var st = basisAt(ROOM_T[2]);
+  var stC = add(st.P, scale(st.T, 7));
+  var steamN = MOBILE ? 90 : 150;
+  pos = []; seed = [];
+  for (i=0;i<steamN;i++){
+    p = [ stC[0] + (rnd(i+201)-0.5)*18,
+          stC[1] - 2.2 + rnd(i+211)*7,
+          stC[2] + (rnd(i+221)-0.5)*16 ];
+    pos.push(p[0],p[1],p[2]);
+    seed.push(rnd(i+231)*6.28, 0.08+rnd(i+241)*0.16, 1.4+rnd(i+251)*1.6, rnd(i+261));
+  }
+  scene.points.push(makePoints(pos, seed, {
+    drift:[1.6,1.9,1.6], alpha:0.05,
+    colA:[0.95,0.82,0.62], colB:[0.75,0.78,0.72]
+  }));
+  // тёплые "угли" внизу хаммама
+  pos = []; seed = [];
+  var emberN = MOBILE ? 60 : 110;
+  for (i=0;i<emberN;i++){
+    p = [ stC[0] + (rnd(i+301)-0.5)*14, stC[1]-2.6+rnd(i+311)*1.2, stC[2] + (rnd(i+321)-0.5)*12 ];
+    pos.push(p[0],p[1],p[2]);
+    seed.push(rnd(i+331)*6.28, 0.3+rnd(i+341)*0.7, 0.04+rnd(i+351)*0.06, rnd(i+361));
+  }
+  scene.points.push(makePoints(pos, seed, { drift:[0.3,0.5,0.3], alpha:0.6,
+    colA:[0.9,0.45,0.18], colB:BRASS_L }));
+
+  /* --- 5. лотос из частиц --- */
+  var fb = basisAt(0.995);
+  var lotusC = add(add(fb.P, scale(fb.T, 15)), [0,5.5,0]);
+  var lp = sampleLotus(MOBILE ? 1400 : 2400);
+  pos = []; seed = [];
+  var LS = 10.5; // мировой размер
+  for (i=0;i<lp.length;i++){
+    var lx = (lp[i][0]-0.5)*LS, ly = (0.62-lp[i][1])*LS, lz = (rnd(i+401)-0.5)*1.6;
+    p = add(add(add(lotusC, scale(fb.R, lx)), scale(fb.U, ly)), scale(fb.T, lz));
+    pos.push(p[0],p[1],p[2]);
+    seed.push(rnd(i+411)*6.28, 0.2+rnd(i+421)*0.5, 0.055+rnd(i+431)*0.075, 0.35+rnd(i+441)*0.65);
+  }
+  scene.points.push(makePoints(pos, seed, {
+    drift:[0.08,0.1,0.08], alpha:0.95,
+    pivot: lotusC, rotSpeed: 0.12
+  }));
+  scene.lotusPos = lotusC;
+
+  // ореол вокруг лотоса
+  pos = []; seed = [];
+  var haloN = MOBILE ? 200 : 380;
+  for (i=0;i<haloN;i++){
+    var an = rnd(i+501)*6.283, rr = 4.5 + rnd(i+511)*7;
+    p = [ lotusC[0]+Math.cos(an)*rr, lotusC[1]+(rnd(i+521)-0.5)*7, lotusC[2]+Math.sin(an)*rr*0.6 ];
+    pos.push(p[0],p[1],p[2]);
+    seed.push(rnd(i+531)*6.28, 0.15+rnd(i+541)*0.35, 0.04+rnd(i+551)*0.05, rnd(i+561));
+  }
+  scene.points.push(makePoints(pos, seed, { drift:[0.7,0.6,0.7], alpha:0.4 }));
+}
+
+/* лотос: сэмплируем 2D-рисунок в точки (0..1) */
+function sampleLotus(n) {
+  var c = cnv(360, 360), x = c.getContext('2d');
+  x.fillStyle = '#fff';
+  x.save(); x.translate(180, 198);
+  var R = 122;
+  function petal(L, wdt) {
+    x.beginPath(); x.moveTo(0,0);
+    x.bezierCurveTo(wdt,-L*0.35,wdt*0.45,-L*0.9,0,-L);
+    x.bezierCurveTo(-wdt*0.45,-L*0.9,-wdt,-L*0.35,0,0);
+    x.fill();
+  }
+  var back = [-0.85,-0.42,0,0.42,0.85];
+  for (var i=0;i<back.length;i++){ x.save(); x.rotate(back[i]); petal(R*1.12,R*0.34); x.restore(); }
+  var front = [-0.62,-0.2,0.2,0.62];
+  for (i=0;i<front.length;i++){ x.save(); x.rotate(front[i]); petal(R*0.82,R*0.30); x.restore(); }
+  x.beginPath(); x.ellipse(0, R*0.06, R*0.62, R*0.16, 0, 0, Math.PI); x.fill();
+  x.restore();
+  var data = x.getImageData(0,0,360,360).data;
+  var cand = [];
+  for (var y=0;y<360;y+=2) for (var xx=0;xx<360;xx+=2)
+    if (data[(y*360+xx)*4+3] > 128) cand.push([xx/360, y/360]);
+  var out = [], stride = Math.max(1, cand.length/n);
+  for (var f=0; f<cand.length; f+=stride) out.push(cand[Math.floor(f)]);
+  return out;
+}
+
+/* ---------- квады (строятся после загрузки шрифтов) ---------- */
+function buildQuads() {
+  scene.quads = [];
+  var i;
+
+  // логотип в глубине тоннеля
+  var lb = basisAt(0.16);
+  var lp2 = add(lb.P, scale(lb.T, 12));
+  scene.quads.push({
+    tex: texLogo(), pos: lp2, R: lb.R, U: lb.U, F: scale(lb.T,-1),
+    sx: 7.5, sy: 3.75, alpha: 1, additive: true, pulse: true
+  });
+
+  // кольцо из 6 карточек услуг
+  var rb = basisAt(ROOM_T[1] + 0.035);
+  var ringC = rb.P;
+  var RAD = 6.8;
+  for (i=0;i<6;i++){
+    var a = i/6*6.283 + 0.5236; // смещение, чтобы карта не была ровно сверху/снизу
+    var off = add(scale(rb.R, Math.cos(a)*RAD), scale(rb.U, Math.sin(a)*RAD*0.72 + 0.6));
+    scene.quads.push({
+      tex: texCard(SERVICES[i][0], SERVICES[i][1], SERVICES[i][2]),
+      pos: add(ringC, off), R: rb.R, U: rb.U, F: scale(rb.T,-1),
+      sx: 1.5, sy: 1.87, alpha: 0.98, additive: false,
+      bob: i, ring: { c: ringC, R: rb.R, U: rb.U, rad: RAD, a0: a }
+    });
+  }
+
+  // тёплое свечение под хаммамом
+  var st = basisAt(ROOM_T[2]);
+  var stC = add(st.P, scale(st.T, 7));
+  scene.quads.push({
+    tex: texGlow('rgba(255,150,60,0.55)','rgba(255,150,60,0)'),
+    pos: [stC[0], stC[1]-2.4, stC[2]], R: st.R, U: st.U, F: scale(st.T,-1),
+    sx: 12, sy: 6, alpha: 0.8, additive: true, pulse: true
+  });
+
+  // три портала мастеров
+  var mb = basisAt(ROOM_T[3]);
+  var mC = add(mb.P, scale(mb.T, 9));
+  var ringTex = texPortalRing();
+  var glowTex = texGlow('rgba(232,192,136,0.5)','rgba(232,192,136,0)');
+  for (i=0;i<3;i++){
+    var offR = (i-1) * 5.6;
+    var pp = add(mC, scale(mb.R, offR));
+    scene.quads.push({ tex: glowTex, pos: pp, R: mb.R, U: mb.U, F: scale(mb.T,-1),
+      sx: 3.6, sy: 3.6, alpha: 0.8, additive: true, pulse: true });
+    scene.quads.push({ tex: ringTex, pos: pp, R: mb.R, U: mb.U, F: scale(mb.T,-1),
+      sx: 2.1, sy: 2.1, alpha: 0.95, additive: true });
+    scene.quads.push({ tex: texName(MASTERS[i]), pos: add(pp, [0,-2.9,0]),
+      R: mb.R, U: mb.U, F: scale(mb.T,-1), sx: 2.2, sy: 0.82, alpha: 0.95, additive: true });
+  }
+  texturesReady = true;
+}
+
+buildScene();
+// текстуры со шрифтами — после загрузки шрифтов (или сразу по таймауту)
+var fontsDone = false;
+function tryBuildQuads(){ if (!fontsDone) { fontsDone = true; buildQuads(); } }
+if (document.fonts && document.fonts.ready) {
+  document.fonts.ready.then(tryBuildQuads);
+  setTimeout(tryBuildQuads, 700);
+} else tryBuildQuads();
+
+/* ============================================================
+   Скролл → полёт камеры
+   ============================================================ */
+var tCur = 0, tTarget = 0;
+var maxScroll = 1;
+function measure(){ maxScroll = Math.max(1, document.documentElement.scrollHeight - innerHeight); }
+measure();
+
+addEventListener('scroll', function(){
+  if (DEBUG_P != null) return; // в debug-режиме камера зафиксирована
+  tTarget = clamp(scrollY / maxScroll, 0, 1);
+  if (scrollY > 30) hintEl.classList.add('is-hidden');
+}, { passive: true });
+
+/* параллакс за курсором / гироскопом */
+var px = 0, py = 0, pxT = 0, pyT = 0;
+addEventListener('mousemove', function(e){
+  pxT = (e.clientX / innerWidth - 0.5) * 2;
+  pyT = (e.clientY / innerHeight - 0.5) * 2;
+});
+addEventListener('deviceorientation', function(e){
+  if (e.gamma == null) return;
+  pxT = clamp(e.gamma / 30, -1, 1);
+  pyT = clamp((e.beta - 45) / 40, -1, 1);
+});
+
+/* прогресс-рейл */
+var dots = [];
+(function(){
+  for (var i=0;i<5;i++){
+    if (i>0){ var ln = document.createElement('i'); ln.className='rail__line'; railEl.appendChild(ln); }
+    var d = document.createElement('button');
+    d.className = 'rail__dot'; d.type = 'button';
+    d.setAttribute('aria-label', ROOM_NAMES[i]);
+    d.title = ROOM_NAMES[i];
+    (function(idx){ d.addEventListener('click', function(){ flyTo(ROOM_T[idx]); }); })(i);
+    railEl.appendChild(d); dots.push(d);
+  }
+})();
+var flyAnim = null;
+function flyTo(t) {
+  var from = scrollY, to = t * maxScroll, start = performance.now(), dur = 1600;
+  if (flyAnim) cancelAnimationFrame(flyAnim);
+  (function step(now){
+    var p = clamp((now - start) / dur, 0, 1);
+    var e = p<0.5 ? 4*p*p*p : 1-Math.pow(-2*p+2,3)/2;
+    scrollTo(0, from + (to-from)*e);
+    if (p<1) flyAnim = requestAnimationFrame(step);
+  })(start);
+}
+
+/* оверлеи */
+function updateOverlays(t) {
+  for (var i=0;i<spaces.length;i++){
+    var el = spaces[i];
+    var c = parseFloat(el.dataset.c), w = parseFloat(el.dataset.w);
+    var vis = Math.exp(-((t-c)*(t-c)) / (2*w*w));
+    el.style.opacity = vis.toFixed(3);
+    el.style.transform = 'translateY(' + ((1-vis)*26).toFixed(1) + 'px)';
+    el.style.pointerEvents = vis > 0.45 ? 'auto' : 'none';
+  }
+  var best = 0, bd = 1e9;
+  for (i=0;i<ROOM_T.length;i++){ var d = Math.abs(t-ROOM_T[i]); if (d<bd){bd=d;best=i;} }
+  for (i=0;i<dots.length;i++) dots[i].classList.toggle('is-active', i===best);
+}
+
+/* ---------- размер ---------- */
+var W=0,H=0,DPR=1, proj;
+function resize(){
+  DPR = Math.min(devicePixelRatio||1, 2);
+  W = innerWidth; H = innerHeight;
+  canvas.width = W*DPR; canvas.height = H*DPR;
+  gl.viewport(0,0,canvas.width,canvas.height);
+  proj = mat4Perspective(60*Math.PI/180, W/H, 0.1, 240);
+  measure();
+}
+addEventListener('resize', resize);
+resize();
+
+/* ---------- debug: ?p=0.5 ---------- */
+if (DEBUG_P != null) {
+  tCur = tTarget = clamp(DEBUG_P, 0, 1);
+}
+
+/* ============================================================
+   Кадр
+   ============================================================ */
+gl.enable(gl.BLEND);
+gl.clearColor(BG[0], BG[1], BG[2], 1);
+var t0 = performance.now();
+
+function frame(now) {
+  var time = (now - t0) / 1000;
+  tCur += (tTarget - tCur) * 0.055;              // демпфирование полёта
+  px += (pxT - px) * 0.04; py += (pyT - py) * 0.04;
+
+  var camT = clamp(tCur, 0, 1);
+  var eye = splineP(camT);
+  var lookT = clamp(camT + 0.035, 0, 1);
+  var target = splineP(lookT);
+
+  // в финале взгляд поднимается к лотосу
+  if (scene.lotusPos) {
+    var wgt = clamp((camT - 0.88) / 0.09, 0, 1);
+    wgt = wgt*wgt*(3-2*wgt);
+    target = [ lerp(target[0], scene.lotusPos[0], wgt * 0.85),
+               lerp(target[1], scene.lotusPos[1] * 0.8, wgt * 0.85),
+               lerp(target[2], scene.lotusPos[2], wgt * 0.85) ];
+  }
+
+  // параллакс: смещаем глаз в базисе камеры
+  var fw = norm(sub(target, eye));
+  var rt = norm(cross(fw, [0,1,0]));
+  var up = cross(rt, fw);
+  eye = add(eye, add(scale(rt, px*0.55), scale(up, -py*0.35)));
+
+  var view = mat4LookAt(eye, target, [0,1,0]);
+
+  gl.clear(gl.COLOR_BUFFER_BIT);
+
+  // мерцание "свечей"
+  var flick = 0.86 + 0.10*Math.sin(time*7.3) * Math.sin(time*3.1) + 0.04*Math.sin(time*13.7);
+
+  // квады
+  if (texturesReady) {
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+    for (var i=0;i<scene.quads.length;i++){
+      var q = scene.quads[i];
+      var pos = q.pos;
+      if (q.ring) { // лёгкое вращение кольца карточек + покачивание
+        var a = q.ring.a0 + time*0.07;
+        var off = add(scale(q.ring.R, Math.cos(a)*q.ring.rad),
+                      scale(q.ring.U, Math.sin(a)*q.ring.rad*0.72 + 0.6 + Math.sin(time*0.9+q.bob)*0.18));
+        pos = add(q.ring.c, off);
+      }
+      var m = mat4Basis(q.R, q.U, q.F, pos, q.sx, q.sy);
+      var al = q.alpha * (q.pulse ? flick : 1);
+      if (q.additive) gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
+      else gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+      drawQuad(m, q.tex, al, q.additive, view, proj);
+    }
+  }
+
+  // частицы (premultiplied additive)
+  gl.blendFunc(gl.ONE, gl.ONE);
+  var pxScale = H * DPR * 0.866;
+  for (i=0;i<scene.points.length;i++) drawPoints(scene.points[i], time, view, proj, pxScale);
+
+  updateOverlays(camT);
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+
+})();
+</script>
 </body>
 </html>
