@@ -100,6 +100,17 @@ h1,.h1{font-family:var(--serif);font-weight:400;font-size:clamp(2.2rem,7vw,4.8re
 .contacts{display:flex;flex-direction:column;gap:.35rem;font-size:1.05rem}
 .contacts a{border-bottom:1px solid rgba(211,161,92,.35);transition:color .3s;pointer-events:auto}
 .contacts a:hover{color:var(--brass-l)}
+.insta-top{
+  position:fixed;top:1.02rem;right:calc(clamp(1.2rem,4vw,2.4rem) + 13.6rem);
+  z-index:11;pointer-events:none;width:46px;height:46px;display:grid;place-items:center;
+  border:0;background:transparent;padding:0;filter:drop-shadow(0 8px 14px rgba(0,0,0,.34));
+  opacity:0;visibility:hidden;transform:translateY(-8px);
+  transition:transform .4s var(--ease),filter .4s var(--ease),opacity .4s var(--ease)
+}
+.insta-top img{width:46px;height:46px;display:block}
+body.is-finale .insta-top{opacity:1;visibility:visible;pointer-events:auto;transform:translateY(0)}
+.insta-top:hover{transform:translateY(-3px) scale(1.06);filter:drop-shadow(0 12px 22px rgba(232,192,136,.32))}
+.insta-top:focus-visible{outline:2px solid var(--brass-l);outline-offset:4px;border-radius:18px}
 
 .flat-reviews{display:none}
 .flat .flat-reviews{display:flex;flex-direction:column;gap:1.1rem;margin-top:1rem;max-width:520px}
@@ -110,9 +121,10 @@ h1,.h1{font-family:var(--serif);font-weight:400;font-size:clamp(2.2rem,7vw,4.8re
   font-size:.78rem;letter-spacing:.08em;color:var(--brass)}
 
 /* мастера в 3D: текст сверху, DOM-блок скрыт — кнопки проецируются из сцены */
-body:not(.flat) .space--masters .inner{transform:translateY(-16vh)}
+body:not(.flat) .space--masters .inner{transform:translateY(-25vh)}
 body:not(.flat) .space--masters .masters{display:none}
 body:not(.flat) .space--rituals .inner{transform:translateY(-19vh)}
+body:not(.flat) .space--reviews .inner{transform:translateY(-27vh)}
 
 /* ---------- Прогресс-путь ---------- */
 .rail{position:fixed;right:clamp(.9rem,3vw,2.2rem);top:50%;transform:translateY(-50%);
@@ -144,17 +156,45 @@ body:not(.flat) .space--rituals .inner{transform:translateY(-19vh)}
 .brand .mark{color:var(--brass)}
 
 /* ---------- Экран-приглашение ---------- */
-.enter{position:fixed;inset:0;z-index:11000;
-  background:radial-gradient(90% 70% at 50% 40%,#16261e 0%,var(--bg) 70%);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.1rem;
-  text-align:center;padding:0 1.5rem;
-  transition:opacity 1.2s var(--ease),visibility 1.2s}
-.enter.is-gone{opacity:0;visibility:hidden}
+.enter{position:fixed;inset:0;z-index:11000;overflow:hidden;
+  background:
+    radial-gradient(38% 36% at var(--mx,64%) var(--my,45%),rgba(232,192,136,.16),transparent 66%),
+    radial-gradient(55% 45% at 72% 55%,rgba(95,158,127,.12),transparent 72%),
+    linear-gradient(180deg,#020403 0%,#07110e 48%,#010202 100%);
+  display:block;text-align:left;padding:0;perspective:1200px;
+  --rx:0deg;--ry:0deg;--mx:64%;--my:45%;
+  transition:opacity 1.2s var(--ease),visibility 1.2s,filter .8s var(--ease)}
+.enter.is-gone{opacity:0;visibility:hidden;pointer-events:none}
+.enter.is-warp{filter:brightness(1.12) saturate(1.2)}
+.enter__depth{position:absolute;inset:0;z-index:1;pointer-events:none;overflow:hidden}
+.enter__fx{position:absolute;inset:0;width:100%;height:100%;z-index:1;display:block;opacity:1;
+  transition:opacity .8s var(--ease),filter .8s var(--ease)}
+.enter__veil{position:absolute;inset:0;z-index:3;pointer-events:none;background:
+  radial-gradient(68% 64% at 68% 50%,transparent 0 48%,rgba(1,2,2,.12) 76%,rgba(1,2,2,.54) 100%),
+  linear-gradient(90deg,rgba(1,2,2,.92) 0%,rgba(1,2,2,.52) 22%,rgba(1,2,2,.03) 54%,rgba(1,2,2,.42) 100%)}
+.enter__threshold,.enter__floor,.enter__doors{display:none}
+.enter__core{position:absolute;left:clamp(1.4rem,8vw,8.5rem);top:50%;z-index:7;
+  width:min(520px,42vw);display:flex;flex-direction:column;align-items:flex-start;gap:1.05rem;
+  transform:translateY(-50%) translateZ(90px);transition:transform .85s var(--ease),opacity .65s var(--ease);
+  text-shadow:0 2px 34px rgba(0,0,0,.9)}
+.enter.is-warp .enter__core{transform:translateY(-48%) translateZ(160px) scale(.92);opacity:0}
+.enter.is-warp .enter__fx{filter:brightness(1.35) saturate(1.25)}
+.enter.is-warp .enter__depth{animation:spaDive 1.12s var(--ease) forwards}
+@keyframes spaDive{55%{transform:scale(1.03)}100%{transform:scale(1.22);opacity:0}}
 .enter__mark{font-size:2.6rem;color:var(--brass);animation:breathe 3.2s var(--ease) infinite}
 @keyframes breathe{50%{transform:scale(1.14);opacity:.75}}
-.enter__brand{font-family:var(--serif);font-size:clamp(2.6rem,8vw,4.2rem);letter-spacing:.1em;color:var(--ink)}
-.enter__sub{font-size:.72rem;letter-spacing:.3em;text-transform:uppercase;color:var(--brass);margin-bottom:1.2rem}
-.enter__note{font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft);opacity:.7;margin-top:1.4rem}
+.enter__brand{font-family:var(--serif);font-size:clamp(4rem,8.5vw,8rem);line-height:.88;letter-spacing:.035em;color:var(--ink)}
+.enter__sub{max-width:33rem;font-size:.82rem;letter-spacing:.2em;text-transform:uppercase;color:var(--brass);font-weight:700;margin:.4rem 0 .35rem}
+.enter__note{font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft);opacity:.72;margin-top:.65rem}
+@media (max-width:640px){
+  .enter__veil{background:linear-gradient(180deg,rgba(1,2,2,.06),rgba(1,2,2,.34) 48%,rgba(1,2,2,.94) 82%)}
+  .enter__core{left:1rem;right:1rem;top:auto;bottom:7vh;width:auto;align-items:center;text-align:center;gap:.8rem;
+    transform:translateZ(70px)}
+  .enter__brand{font-size:clamp(3.2rem,17vw,4.6rem);letter-spacing:.035em}
+  .enter__sub{max-width:22rem;font-size:.58rem;letter-spacing:.14em;line-height:1.75;margin-bottom:.35rem}
+  .enter__note{max-width:20rem;font-size:.58rem;letter-spacing:.12em;line-height:1.7;margin-top:.55rem}
+  .enter .btn{padding:.9rem 1.8rem;min-width:198px}
+}
 .flat .enter{display:none}
 body:not(.entered):not(.flat) .hint{opacity:0}
 
@@ -184,10 +224,61 @@ body.entered .mute{display:flex}
 .focus-close{position:absolute;top:.65rem;right:.85rem;background:none;border:0;
   color:var(--ink-soft);font-size:1.15rem;cursor:pointer;padding:.3rem;line-height:1}
 .focus-close:hover{color:var(--brass-l)}
+
+/* ---------- Инфо мастера + оферта ---------- */
+.master-panel,.garden-panel{position:fixed;left:clamp(1rem,6vw,5rem);top:50%;z-index:9;
+  width:min(390px,86vw);background:rgba(16,27,21,.91);backdrop-filter:blur(14px);
+  border:1px solid var(--line);border-radius:18px;padding:1.8rem 1.65rem 1.55rem;
+  opacity:0;transform:translateY(-50%) translateX(-34px);pointer-events:none;
+  transition:opacity .6s var(--ease),transform .6s var(--ease)}
+.master-panel.is-on,.garden-panel.is-on{opacity:1;transform:translateY(-50%);pointer-events:auto}
+.master-panel .role,.garden-panel .role{font-size:.7rem;letter-spacing:.24em;text-transform:uppercase;color:var(--brass);margin-bottom:.35rem}
+.master-panel h3,.garden-panel h3{font-family:var(--serif);font-weight:400;font-size:2.05rem;line-height:1.04;margin-bottom:.8rem}
+.master-panel p,.garden-panel p{color:var(--ink-soft);font-size:.96rem;font-weight:300;line-height:1.58}
+.master-panel .btn{margin-top:1.25rem;padding:.72rem 1.55rem;font-size:.88rem}
+.garden-panel{
+  left:50%;top:50%;width:min(330px,84vw);padding:1.35rem 1.3rem 1.2rem;
+  transform:translate(-50%,calc(-100% - 18px)) translateY(12px)
+}
+.garden-panel.is-on{transform:var(--garden-transform,translate(-50%,calc(-100% - 18px)))}
+.garden-panel h3{font-size:1.6rem;margin-bottom:.55rem}
+.garden-panel p:not(.role){font-size:.92rem;line-height:1.55}
+.panel-close{position:absolute;top:.65rem;right:.85rem;background:none;border:0;
+  color:var(--ink-soft);font-size:1.15rem;cursor:pointer;padding:.3rem;line-height:1}
+.panel-close:hover{color:var(--brass-l)}
+
+.offer-btn{position:fixed;right:clamp(1.2rem,4vw,2.4rem);top:1.35rem;z-index:11;
+  pointer-events:none;background:rgba(15,27,22,.58);backdrop-filter:blur(10px);
+  color:var(--brass-l);border:1px solid var(--line);border-radius:100px;
+  padding:.48rem .78rem;font:600 .68rem var(--sans);letter-spacing:.05em;text-transform:uppercase;
+  cursor:pointer;opacity:0;visibility:hidden;transform:translateY(-8px);
+  transition:border-color .35s var(--ease),transform .35s var(--ease),color .35s,opacity .4s var(--ease),visibility .4s}
+body.is-finale .offer-btn{opacity:1;visibility:visible;pointer-events:auto;transform:translateY(0)}
+.offer-btn:hover{border-color:var(--brass);color:var(--ink);transform:translateY(-2px)}
+.offer-modal{position:fixed;inset:0;z-index:12000;background:rgba(5,10,8,.72);backdrop-filter:blur(10px);
+  display:flex;align-items:center;justify-content:center;padding:1.2rem;
+  opacity:0;visibility:hidden;pointer-events:none;transition:opacity .35s var(--ease),visibility .35s}
+.offer-modal.is-on{opacity:1;visibility:visible;pointer-events:auto}
+.offer-modal__dialog{position:relative;width:min(760px,94vw);max-height:min(82vh,820px);
+  background:#101b15;border:1px solid var(--line);border-radius:18px;
+  box-shadow:0 30px 110px -46px rgba(232,192,136,.45);overflow:hidden}
+.offer-modal__head{padding:1.55rem 1.7rem 1rem;border-bottom:1px solid rgba(211,161,92,.16)}
+.offer-modal__head .eyebrow{display:block;margin-bottom:.35rem}
+.offer-modal__head h3{font-family:var(--serif);font-weight:400;font-size:clamp(1.55rem,4vw,2.3rem);line-height:1.08}
+.offer-modal__body{max-height:calc(min(82vh,820px) - 116px);overflow:auto;padding:1.25rem 1.7rem 1.7rem;
+  color:var(--ink-soft);font-size:.94rem;line-height:1.62}
+.offer-modal__body h4{font-family:var(--serif);font-weight:400;color:var(--ink);font-size:1.35rem;margin:1.25rem 0 .45rem}
+.offer-modal__body p{margin:.45rem 0}
 @media (max-width:640px){
   .focus-panel{left:1rem;right:1rem;top:auto;bottom:5.4rem;width:auto;
     transform:translateY(24px)}
   .focus-panel.is-on{transform:translateY(0)}
+  .master-panel{left:1rem;right:1rem;top:auto;bottom:5.4rem;width:auto;transform:translateY(24px)}
+  .master-panel.is-on{transform:translateY(0)}
+  .garden-panel{width:min(310px,86vw);right:auto;bottom:auto}
+  .offer-btn{top:4.1rem;right:1rem;font-size:.62rem;padding:.46rem .62rem}
+  .insta-top{top:3.78rem;right:8rem;width:40px;height:40px}
+  .insta-top img{width:40px;height:40px}
 }
 
 /* ============================================================
@@ -214,6 +305,7 @@ html.no-js .space{opacity:1;transform:none}
   .eyebrow{letter-spacing:.18em}
   .space p{max-width:100%}
   .brand{font-size:1.05rem}
+  body:not(.flat) .space--reviews .inner{transform:translateY(-20vh)}
 }
 </style>
 </head>
@@ -224,6 +316,10 @@ html.no-js .space{opacity:1;transform:none}
 <div class="spacer" aria-hidden="true"></div>
 
 <a class="brand" href="#top" aria-label="MAI SPA — наверх"><span class="mark">✦</span> MAI <em>SPA</em></a>
+<a class="insta-top" href="https://www.instagram.com/maitaispa12/" target="_blank" rel="noopener" aria-label="Instagram MAI SPA">
+  <img src="assets/img/instagram-gold.svg" alt="" aria-hidden="true" />
+</a>
+<button class="offer-btn" id="offerBtn" type="button">Публичная оферта</button>
 
 <!-- ================= ОВЕРЛЕИ 5 ПРОСТРАНСТВ ================= -->
 <main class="overlay" id="top">
@@ -272,7 +368,7 @@ html.no-js .space{opacity:1;transform:none}
       <p class="eyebrow">Пространство четвёртое</p>
       <h2 class="h2">Сад орхидей</h2>
       <p>Тропический уголок Таиланда: живые орхидеи, влажный тёплый воздух
-      и аромат франжипани. Пространство, где дыхание само становится глубже.</p>
+      и короткие тихие мысли, которые раскрываются при прикосновении.</p>
     </div>
   </section>
 
@@ -291,7 +387,7 @@ html.no-js .space{opacity:1;transform:none}
   </section>
 
   <!-- 6. Отзывы -->
-  <section class="space" data-c="0.895" data-w="0.022" aria-label="Отзывы гостей">
+  <section class="space space--reviews" data-c="0.895" data-w="0.022" aria-label="Отзывы гостей">
     <div class="inner">
       <p class="eyebrow">Пространство шестое</p>
       <h2 class="h2">Нам доверяют</h2>
@@ -306,7 +402,7 @@ html.no-js .space{opacity:1;transform:none}
   </section>
 
   <!-- 7. Финал -->
-  <section class="space" data-c="0.98" data-w="0.034" aria-label="Контакты">
+  <section class="space" data-c="0.996" data-w="0.008" aria-label="Контакты">
     <div class="inner">
       <p class="eyebrow">MAI SPA · Йошкар-Ола</p>
       <h2 class="h2">До встречи<br>в <span class="em">тишине</span></h2>
@@ -331,11 +427,19 @@ html.no-js .space{opacity:1;transform:none}
 
 <!-- Экран-приглашение -->
 <div class="enter" id="enter" role="dialog" aria-label="Вход в MAI SPA">
-  <span class="enter__mark">✦</span>
-  <p class="enter__brand">MAI SPA</p>
-  <p class="enter__sub">премиальный тайский SPA · Йошкар-Ола</p>
-  <button class="btn" id="enterBtn" type="button">Войти в MAI SPA</button>
-  <p class="enter__note">путешествие со звуком · это займёт минуту</p>
+  <div class="enter__depth" aria-hidden="true">
+    <canvas class="enter__fx" id="enterFx"></canvas>
+    <i class="enter__threshold"></i>
+    <i class="enter__veil"></i>
+    <i class="enter__floor"></i>
+  </div>
+  <div class="enter__core">
+    <span class="enter__mark">✦</span>
+    <p class="enter__brand">MAI SPA</p>
+    <p class="enter__sub">премиальный тайский SPA · Йошкар-Ола</p>
+    <button class="btn" id="enterBtn" type="button">Войти в MAI SPA</button>
+    <p class="enter__note">двигайте курсор · скролльте для формы лотоса</p>
+  </div>
 </div>
 
 <!-- Звук -->
@@ -351,6 +455,83 @@ html.no-js .space{opacity:1;transform:none}
     <a class="btn" href="https://n1351412.yclients.com" target="_blank" rel="noopener">Записаться</a>
   </div>
 </aside>
+
+<!-- Панель мастера -->
+<aside class="master-panel" id="masterPanel" aria-hidden="true">
+  <button class="panel-close" id="masterClose" type="button" aria-label="Закрыть">✕</button>
+  <p class="role" id="masterRole"></p>
+  <h3 id="masterName"></h3>
+  <p id="masterDesc"></p>
+  <a class="btn" href="https://n1351412.yclients.com" target="_blank" rel="noopener">Записаться</a>
+</aside>
+
+<!-- Тихая заметка сада -->
+<aside class="garden-panel" id="gardenPanel" aria-hidden="true">
+  <button class="panel-close" id="gardenClose" type="button" aria-label="Закрыть">✕</button>
+  <p class="role">Сад орхидей</p>
+  <h3 id="gardenTitle"></h3>
+  <p id="gardenText"></p>
+</aside>
+
+<!-- Публичная оферта -->
+<section class="offer-modal" id="offerModal" aria-hidden="true" role="dialog" aria-label="Публичная оферта">
+  <div class="offer-modal__dialog">
+    <button class="panel-close" id="offerClose" type="button" aria-label="Закрыть">✕</button>
+    <div class="offer-modal__head">
+      <p class="eyebrow">Публичная оферта</p>
+      <h3>О приобретении и использовании подарочных сертификатов Mai Spa</h3>
+    </div>
+    <div class="offer-modal__body">
+      <h4>1. Общие положения</h4>
+      <p>1.1. Настоящий документ является публичной офертой в соответствии со ст. 437 Гражданский кодекс РФ.</p>
+      <p>1.2. Приобретая подарочный сертификат, Покупатель подтверждает согласие с условиями настоящей оферты.</p>
+      <p>1.3. Подарочный сертификат подтверждает внесение авансового платежа и предоставляет право на получение услуг в спа-салоне на сумму/услугу, указанную в сертификате.</p>
+
+      <h4>2. Приобретение сертификата</h4>
+      <p>2.1. Договор оказания услуг считается заключённым с момента оплаты сертификата.</p>
+      <p>2.2. При покупке могут фиксироваться данные Покупателя (ФИО, телефон).</p>
+      <p>2.3. Сертификат может быть передан третьему лицу для использования.</p>
+
+      <h4>3. Срок действия</h4>
+      <p>3.1. Срок действия указывается на сертификате.</p>
+      <p>3.2. Сертификат действует до указанной даты включительно.</p>
+      <p>3.3. Срок действия сертификата устанавливается с целью планирования записи и оказания услуг.</p>
+      <p>3.4. По истечении срока действия сертификат не может быть использован для получения услуг.</p>
+      <p>3.5. Продление срока возможно по усмотрению Исполнителя.</p>
+
+      <h4>4. Использование сертификата</h4>
+      <p>4.1. Услуги предоставляются по предварительной записи.</p>
+      <p>4.2. При записи необходимо сообщить номер (код) сертификата.</p>
+      <p>4.3. Отмена или перенос записи возможны не менее чем за 12 часов.</p>
+      <p>4.4. При отмене менее чем за 12 часов или неявке без предупреждения услуга считается оказанной и подлежит списанию.</p>
+      <p>4.5. В случае опоздания время процедуры может быть сокращено.</p>
+
+      <h4>5. Возврат денежных средств</h4>
+      <p>5.1. Подарочный сертификат является авансом за будущие услуги.</p>
+      <p>5.2. Клиент вправе обратиться с заявлением о возврате денежных средств.</p>
+      <p>5.3. Для оформления возврата необходимо предоставить: ФИО заявителя, данные о покупке (дата, сумма, способ оплаты), реквизиты для возврата, сертификат (номер/фото).</p>
+      <p>5.4. Исполнитель вправе запросить документы, подтверждающие факт оплаты (чек, выписку и иные подтверждения).</p>
+      <p>5.5. Возврат осуществляется после проведения проверки (верификации) данных об оплате и личности заявителя.</p>
+      <p>5.6. Денежные средства возвращаются лицу, осуществившему оплату сертификата, либо иному лицу при наличии подтвержденного волеизъявления плательщика на получение таким лицом денежных средств.</p>
+      <p>5.7. В случае если заявитель не является плательщиком по сертификату, Исполнитель вправе запросить сведения и документы, позволяющие установить факт оплаты и право заявителя на получение денежных средств.</p>
+      <p>5.8. При невозможности установить плательщика либо право заявителя на получение денежных средств рассмотрение заявления приостанавливается до предоставления необходимых сведений.</p>
+      <p>5.9. Рекомендуется обращаться за возвратом в период действия сертификата.</p>
+      <p>5.10. Обращения о возврате денежных средств рассматриваются в порядке, установленном настоящей офертой.</p>
+
+      <h4>6. Ответственность сторон</h4>
+      <p>6.1. Исполнитель не несёт ответственности за невозможность использования сертификата по причинам, не зависящим от него.</p>
+      <p>6.2. Неиспользование сертификата в установленный срок не является автоматическим основанием для возврата денежных средств.</p>
+
+      <h4>7. Сроки обращения</h4>
+      <p>7.1. К требованиям, связанным с подарочными сертификатами, применяется общий срок исковой давности — 3 года. Течение срока определяется в соответствии с действующим законодательством РФ.</p>
+
+      <h4>8. Прочие условия</h4>
+      <p>8.1. Исполнитель вправе вносить изменения в настоящую оферту.</p>
+      <p>8.2. Актуальная версия оферты доступна в салоне и/или онлайн.</p>
+      <p>8.3. Все споры разрешаются в соответствии с законодательством РФ.</p>
+    </div>
+  </div>
+</section>
 
 <noscript><style>#gl,.vignette,.spacer,.rail,.hint{display:none}.overlay{position:static}.space{position:static;min-height:auto;padding:4rem 1.5rem}</style></noscript>
 
@@ -450,7 +631,7 @@ var CTRL = [
   v3(-18, 2.2, -112),    // зал мастеров
   v3(-20, 2.3, -126),
   v3(-14, 2.5, -138), v3(-4, 2.8, -150),  // коридор отзывов
-  v3(2, 4.2, -162), v3(5, 7.5, -174), v3(6, 11.5, -186)  // подъём к лотосу
+  v3(3, 4.2, -162), v3(24, 7.8, -165), v3(38, 12.8, -150)  // финальный вираж к лотосу
 ];
 function splineP(t) {
   t = clamp(t, 0, 1);
@@ -480,7 +661,7 @@ function basisAt(t){
 }
 
 /* ---------- якоря комнат ---------- */
-var ROOM_T = [0.04, 0.178, 0.467, 0.545, 0.80, 0.895, 0.98];
+var ROOM_T = [0.04, 0.178, 0.467, 0.545, 0.80, 0.895, 0.996];
 var ROOM_NAMES = ['Вход','Зал ритуалов','Пространство пара','Сад орхидей','Зал мастеров','Отзывы','Контакты'];
 
 /* ============================================================
@@ -519,9 +700,9 @@ var PT_VS = [
 'attribute vec3 aScatter;',  // рассыпанное состояние
 'attribute vec4 aSeed;', // x: фаза, y: скорость, z: размер, w: цвет-микс
 'uniform mat4 uView, uProj;',
-'uniform float uTime, uPxScale, uRotY, uAssemble, uMorph, uRise, uSwirl;',
+'uniform float uTime, uPxScale, uRotY, uAssemble, uMorph;',
 'uniform vec3 uDrift, uPivot;',
-'varying float vFog, vMix, vTw, vSteam;',
+'varying float vFog, vMix, vTw;',
 'void main(){',
 '  vec3 tgt = mix(aPos, aAlt, uMorph);',
 '  vec3 p = mix(aScatter, tgt, uAssemble) - uPivot;',
@@ -530,31 +711,23 @@ var PT_VS = [
 '  p += vec3(sin(uTime*aSeed.y + aSeed.x),',
 '            cos(uTime*aSeed.y*0.83 + aSeed.x*1.7),',
 '            sin(uTime*aSeed.y*0.61 + aSeed.x*2.3)) * uDrift * (1.0 + (1.0 - uAssemble) * 4.0);',
-'  float steaming = step(0.001, uRise);',                                  // включается только для пара
-'  float life = fract(uTime * (0.06 + aSeed.y * 0.35) + aSeed.w);',        // 0..1 циклично, у каждой частицы своя фаза
-'  p.y += life * uRise;',                                                  // пар поднимается вверх и переиспользуется
-'  float widen = uSwirl * life;',                                          // и клубится всё шире по мере подъёма
-'  p.x += sin(aSeed.x + life * 6.2831 + uTime * 0.4) * widen;',
-'  p.z += cos(aSeed.x * 1.7 + life * 6.2831 + uTime * 0.3) * widen;',
-'  float env = smoothstep(0.0, 0.18, life) * (1.0 - smoothstep(0.55, 1.0, life));',  // проявляется у пола, тает вверху
-'  vSteam = mix(1.0, env, steaming);',
 '  vec4 mv = uView * vec4(p, 1.0);',
 '  float dist = length(mv.xyz);',
 '  gl_Position = uProj * mv;',
 '  gl_PointSize = clamp(aSeed.z * uPxScale / dist, 1.0, 170.0);',
 '  vFog = 1.0 - exp(-0.0009 * dist * dist);',
-'  vMix = mix(aSeed.w, life, steaming);',   // цвет пара: тёплый низ → прохладный верх
+'  vMix = aSeed.w;',
 '  vTw = 0.75 + 0.25 * sin(uTime * (1.2 + aSeed.y) + aSeed.x * 7.0);',
 '}'].join('\n');
 var PT_FS = [
 'precision mediump float;',
 'uniform vec3 uColA, uColB;',
 'uniform float uAlpha;',
-'varying float vFog, vMix, vTw, vSteam;',
+'varying float vFog, vMix, vTw;',
 'void main(){',
 '  vec2 uv = gl_PointCoord * 2.0 - 1.0;',
 '  float d = length(uv);',
-'  float a = smoothstep(1.0, 0.12, d) * uAlpha * vTw * vSteam * (1.0 - vFog);',
+'  float a = smoothstep(1.0, 0.12, d) * uAlpha * vTw * (1.0 - vFog);',
 '  vec3 col = mix(uColA, uColB, vMix);',
 '  gl_FragColor = vec4(col * a, a);',   // premultiplied, blending ONE/ONE
 '}'].join('\n');
@@ -596,8 +769,7 @@ var PT = {
   uTime: gl.getUniformLocation(ptProg,'uTime'), uPxScale: gl.getUniformLocation(ptProg,'uPxScale'),
   uDrift: gl.getUniformLocation(ptProg,'uDrift'), uColA: gl.getUniformLocation(ptProg,'uColA'),
   uColB: gl.getUniformLocation(ptProg,'uColB'), uAlpha: gl.getUniformLocation(ptProg,'uAlpha'),
-  uRotY: gl.getUniformLocation(ptProg,'uRotY'), uPivot: gl.getUniformLocation(ptProg,'uPivot'),
-  uRise: gl.getUniformLocation(ptProg,'uRise'), uSwirl: gl.getUniformLocation(ptProg,'uSwirl')
+  uRotY: gl.getUniformLocation(ptProg,'uRotY'), uPivot: gl.getUniformLocation(ptProg,'uPivot')
 };
 var QD = {
   aPos: gl.getAttribLocation(qdProg,'aPos'),
@@ -637,9 +809,9 @@ function makePoints(positions, seeds, opts) {
     drift: opts.drift || [0.3,0.3,0.3],
     colA: opts.colA || BRASS, colB: opts.colB || BRASS_L,
     alpha: opts.alpha != null ? opts.alpha : 0.8,
+    baseAlpha: opts.alpha != null ? opts.alpha : 0.8,
     pivot: opts.pivot || [0,0,0],
-    rotSpeed: opts.rotSpeed || 0,
-    rise: opts.rise || 0, swirl: opts.swirl || 0
+    rotSpeed: opts.rotSpeed || 0
   };
 }
 function drawPoints(sys, time, view, proj, pxScale) {
@@ -666,7 +838,7 @@ function drawPoints(sys, time, view, proj, pxScale) {
     gl.disableVertexAttribArray(PT.aScatter);
     gl.vertexAttrib3f(PT.aScatter, 0, 0, 0);
   }
-  gl.uniform1f(PT.uAssemble, sys.ab ? sys.assembleVal : 1);
+  gl.uniform1f(PT.uAssemble, sys.scb ? sys.assembleVal : 1);
   gl.uniform1f(PT.uMorph, sys.ab ? sys.morphVal : 0);
   gl.uniformMatrix4fv(PT.uView, false, view);
   gl.uniformMatrix4fv(PT.uProj, false, proj);
@@ -678,8 +850,6 @@ function drawPoints(sys, time, view, proj, pxScale) {
   gl.uniform1f(PT.uAlpha, sys.alpha);
   gl.uniform1f(PT.uRotY, sys.rotSpeed ? Math.sin(time * 0.35) * 0.22 : 0);
   gl.uniform3fv(PT.uPivot, sys.pivot);
-  gl.uniform1f(PT.uRise, sys.rise || 0);
-  gl.uniform1f(PT.uSwirl, sys.swirl || 0);
   gl.drawArrays(gl.POINTS, 0, sys.n);
 }
 function drawQuad(model, tex, alpha, additive, view, proj) {
@@ -925,8 +1095,25 @@ var SERVICES = [
   ['05','VIP-ритуалы','120–180 мин','Максимальная программа: сочетание техник, травяные мешочки и чайная церемония. Вечер полного перезапуска.'],
   ['06','Thai Yoga','60 мин','Пассивная йога: мастер мягко растягивает и скручивает тело за вас. Энергия и гибкость — без усилий.']
 ];
+var ORCHID_NOTES = [
+  { title:'Тише', text:'Иногда телу достаточно одного спокойного часа, чтобы снова услышать себя.' },
+  { title:'Тёплый воздух', text:'Влажное тепло сада замедляет дыхание. Всё лишнее остаётся за дверью.' },
+  { title:'Лёгкость', text:'Орхидея не торопится раскрыться. Отдых тоже не требует усилия.' },
+  { title:'Пауза', text:'Пусть это будет место, где не нужно отвечать сразу и быть удобным для мира.' },
+  { title:'Мягкость', text:'Самая глубокая забота часто ощущается не силой, а точностью и вниманием.' },
+  { title:'После дождя', text:'В тайских садах воздух пахнет листьями, водой и новым началом.' },
+  { title:'Баланс', text:'Когда тело расслабляется, мысли перестают спорить и становятся тише.' },
+  { title:'Свет', text:'Даже маленький тёплый свет меняет пространство, если дать ему время.' },
+  { title:'Прикосновение', text:'Хороший ритуал начинается раньше массажа: с ощущения, что о вас уже позаботились.' },
+  { title:'Дыхание', text:'Сделайте вдох чуть глубже. Иногда именно с него начинается возвращение к себе.' },
+  { title:'Тропики', text:'Орхидеи напоминают: красота может быть спокойной, влажной и почти невесомой.' },
+  { title:'Покой', text:'Здесь не нужно спешить. Сад раскрывается ровно настолько, насколько вы готовы.' }
+];
 var MASTERS = ['Мисс Лауан','Мисс Ванни','Мисс Натсинее'];
 var MASTER_IMGS = [null, null, null];
+var MASTER_VIDEO_SRCS = ['1%D1%82%D0%B0%D0%B9.mp4', '%D1%82%D0%B0%D0%B92.mp4', '%D1%82%D0%B0%D0%B93.mp4'];
+var MASTER_VIDEO_OFFSETS = [0.22, 0.22, 0.22];
+var MASTER_VIDEO_TEX = [null, null, null];
 ['assets/img/master-lauan.jpg','assets/img/master-vanni.jpg','assets/img/master-natsinee.jpg']
   .forEach(function (src, idx) {
     var im = new Image();
@@ -939,6 +1126,64 @@ var MASTER_IMGS = [null, null, null];
 
 var scene = { points: [], quads: [] };
 var texturesReady = false;
+
+function texVideoCircle(src, poster, offsetY) {
+  var c = cnv(512, 512), x = c.getContext('2d');
+  if (poster) {
+    x.save();
+    x.beginPath(); x.arc(256, 256, 244, 0, Math.PI * 2); x.clip();
+    var pa = poster.width / poster.height;
+    var pdw = 512, pdh = 512, pdx = 0, pdy = 0;
+    if (pa > 1) { pdw = 512 * pa; pdx = (512 - pdw) / 2; }
+    else { pdh = 512 / pa; pdy = (512 - pdh) / 2; }
+    x.drawImage(poster, pdx, pdy, pdw, pdh);
+    x.restore();
+  }
+  var tex = makeTexture(c);
+  var v = document.createElement('video');
+  v.src = src;
+  v.muted = true;
+  v.loop = true;
+  v.autoplay = true;
+  v.playsInline = true;
+  v.preload = 'auto';
+  v.setAttribute('muted', '');
+  v.setAttribute('playsinline', '');
+  v.play().catch(function () {});
+  return { tex: tex, video: v, canvas: c, ctx: x, offsetY: offsetY || 0, ready: false };
+}
+function getMasterVideoTex(idx) {
+  if (!MASTER_VIDEO_SRCS[idx]) return null;
+  if (!MASTER_VIDEO_TEX[idx]) MASTER_VIDEO_TEX[idx] = texVideoCircle(MASTER_VIDEO_SRCS[idx], MASTER_IMGS[idx], MASTER_VIDEO_OFFSETS[idx]);
+  return MASTER_VIDEO_TEX[idx];
+}
+function updateVideoCircle(vt) {
+  var v = vt.video;
+  if (v.readyState < 2 || !v.videoWidth || !v.videoHeight) return;
+  if (v.paused) v.play().catch(function () {});
+  var x = vt.ctx, c = vt.canvas;
+  x.clearRect(0, 0, c.width, c.height);
+  x.save();
+  x.beginPath();
+  x.arc(256, 256, 244, 0, Math.PI * 2);
+  x.clip();
+  var va = v.videoWidth / v.videoHeight;
+  var dw = 512, dh = 512, dx = 0, dy = 0;
+  if (va > 1) { dw = 512 * va; dx = (512 - dw) / 2; }
+  else { dh = 512 / va; dy = (512 - dh) / 2; }
+  dy += 512 * vt.offsetY;
+  x.drawImage(v, dx, dy, dw, dh);
+  var g = x.createRadialGradient(256, 230, 70, 256, 256, 256);
+  g.addColorStop(0, 'rgba(255,255,255,0)');
+  g.addColorStop(0.72, 'rgba(0,0,0,0)');
+  g.addColorStop(1, 'rgba(0,0,0,0.58)');
+  x.fillStyle = g;
+  x.fillRect(0, 0, 512, 512);
+  x.restore();
+  gl.bindTexture(gl.TEXTURE_2D, vt.tex);
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, c);
+  vt.ready = true;
+}
 
 function buildScene() {
   var i, p, s;
@@ -971,22 +1216,21 @@ function buildScene() {
   }
   scene.points.push(makePoints(pos, seed, { drift:[0.35,0.3,0.35], alpha:0.55 }));
 
-  /* --- 3. пар хаммама: рождается у пола, клубится и поднимается --- */
+  /* --- 3. пар хаммама --- */
   var st = basisAt(ROOM_T[2]);
   var stC = add(st.P, scale(st.T, 7));
-  var steamN = MOBILE ? 150 : 260;
+  var steamN = MOBILE ? 90 : 150;
   pos = []; seed = [];
   for (i=0;i<steamN;i++){
-    p = [ stC[0] + (rnd(i+201)-0.5)*15,
-          stC[1] - 3.0 + rnd(i+211)*2.6,     // у самого пола — дальше поднимает шейдер (uRise)
-          stC[2] + (rnd(i+221)-0.5)*13 ];
+    p = [ stC[0] + (rnd(i+201)-0.5)*18,
+          stC[1] - 2.2 + rnd(i+211)*7,
+          stC[2] + (rnd(i+221)-0.5)*16 ];
     pos.push(p[0],p[1],p[2]);
-    seed.push(rnd(i+231)*6.28, 0.06+rnd(i+241)*0.15, 1.7+rnd(i+251)*1.9, rnd(i+261));
+    seed.push(rnd(i+231)*6.28, 0.08+rnd(i+241)*0.16, 1.4+rnd(i+251)*1.6, rnd(i+261));
   }
   scene.points.push(makePoints(pos, seed, {
-    drift:[1.0,0.6,1.0], alpha:0.10,
-    colA:[0.98,0.80,0.55], colB:[0.82,0.86,0.94],   // тёплый низ (угли) → прохладный верх
-    rise: 11.0, swirl: 3.4
+    drift:[1.6,1.9,1.6], alpha:0.05,
+    colA:[0.95,0.82,0.62], colB:[0.75,0.78,0.72]
   }));
   // тёплые "угли" внизу хаммама
   pos = []; seed = [];
@@ -1017,7 +1261,7 @@ function buildScene() {
 
   /* --- 5. лотос из частиц --- */
   var fb = basisAt(0.995);
-  var lotusC = add(add(fb.P, scale(fb.T, 15)), [0,5.5,0]);
+  var lotusC = add(add(fb.P, scale(fb.T, 15)), [0,7.4,0]);
   var N_FIN = MOBILE ? 1400 : 2400;
   var lp = sampleLotus(N_FIN);
   var wp = sampleWord(N_FIN);
@@ -1149,12 +1393,6 @@ function buildQuads() {
     pos: [stC[0], stC[1]-2.4, stC[2]], R: st.R, U: st.U, F: scale(st.T,-1),
     sx: 12, sy: 6, alpha: 0.8, additive: true, pulse: true
   });
-  // прохладный луч сверху — будто свет пробивается сквозь пар
-  scene.quads.push({
-    tex: texGlow('rgba(150,185,225,0.30)','rgba(150,185,225,0)'),
-    pos: [stC[0], stC[1]+6.0, stC[2]], R: st.R, U: st.U, F: scale(st.T,-1),
-    sx: 15, sy: 10, alpha: 0.6, additive: true, pulse: true
-  });
 
   // сад орхидей: цветы-билборды вокруг центра петли — видны с любой стороны облёта
   var GARDEN = [28, -0.8, -58];
@@ -1168,22 +1406,20 @@ function buildQuads() {
     [  8.5, 2.4,  8.5, 1.2, 1], [ -9.0, 2.6, -8.0, 1.3, 0],
     [ -2.5, 3.0,  7.0, 1.1, 1], [  3.0,-2.0, -9.0, 1.2, 0]
   ];
-  var AROMAS = ['франжипани','жасмин','иланг-иланг','лемонграсс','сандал','лотос',
-                'манго','зелёный чай','кокос','мята','орхидея','тамаринд'];
+  scene.orchidQuads = [];
   for (i=0;i<ORCHIDS.length;i++){
     var oc = ORCHIDS[i];
     var opos = [GARDEN[0]+oc[0], GARDEN[1]+oc[1], GARDEN[2]+oc[2]];
     scene.quads.push({ tex: orchidGlow, pos: opos, billboard: true,
       R: [1,0,0], U: [0,1,0], F: [0,0,1],
       sx: oc[3]*2.0, sy: oc[3]*2.0, alpha: 0.7, additive: true, pulse: true, sway: i*1.3 });
-    scene.quads.push({ tex: oc[4] ? orchidCream : orchidPink, pos: opos, billboard: true,
+    var orchidQuad = { tex: oc[4] ? orchidCream : orchidPink, pos: opos, billboard: true,
       R: [1,0,0], U: [0,1,0], F: [0,0,1],
-      sx: oc[3], sy: oc[3], alpha: 0.96, additive: false, sway: i*1.3 });
-    // подпись-аромат под цветком
-    scene.quads.push({ tex: texAroma(AROMAS[i % AROMAS.length]),
-      pos: [opos[0], opos[1] - oc[3]*1.02, opos[2]], billboard: true,
-      R: [1,0,0], U: [0,1,0], F: [0,0,1],
-      sx: oc[3]*1.05, sy: oc[3]*0.26, alpha: 0.85, additive: true, sway: i*1.3 });
+      sx: oc[3], sy: oc[3], alpha: 0.96, additive: false, sway: i*1.3,
+      orchid: i, hoverAmt: 0
+    };
+    scene.quads.push(orchidQuad);
+    scene.orchidQuads.push(orchidQuad);
   }
 
   // светлячки (позиции обновляются в кадре)
@@ -1205,24 +1441,30 @@ function buildQuads() {
     var pF = norm(add(scale(tb.T, -1), scale(tb.R, -mside * 0.5))); // развёрнута к пути
     var pR = norm(cross([0,1,0], pF));
     var pU = cross(pF, pR);
-    scene.quads.push({ tex: glowTex, pos: pp, R: pR, U: pU, F: pF,
+    scene.quads.push({ tex: glowTex, pos: pp, R: pR, U: pU, F: pF, trackCamera: true,
       sx: 3.6, sy: 3.6, alpha: 0.8, additive: true, pulse: true });
-    if (MASTER_IMGS[i]) {
+    var masterVideoTex = getMasterVideoTex(i);
+    if (masterVideoTex) {
+      scene.quads.push({ tex: masterVideoTex.tex, videoTex: masterVideoTex, pos: pp,
+        R: pR, U: pU, F: pF, trackCamera: true, master: i,
+        sx: 1.62, sy: 1.62, alpha: 1, additive: false, cullBack: true });
+    } else if (MASTER_IMGS[i]) {
       scene.quads.push({ tex: texPhotoCircle(MASTER_IMGS[i]), pos: pp,
-        R: pR, U: pU, F: pF,
+        R: pR, U: pU, F: pF, trackCamera: true, master: i,
         sx: 1.62, sy: 1.62, alpha: 1, additive: false, cullBack: true });
     }
-    scene.quads.push({ tex: ringTex, pos: pp, R: pR, U: pU, F: pF,
+    scene.quads.push({ tex: ringTex, pos: pp, R: pR, U: pU, F: pF, trackCamera: true, master: i,
       sx: 2.1, sy: 2.1, alpha: 0.95, additive: true });
     scene.quads.push({ tex: texName(MASTERS[i]), pos: add(pp, scale(pU, -2.3)),
-      R: pR, U: pU, F: pF, sx: 2.2, sy: 0.82, alpha: 0.95, additive: true });
+      R: pR, U: pU, F: pF, trackCamera: true, master: i, sx: 2.2, sy: 0.82, alpha: 0.95, additive: true });
     // 3D-кнопка «Записаться» — под тем же углом, что и имя
     scene.quads.push({ tex: btnTex, pos: add(pp, scale(pU, -3.05)),
-      R: pR, U: pU, F: pF, sx: 1.05, sy: 0.33, alpha: 0.98, additive: false,
+      R: pR, U: pU, F: pF, trackCamera: true, sx: 1.05, sy: 0.33, alpha: 0.98, additive: false,
       cullBack: true, btn: i, hoverAmt: 0 });
     scene.masterGazes.push({ pos: pp, t: mt });
   }
   scene.btnQuads = scene.quads.filter(function (q) { return q.btn != null; });
+  scene.masterQuads = scene.quads.filter(function (q) { return q.master != null; });
   // коридор отзывов: стеклянные панели по бокам пути
   var REVIEWS = [
     ['Каждый массаж — не просто процедура, а настоящий ритуал. Помог снять напряжение и восстановить силы.', 'Марина Х.'],
@@ -1233,7 +1475,7 @@ function buildQuads() {
   var revGlow = texGlow('rgba(211,161,92,0.30)','rgba(211,161,92,0)');
   scene.reviewPanels = [];
   for (i = 0; i < REVIEWS.length; i++) {
-    var rt2 = 0.885 + i * 0.02;                  // после всех мастеров, по одной за раз
+    var rt2 = 0.875 + i * 0.017;                 // после всех мастеров, по одной за раз
     var rb2 = basisAt(rt2);
     var side = (i % 2 === 0) ? -1 : 1;           // чередуем лево/право
     var rpos = add(add(rb2.P, scale(rb2.R, side * 6.6)), scale(rb2.U, 1.4 + (i % 2) * 0.7));
@@ -1241,10 +1483,10 @@ function buildQuads() {
     var rF = norm(add(scale(rb2.T, -1), scale(rb2.R, -side * 0.45)));
     var rR = norm(cross([0,1,0], rF));
     var rU = cross(rF, rR);
-    scene.quads.push({ tex: revGlow, pos: rpos, R: rR, U: rU, F: rF,
-      sx: 3.6, sy: 2.7, alpha: 0.55, additive: true, pulse: true, sway: i * 1.7, showAfter: 0.868 });
+    scene.quads.push({ tex: revGlow, pos: rpos, R: rR, U: rU, F: rF, trackCamera: true,
+      sx: 3.6, sy: 2.7, alpha: 0.55, additive: true, pulse: true, sway: i * 1.7, showAfter: 0.858, hideAfter: 0.952 });
     scene.quads.push({ tex: texReview(REVIEWS[i][0], REVIEWS[i][1]), pos: rpos,
-      R: rR, U: rU, F: rF, sx: 2.3, sy: 1.65, alpha: 0.97, additive: false, sway: i * 1.7, showAfter: 0.868, cullBack: true });
+      R: rR, U: rU, F: rF, trackCamera: true, sx: 2.3, sy: 1.65, alpha: 0.97, additive: false, sway: i * 1.7, showAfter: 0.858, hideAfter: 0.952, cullBack: true });
     scene.reviewPanels.push({ pos: rpos, t: rt2 });
   }
 
@@ -1267,6 +1509,364 @@ if (document.fonts && document.fonts.ready) {
 var entered = false;
 var enterEl = document.getElementById('enter');
 var enterBtn = document.getElementById('enterBtn');
+var enterFx = document.getElementById('enterFx');
+
+/* ---------- 3D-вход на готовом движке Three.js ---------- */
+var enterMouse = { x: 0, y: 0, tx: 0, ty: 0, active: false };
+var enterWarp = false;
+var enter3D = null;
+var LIGHT_ENTER = REDUCED || navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4;
+var enterMorphTarget = 0;
+var enterTouchY = null;
+
+function setEnterPointer(x, y, active) {
+  enterMouse.tx = x / innerWidth * 2 - 1;
+  enterMouse.ty = y / innerHeight * 2 - 1;
+  enterMouse.active = active;
+  if (!enterEl) return;
+  enterEl.style.setProperty('--mx', (x / innerWidth * 100).toFixed(2) + '%');
+  enterEl.style.setProperty('--my', (y / innerHeight * 100).toFixed(2) + '%');
+}
+
+function initEnterThree() {
+  if (!enterFx || REDUCED) return;
+  import('https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js').then(function (THREE) {
+    if (!enterEl || enterEl.classList.contains('is-gone')) return;
+
+    var renderer = new THREE.WebGLRenderer({
+      canvas: enterFx,
+      alpha: true,
+      antialias: true,
+      powerPreference: 'high-performance'
+    });
+    renderer.setClearColor(0x000000, 0);
+    renderer.setPixelRatio(Math.min(devicePixelRatio || 1, LIGHT_ENTER ? 1.2 : 1.6));
+
+    var scene3 = new THREE.Scene();
+    scene3.fog = new THREE.FogExp2(0x020403, 0.012);
+    var camera3 = new THREE.PerspectiveCamera(42, innerWidth / innerHeight, 0.1, 80);
+    camera3.position.set(0, 0, 8.2);
+
+    var group = new THREE.Group();
+    scene3.add(group);
+
+    var count = innerWidth < 760 ? 1800 : (LIGHT_ENTER ? 2800 : 5600);
+    var floatCount = innerWidth < 760 ? 260 : 720;
+    var geo = new THREE.TetrahedronGeometry(0.038, 0);
+    var baseColors = new Float32Array(geo.attributes.position.count * 3);
+    for (var bc = 0; bc < baseColors.length; bc++) baseColors[bc] = 1;
+    geo.setAttribute('color', new THREE.BufferAttribute(baseColors, 3));
+    var mat = new THREE.MeshBasicMaterial({
+      vertexColors: true,
+      transparent: true,
+      opacity: 0.98,
+      depthWrite: false,
+      fog: false,
+      wireframe: true,
+      blending: THREE.AdditiveBlending
+    });
+    var mesh = new THREE.InstancedMesh(geo, mat, count);
+    mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+    group.add(mesh);
+
+    var floatMat = mat.clone();
+    floatMat.opacity = 0.48;
+    var floatMesh = new THREE.InstancedMesh(geo, floatMat, floatCount);
+    floatMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+    scene3.add(floatMesh);
+
+    var target = new Float32Array(count * 3);
+    var scatter = new Float32Array(count * 3);
+    var lotusTarget = new Float32Array(count * 3);
+    var sizes = new Float32Array(count);
+    var phases = new Float32Array(count);
+    var baseCol = new Float32Array(count * 3);
+    var feature = new Uint8Array(count);
+    var fpos = new Float32Array(floatCount * 3);
+    var fsizes = new Float32Array(floatCount);
+    var fphases = new Float32Array(floatCount);
+    var dummy = new THREE.Object3D();
+    var color = new THREE.Color();
+    var hotColor = new THREE.Color(0xfff1c6);
+    var goldColor = new THREE.Color(0xffc96e);
+    var lotusFillColor = new THREE.Color(0xfff8e8);
+    var lotusFeatureColor = new THREE.Color(0xc8882d);
+    var cursorWorld = new THREE.Vector3();
+    var cursorLocal = new THREE.Vector3(999, 999, 999);
+    var ndc = new THREE.Vector3();
+    var rayDir = new THREE.Vector3();
+    var rayOrigin = new THREE.Vector3();
+    var auraTexture = (function () {
+      var c = document.createElement('canvas'), x = c.getContext('2d');
+      c.width = c.height = 256;
+      var g = x.createRadialGradient(128, 128, 0, 128, 128, 128);
+      g.addColorStop(0, 'rgba(255,244,210,0.86)');
+      g.addColorStop(0.28, 'rgba(232,192,136,0.32)');
+      g.addColorStop(1, 'rgba(232,192,136,0)');
+      x.fillStyle = g; x.fillRect(0, 0, 256, 256);
+      return new THREE.CanvasTexture(c);
+    })();
+    var aura = new THREE.Sprite(new THREE.SpriteMaterial({
+      map: auraTexture,
+      color: 0xffdf9e,
+      transparent: true,
+      opacity: 0,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending
+    }));
+    aura.scale.set(1.2, 1.2, 1);
+    scene3.add(aura);
+    var palette = [0xe9c06f, 0xffefd0, 0xd2a052, 0x7cc5a1, 0xf2d8ad, 0xb679ff];
+    var lotusReady = false;
+    var morph = 0;
+
+    function loadLotusTarget() {
+      var scale = innerWidth < 760 ? 1.02 : 1.5;
+      var shiftX = innerWidth < 760 ? 0.12 : 2.85;
+      var shiftY = innerWidth < 760 ? 0.58 : 0.42;
+      for (var i = 0; i < count; i++) {
+        var p = petalPoint(i + 1400);
+        var useFeature = rnd(i + 1197) < 0.2;
+        feature[i] = useFeature ? 1 : 0;
+        lotusTarget[i * 3] = p[0] * scale + shiftX;
+        lotusTarget[i * 3 + 1] = p[1] * scale + shiftY;
+        lotusTarget[i * 3 + 2] = p[2] * scale + (useFeature ? 0.18 : 0);
+      }
+      lotusReady = true;
+    }
+    loadLotusTarget();
+
+    function rotateZ(x, y, a) {
+      var c = Math.cos(a), s = Math.sin(a);
+      return [x * c - y * s, x * s + y * c];
+    }
+    function rotateY(x, z, a) {
+      var c = Math.cos(a), s = Math.sin(a);
+      return [x * c + z * s, -x * s + z * c];
+    }
+    function petalPoint(i) {
+      var petals = [
+        { c:[0.0,0.52,0.0], s:[0.62,1.32,0.36], rz:0.0, ry:0.0 },
+        { c:[-0.66,0.04,0.06], s:[0.68,1.12,0.34], rz:-0.58, ry:0.18 },
+        { c:[0.66,0.04,0.06], s:[0.68,1.12,0.34], rz:0.58, ry:-0.18 },
+        { c:[-0.96,-0.42,-0.04], s:[0.68,0.88,0.30], rz:-1.02, ry:0.25 },
+        { c:[0.96,-0.42,-0.04], s:[0.68,0.88,0.30], rz:1.02, ry:-0.25 },
+        { c:[0.0,-0.66,0.02], s:[0.92,0.46,0.26], rz:0.0, ry:0.0 }
+      ];
+      var p = petals[Math.floor(rnd(i + 330) * petals.length)];
+      var t = Math.pow(rnd(i + 341), 0.78);         // 0 = tip, 1 = base
+      var width = p.s[0] * Math.pow(Math.sin(Math.PI * t), 0.72);
+      var x = (rnd(i + 352) * 2 - 1) * width;
+      var y = (0.52 - t) * p.s[1];
+      var z = (rnd(i + 363) - 0.5) * p.s[2] * 0.24 + Math.sin(Math.PI * t) * p.s[2] * 0.22;
+      // Уплотняем края и центральную жилку, чтобы лепестки читались после сборки.
+      if (rnd(i + 374) < 0.34) x = Math.sign(x || (rnd(i + 375) - 0.5)) * width * (0.82 + rnd(i + 376) * 0.18);
+      if (rnd(i + 377) < 0.18) x *= 0.18;
+      var rz = rotateZ(x, y, p.rz);
+      x = rz[0]; y = rz[1];
+      var ry = rotateY(x, z, p.ry);
+      x = ry[0]; z = ry[1];
+      return [x + p.c[0], y + p.c[1], z + p.c[2]];
+    }
+
+    for (var i = 0; i < count; i++) {
+      var lp = petalPoint(i);
+      var mainScale = innerWidth < 760 ? 1.04 : 1.56;
+      var shiftX = innerWidth < 760 ? 0 : 2.65;
+      target[i * 3] = lp[0] * mainScale + shiftX;
+      target[i * 3 + 1] = lp[1] * mainScale + (innerWidth < 760 ? 0.38 : 0.0);
+      target[i * 3 + 2] = lp[2] * mainScale;
+      scatter[i * 3] = (rnd(i + 401) - 0.5) * 13;
+      scatter[i * 3 + 1] = (rnd(i + 412) - 0.5) * 8.5;
+      scatter[i * 3 + 2] = (rnd(i + 423) - 0.5) * 9;
+      sizes[i] = 0.58 + Math.pow(rnd(i + 434), 2) * 1.65;
+      phases[i] = rnd(i + 445) * 6.283;
+      color.setHex(palette[Math.floor(rnd(i + 456) * palette.length)]);
+      if (rnd(i + 467) > 0.64) color.offsetHSL(0, 0, rnd(i + 478) * 0.24);
+      baseCol[i * 3] = color.r; baseCol[i * 3 + 1] = color.g; baseCol[i * 3 + 2] = color.b;
+      mesh.setColorAt(i, color);
+    }
+    if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
+
+    for (i = 0; i < floatCount; i++) {
+      fpos[i * 3] = (rnd(i + 900) - 0.5) * 16;
+      fpos[i * 3 + 1] = (rnd(i + 911) - 0.5) * 9;
+      fpos[i * 3 + 2] = -4 + rnd(i + 922) * 8;
+      fsizes[i] = 0.55 + rnd(i + 933) * 2.7;
+      fphases[i] = rnd(i + 944) * 6.283;
+      color.setHex(palette[Math.floor(rnd(i + 955) * palette.length)]);
+      floatMesh.setColorAt(i, color);
+    }
+    if (floatMesh.instanceColor) floatMesh.instanceColor.needsUpdate = true;
+
+    var raf3 = null, stopped = false, burst = 0, burstTarget = 0;
+    function resize3() {
+      camera3.aspect = innerWidth / innerHeight;
+      camera3.updateProjectionMatrix();
+      renderer.setSize(innerWidth, innerHeight, false);
+    }
+    resize3();
+    addEventListener('resize', resize3);
+
+    function frame3(now) {
+      if (stopped) return;
+      var t = now * 0.001;
+      enterMouse.x += (enterMouse.tx - enterMouse.x) * 0.055;
+      enterMouse.y += (enterMouse.ty - enterMouse.y) * 0.055;
+      burst += (burstTarget - burst) * 0.045;
+      morph += (enterMorphTarget - morph) * 0.075;
+      var lotusMix = lotusReady ? clamp((morph - 0.46) / 0.54, 0, 1) : 0;
+      lotusMix = lotusMix * lotusMix * (3 - 2 * lotusMix);
+      var scrollScatter = Math.sin(Math.PI * clamp(morph, 0, 1));
+      scrollScatter = Math.pow(Math.max(0, scrollScatter), 0.75) * (1 - burst) * (1 - lotusMix * 0.92);
+
+      camera3.position.x = enterMouse.x * 0.34;
+      camera3.position.y = -enterMouse.y * 0.22;
+      camera3.lookAt(innerWidth < 760 ? 0 : 1.68, 0.05, 0);
+      var readable = 1 - lotusMix * 0.72;
+      group.rotation.y = (Math.sin(t * 0.18) * 0.16 + enterMouse.x * 0.36) * readable + burst * 0.22;
+      group.rotation.x = (Math.sin(t * 0.13) * 0.06 - enterMouse.y * 0.18) * readable;
+      group.rotation.z = Math.sin(t * 0.1) * 0.035 * readable;
+      group.updateMatrixWorld(true);
+      var shouldWireframe = lotusMix < 0.22 || burst > 0.12;
+      if (mat.wireframe !== shouldWireframe) {
+        mat.wireframe = shouldWireframe;
+        mat.needsUpdate = true;
+      }
+
+      var hoverPower = enterMouse.active && !burstTarget ? (1 - lotusMix * 0.48) : 0;
+      if (hoverPower) {
+        ndc.set(enterMouse.x, -enterMouse.y, 0.5).unproject(camera3);
+        rayOrigin.copy(camera3.position);
+        rayDir.copy(ndc).sub(rayOrigin).normalize();
+        var denom = rayDir.z || 0.0001;
+        var distToPlane = (0 - rayOrigin.z) / denom;
+        cursorWorld.copy(rayOrigin).addScaledVector(rayDir, distToPlane);
+        cursorLocal.copy(cursorWorld);
+        group.worldToLocal(cursorLocal);
+        aura.position.copy(cursorWorld);
+        aura.material.opacity += (0.55 - aura.material.opacity) * 0.2;
+        var auraScale = 0.52 + Math.sin(t * 7) * 0.04;
+        aura.scale.set(auraScale, auraScale, 1);
+      } else {
+        cursorLocal.set(999, 999, 999);
+        aura.material.opacity += (0 - aura.material.opacity) * 0.16;
+      }
+
+      for (var i = 0; i < count; i++) {
+        var k = i * 3;
+        var wave = Math.sin(t * (0.8 + rnd(i + 501) * 0.8) + phases[i]) * 0.045;
+        var bx = lerp(target[k], lotusTarget[k], lotusMix);
+        var by = lerp(target[k + 1], lotusTarget[k + 1], lotusMix);
+        var bz = lerp(target[k + 2], lotusTarget[k + 2], lotusMix);
+        var liveScatter = Math.max(scrollScatter, burst);
+        var px = lerp(bx, scatter[k], liveScatter) + wave * (1 + liveScatter * 5);
+        var py = lerp(by, scatter[k + 1], liveScatter) + Math.cos(t * 0.7 + phases[i]) * 0.035;
+        var pz = lerp(bz, scatter[k + 2] + burst * 6, liveScatter);
+        var dx = px - cursorLocal.x, dy = py - cursorLocal.y, dz = pz - cursorLocal.z;
+        var d2 = dx * dx + dy * dy + dz * dz * 0.36;
+        var influence = hoverPower ? Math.max(0, 1 - d2 / 1.12) : 0;
+        if (influence > 0) {
+          influence = influence * influence * (3 - 2 * influence);
+          var d = Math.sqrt(dx * dx + dy * dy + dz * dz) || 1;
+          var pulse = 0.8 + 0.2 * Math.sin(t * 18 - d * 4.5);
+          var push = influence * pulse * 0.72;
+          px += dx / d * push;
+          py += dy / d * push;
+          pz += dz / d * push + influence * 0.32;
+        }
+        dummy.position.set(px, py, pz);
+        dummy.rotation.set(t * (0.22 + influence * 1.8) + phases[i], t * 0.31 + i * 0.013, t * (0.18 + influence * 2.4));
+        var formSize = lerp(1, feature[i] ? 0.62 : 0.38, lotusMix);
+        var sc = sizes[i] * formSize * (1 + burst * 1.8 + influence * 1.75);
+        dummy.scale.setScalar(sc);
+        dummy.updateMatrix();
+        mesh.setMatrixAt(i, dummy.matrix);
+        var finalR = feature[i] ? lotusFeatureColor.r : lotusFillColor.r;
+        var finalG = feature[i] ? lotusFeatureColor.g : lotusFillColor.g;
+        var finalB = feature[i] ? lotusFeatureColor.b : lotusFillColor.b;
+        var formCol = lotusMix * 0.9;
+        var cr = lerp(baseCol[k], finalR, formCol);
+        var cg = lerp(baseCol[k + 1], finalG, formCol);
+        var cb = lerp(baseCol[k + 2], finalB, formCol);
+        if (influence > 0.01) {
+          color.setRGB(
+            lerp(cr, hotColor.r, influence),
+            lerp(cg, hotColor.g, influence * 0.78),
+            lerp(cb, goldColor.b, influence * 0.55)
+          );
+        } else {
+          color.setRGB(cr, cg, cb);
+        }
+        mesh.setColorAt(i, color);
+      }
+      mesh.instanceMatrix.needsUpdate = true;
+      if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
+
+      for (i = 0; i < floatCount; i++) {
+        k = i * 3;
+        dummy.position.set(
+          fpos[k] + Math.sin(t * 0.16 + fphases[i]) * 0.32 + enterMouse.x * (0.35 + fsizes[i] * 0.03),
+          fpos[k + 1] + Math.cos(t * 0.13 + fphases[i]) * 0.24 - enterMouse.y * (0.25 + fsizes[i] * 0.03),
+          fpos[k + 2] + Math.sin(t * 0.11 + fphases[i]) * 0.45
+        );
+        dummy.rotation.set(t * 0.22 + fphases[i], t * 0.17, t * 0.25);
+        dummy.scale.setScalar(fsizes[i]);
+        dummy.updateMatrix();
+        floatMesh.setMatrixAt(i, dummy.matrix);
+      }
+      floatMesh.instanceMatrix.needsUpdate = true;
+
+      renderer.render(scene3, camera3);
+      raf3 = requestAnimationFrame(frame3);
+    }
+    raf3 = requestAnimationFrame(frame3);
+
+    enter3D = {
+      burst: function () { burstTarget = 1; },
+      stop: function () {
+        stopped = true;
+        if (raf3) cancelAnimationFrame(raf3);
+        removeEventListener('resize', resize3);
+        renderer.dispose();
+        geo.dispose();
+        mat.dispose();
+        floatMat.dispose();
+        auraTexture.dispose();
+        aura.material.dispose();
+      }
+    };
+  }).catch(function () {
+    if (enterFx) enterFx.style.display = 'none';
+  });
+}
+
+if (enterEl) {
+  enterEl.addEventListener('wheel', function (e) {
+    if (entered) return;
+    e.preventDefault();
+    enterMorphTarget = clamp(enterMorphTarget + e.deltaY * 0.00115, 0, 1);
+  }, { passive: false });
+  enterEl.addEventListener('mousemove', function (e) {
+    setEnterPointer(e.clientX, e.clientY, true);
+  });
+  enterEl.addEventListener('mouseleave', function () { enterMouse.active = false; });
+  enterEl.addEventListener('touchstart', function (e) {
+    if (!e.touches.length) return;
+    enterTouchY = e.touches[0].clientY;
+  }, { passive: true });
+  enterEl.addEventListener('touchmove', function (e) {
+    if (!e.touches.length) return;
+    if (enterTouchY != null && !entered) {
+      e.preventDefault();
+      enterMorphTarget = clamp(enterMorphTarget + (enterTouchY - e.touches[0].clientY) * 0.0032, 0, 1);
+      enterTouchY = e.touches[0].clientY;
+    }
+    setEnterPointer(e.touches[0].clientX, e.touches[0].clientY, true);
+  }, { passive: false });
+  enterEl.addEventListener('touchend', function () { enterMouse.active = false; enterTouchY = null; });
+}
+initEnterThree();
 var muteBtn = document.getElementById('muteBtn');
 var AC = null, master = null;
 var mutedFlag = false;
@@ -1342,7 +1942,11 @@ function doEnter(withSound) {
   if (entered) return;
   entered = true;
   document.body.classList.add('entered');
-  enterEl.classList.add('is-gone');
+  enterWarp = true;
+  if (enter3D && enter3D.burst) enter3D.burst();
+  enterEl.classList.add('is-warp');
+  setTimeout(function () { enterEl.classList.add('is-gone'); }, REDUCED ? 0 : 1080);
+  setTimeout(function () { if (enter3D && enter3D.stop) enter3D.stop(); }, REDUCED ? 0 : 1500);
   document.documentElement.style.overflow = '';
   if (withSound && !REDUCED) { startAudio(); gong(140, 1.1); }
   lastRoom = 0;
@@ -1389,6 +1993,36 @@ var focusPanel = document.getElementById('focusPanel');
 var fpTitle = document.getElementById('fpTitle');
 var fpDur = document.getElementById('fpDur');
 var fpDesc = document.getElementById('fpDesc');
+var masterPanel = document.getElementById('masterPanel');
+var masterClose = document.getElementById('masterClose');
+var masterRole = document.getElementById('masterRole');
+var masterName = document.getElementById('masterName');
+var masterDesc = document.getElementById('masterDesc');
+var gardenPanel = document.getElementById('gardenPanel');
+var gardenClose = document.getElementById('gardenClose');
+var gardenTitle = document.getElementById('gardenTitle');
+var gardenText = document.getElementById('gardenText');
+var offerBtn = document.getElementById('offerBtn');
+var offerModal = document.getElementById('offerModal');
+var offerClose = document.getElementById('offerClose');
+
+var MASTER_INFO = [
+  {
+    role: 'Thai Master',
+    name: 'Мисс Лауан',
+    desc: 'Её искусство массажа посвящено восстановлению клиентов после травм и повышению общего состояния. С удовольствием поможет обеспечить гармонию ума, тела и духа.'
+  },
+  {
+    role: 'Thai Master',
+    name: 'Мисс Ванни',
+    desc: 'Ванни постоянно углубляет свои навыки тайского массажа, обучаясь в Бангкоке. Её мягкие, но уверенные движения помогут вам достичь глубокого расслабления и восстановить энергию.'
+  },
+  {
+    role: 'Thai Master',
+    name: 'Мисс Натсинее',
+    desc: 'Натсинее сочетает силу и точность в каждом движении, глубоко прорабатывая мышцы и помогая снять даже самое стойкое напряжение. Её массаж заряжает энергией, восстанавливает тело и дарит ощущение лёгкости и комфорта.'
+  }
+];
 
 function raycastList(list, mx, my) {
   if (!camState || !list || !list.length) return null;
@@ -1399,18 +2033,78 @@ function raycastList(list, mx, my) {
   for (var i = 0; i < list.length; i++) {
     var q = list[i];
     if (!q.curPos) continue;
-    var denom = d[0]*q.F[0] + d[1]*q.F[1] + d[2]*q.F[2];
+    var qR = q.curR || q.R;
+    var qU = q.curU || q.U;
+    var qF = q.curF || q.F;
+    var denom = d[0]*qF[0] + d[1]*qF[1] + d[2]*qF[2];
     if (Math.abs(denom) < 1e-4) continue;
     var w0 = sub(q.curPos, camState.eye);
-    var tt = (w0[0]*q.F[0] + w0[1]*q.F[1] + w0[2]*q.F[2]) / denom;
+    var tt = (w0[0]*qF[0] + w0[1]*qF[1] + w0[2]*qF[2]) / denom;
     if (tt < 0.5 || tt > bestT) continue;
     var hit = add(camState.eye, scale(d, tt));
     var loc = sub(hit, q.curPos);
-    var hx = (loc[0]*q.R[0] + loc[1]*q.R[1] + loc[2]*q.R[2]) / q.sx;
-    var hy = (loc[0]*q.U[0] + loc[1]*q.U[1] + loc[2]*q.U[2]) / q.sy;
+    var hx = (loc[0]*qR[0] + loc[1]*qR[1] + loc[2]*qR[2]) / q.sx;
+    var hy = (loc[0]*qU[0] + loc[1]*qU[1] + loc[2]*qU[2]) / q.sy;
     if (Math.abs(hx) <= 1.03 && Math.abs(hy) <= 1.03) { bestQ = q; bestT = tt; }
   }
   return bestQ;
+}
+function openMasterInfo(idx) {
+  var info = MASTER_INFO[idx];
+  if (!info || !masterPanel) return;
+  closeFocus();
+  closeGardenNote();
+  masterRole.textContent = info.role;
+  masterName.textContent = info.name;
+  masterDesc.textContent = info.desc;
+  masterPanel.classList.add('is-on');
+  masterPanel.setAttribute('aria-hidden', 'false');
+  gong(260 + idx * 36, 0.28);
+}
+function closeMasterInfo() {
+  if (!masterPanel) return;
+  masterPanel.classList.remove('is-on');
+  masterPanel.setAttribute('aria-hidden', 'true');
+}
+function placeGardenPanel(x, y) {
+  if (!gardenPanel) return;
+  var pad = 18;
+  var w = Math.min(330, innerWidth * 0.84);
+  var h = gardenPanel.offsetHeight || 150;
+  var left = clamp(x, pad + w / 2, innerWidth - pad - w / 2);
+  var above = y - h - 24 > pad;
+  var top = above ? y - 18 : y + 18;
+  gardenPanel.style.left = left + 'px';
+  gardenPanel.style.top = clamp(top, pad, innerHeight - pad) + 'px';
+  gardenPanel.style.setProperty('--garden-transform', above ? 'translate(-50%,calc(-100% - 18px))' : 'translate(-50%,18px)');
+}
+function openOrchidNote(q, x, y) {
+  var note = ORCHID_NOTES[q.orchid % ORCHID_NOTES.length];
+  if (!note || !gardenPanel) return;
+  closeFocus();
+  closeMasterInfo();
+  gardenTitle.textContent = note.title;
+  gardenText.textContent = note.text;
+  placeGardenPanel(x, y);
+  gardenPanel.classList.add('is-on');
+  gardenPanel.setAttribute('aria-hidden', 'false');
+  requestAnimationFrame(function () { placeGardenPanel(x, y); });
+  gong(190 + q.orchid * 10, 0.22);
+}
+function closeGardenNote() {
+  if (!gardenPanel) return;
+  gardenPanel.classList.remove('is-on');
+  gardenPanel.setAttribute('aria-hidden', 'true');
+}
+function openOffer() {
+  if (!offerModal) return;
+  offerModal.classList.add('is-on');
+  offerModal.setAttribute('aria-hidden', 'false');
+}
+function closeOffer() {
+  if (!offerModal) return;
+  offerModal.classList.remove('is-on');
+  offerModal.setAttribute('aria-hidden', 'true');
 }
 function openFocus(q) {
   focus.active = true; focus.q = q;
@@ -1420,6 +2114,8 @@ function openFocus(q) {
   fpDesc.textContent = svc[3];
   focusPanel.classList.add('is-on');
   focusPanel.setAttribute('aria-hidden', 'false');
+  closeMasterInfo();
+  closeGardenNote();
   gong(300 + q.card * 24, 0.35);
 }
 function closeFocus() {
@@ -1429,23 +2125,37 @@ function closeFocus() {
   focusPanel.setAttribute('aria-hidden', 'true');
 }
 document.getElementById('focusClose').addEventListener('click', closeFocus);
+if (masterClose) masterClose.addEventListener('click', closeMasterInfo);
+if (gardenClose) gardenClose.addEventListener('click', closeGardenNote);
+if (offerBtn) offerBtn.addEventListener('click', openOffer);
+if (offerClose) offerClose.addEventListener('click', closeOffer);
+if (offerModal) offerModal.addEventListener('click', function (e) { if (e.target === offerModal) closeOffer(); });
+document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { closeOffer(); closeMasterInfo(); closeGardenNote(); closeFocus(); } });
 addEventListener('wheel', function () { if (focus.active) closeFocus(); }, { passive: true });
-addEventListener('touchmove', function () { if (focus.active) closeFocus(); }, { passive: true });
+addEventListener('wheel', closeMasterInfo, { passive: true });
+addEventListener('wheel', closeGardenNote, { passive: true });
+addEventListener('touchmove', function () { if (focus.active) closeFocus(); closeMasterInfo(); closeGardenNote(); }, { passive: true });
 document.addEventListener('click', function (e) {
-  if (e.target.closest('a, button, .focus-panel, .rail')) return;
+  if (e.target.closest('a, button, .focus-panel, .master-panel, .garden-panel, .offer-modal, .rail')) return;
   if (!entered) return;
   var b = raycastList(scene.btnQuads, e.clientX, e.clientY);
   if (b) { window.open('https://n1351412.yclients.com', '_blank', 'noopener'); return; }
+  var m = raycastList(scene.masterQuads, e.clientX, e.clientY);
+  if (m) { openMasterInfo(m.master); return; }
+  var o = raycastList(scene.orchidQuads, e.clientX, e.clientY);
+  if (o) { openOrchidNote(o, e.clientX, e.clientY); return; }
   var q = raycastList(scene.cardQuads, e.clientX, e.clientY);
   if (q) openFocus(q);
-  else closeFocus();
+  else { closeFocus(); closeMasterInfo(); closeGardenNote(); }
 });
-var hoverBtnQ = null;
+var hoverBtnQ = null, hoverMasterQ = null, hoverOrchidQ = null;
 document.addEventListener('mousemove', function (e) {
-  if (!entered || focus.active) { hoverQ = null; hoverBtnQ = null; return; }
+  if (!entered || focus.active) { hoverQ = null; hoverBtnQ = null; hoverMasterQ = null; hoverOrchidQ = null; return; }
   hoverBtnQ = raycastList(scene.btnQuads, e.clientX, e.clientY);
-  hoverQ = hoverBtnQ ? null : raycastList(scene.cardQuads, e.clientX, e.clientY);
-  document.body.style.cursor = (hoverQ || hoverBtnQ) ? 'pointer' : '';
+  hoverMasterQ = hoverBtnQ ? null : raycastList(scene.masterQuads, e.clientX, e.clientY);
+  hoverOrchidQ = (hoverBtnQ || hoverMasterQ) ? null : raycastList(scene.orchidQuads, e.clientX, e.clientY);
+  hoverQ = (hoverBtnQ || hoverMasterQ || hoverOrchidQ) ? null : raycastList(scene.cardQuads, e.clientX, e.clientY);
+  document.body.style.cursor = (hoverQ || hoverBtnQ || hoverMasterQ || hoverOrchidQ) ? 'pointer' : '';
 });
 
 /* ============================================================
@@ -1454,7 +2164,7 @@ document.addEventListener('mousemove', function (e) {
 var isDragging = false, dragX = 0, dragY = 0;
 var yawT = 0, pitchT = 0, lookYaw = 0, lookPitch = 0;
 document.addEventListener('mousedown', function (e) {
-  if (e.target.closest('a, button, .focus-panel, .rail, .enter')) return;
+  if (e.target.closest('a, button, .focus-panel, .master-panel, .garden-panel, .offer-modal, .rail, .enter')) return;
   if (!entered || focus.active) return;
   isDragging = true; dragX = e.clientX; dragY = e.clientY;
   document.body.style.cursor = 'grabbing';
@@ -1542,6 +2252,7 @@ function flyTo(t) {
 
 /* оверлеи */
 function updateOverlays(t) {
+  document.body.classList.toggle('is-finale', t > 0.982);
   for (var i=0;i<spaces.length;i++){
     var el = spaces[i];
     var c = parseFloat(el.dataset.c), w = parseFloat(el.dataset.w);
@@ -1663,7 +2374,8 @@ function frame(now) {
   // подлёт камеры к карточке услуги
   if (focus.anim > 0.001 && focus.q && focus.q.curPos) {
     var fq = focus.q;
-    var fEye = add(add(fq.curPos, scale(fq.F, MOBILE ? 5.6 : 4.4)), scale(fq.U, 0.12));
+    var ff = fq.curF || fq.F, fu = fq.curU || fq.U;
+    var fEye = add(add(fq.curPos, scale(ff, MOBILE ? 5.6 : 4.4)), scale(fu, 0.12));
     var fa = focus.anim * focus.anim * (3 - 2 * focus.anim);
     eye = [lerp(eye[0], fEye[0], fa), lerp(eye[1], fEye[1], fa), lerp(eye[2], fEye[2], fa)];
     target = [lerp(target[0], fq.curPos[0], fa), lerp(target[1], fq.curPos[1], fa), lerp(target[2], fq.curPos[2], fa)];
@@ -1688,6 +2400,10 @@ function frame(now) {
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
     for (var i=0;i<scene.quads.length;i++){
       var q = scene.quads[i];
+      if (q.videoTex) {
+        updateVideoCircle(q.videoTex);
+        q.tex = q.videoTex.tex;
+      }
       var pos = q.pos;
       if (q.tube) { // близость камеры: карточка светится и подаётся навстречу
         var dEC = Math.hypot(eye[0]-q.pos[0], eye[1]-q.pos[1], eye[2]-q.pos[2]);
@@ -1699,9 +2415,22 @@ function frame(now) {
       q.curPos = pos;
       var qR = q.R, qU = q.U, qF = q.F;
       if (q.billboard) { qR = rt; qU = up; qF = scale(fw, -1); }
+      if (q.trackCamera) {
+        qF = norm(sub(eye, pos));
+        qR = norm(cross([0,1,0], qF));
+        if (Math.hypot(qR[0], qR[1], qR[2]) < 0.001) qR = rt;
+        qU = norm(cross(qF, qR));
+      }
+      q.curR = qR; q.curU = qU; q.curF = qF;
       if (q.card != null) { // hover: карточка мягко увеличивается
         var hTgt = (hoverQ === q || focus.q === q && focus.active) ? 1 : 0;
         q.hoverAmt += (hTgt - q.hoverAmt) * 0.1;
+      }
+      if (q.master != null) {
+        q.hoverAmt += (((hoverMasterQ === q) ? 1 : 0) - q.hoverAmt) * 0.1;
+      }
+      if (q.orchid != null) {
+        q.hoverAmt += (((hoverOrchidQ === q) ? 1 : 0) - q.hoverAmt) * 0.12;
       }
       if (q.btn != null) {
         q.hoverAmt += (((hoverBtnQ === q) ? 1 : 0) - q.hoverAmt) * 0.12;
@@ -1717,6 +2446,7 @@ function frame(now) {
       var al = q.alpha * (q.pulse ? flick : 1);
       if (q.fadeAfter) al *= clamp(1 - (camT - q.fadeAfter) / 0.045, 0, 1); // логотип гаснет за спиной
       if (q.showAfter) al *= clamp((camT - q.showAfter) / 0.02, 0, 1);       // отзывы — после зала мастеров
+      if (q.hideAfter) al *= clamp(1 - (camT - q.hideAfter) / 0.022, 0, 1);
       if (q.tube) {
         al = q.alpha * (0.8 + 0.25 * q.prox);
         if (q.prox > 0.04) { // золотой ореол у ближней карточки
