@@ -40,7 +40,7 @@ a{color:inherit;text-decoration:none}
   background:radial-gradient(120% 90% at 50% 50%,transparent 55%,rgba(5,10,8,.55) 100%)}
 
 /* ---------- Скролл-простор ---------- */
-.spacer{height:1200vh;position:relative;z-index:0}
+.spacer{height:1400vh;position:relative;z-index:0}
 
 /* ---------- Оверлеи-пространства ---------- */
 .overlay{position:fixed;inset:0;z-index:5;pointer-events:none}
@@ -100,6 +100,19 @@ h1,.h1{font-family:var(--serif);font-weight:400;font-size:clamp(2.2rem,7vw,4.8re
 .contacts{display:flex;flex-direction:column;gap:.35rem;font-size:1.05rem}
 .contacts a{border-bottom:1px solid rgba(211,161,92,.35);transition:color .3s;pointer-events:auto}
 .contacts a:hover{color:var(--brass-l)}
+
+.flat-reviews{display:none}
+.flat .flat-reviews{display:flex;flex-direction:column;gap:1.1rem;margin-top:1rem;max-width:520px}
+.flat .flat-reviews blockquote{background:rgba(211,161,92,.06);border:1px solid var(--line);
+  border-radius:14px;padding:1.1rem 1.3rem;font-size:.95rem;color:var(--ink-soft);
+  font-weight:300;text-align:left}
+.flat .flat-reviews cite{display:block;margin-top:.6rem;font-style:normal;
+  font-size:.78rem;letter-spacing:.08em;color:var(--brass)}
+
+/* мастера в 3D: текст сверху, DOM-блок скрыт — кнопки проецируются из сцены */
+body:not(.flat) .space--masters .inner{transform:translateY(-16vh)}
+body:not(.flat) .space--masters .masters{display:none}
+body:not(.flat) .space--rituals .inner{transform:translateY(-19vh)}
 
 /* ---------- Прогресс-путь ---------- */
 .rail{position:fixed;right:clamp(.9rem,3vw,2.2rem);top:50%;transform:translateY(-50%);
@@ -216,7 +229,7 @@ html.no-js .space{opacity:1;transform:none}
 <main class="overlay" id="top">
 
   <!-- 1. Вход -->
-  <section class="space" data-c="0.04" data-w="0.038" aria-label="Вход">
+  <section class="space" data-c="0.032" data-w="0.022" aria-label="Вход">
     <div class="inner">
       <p class="eyebrow">MAI SPA · тайский SPA · Йошкар-Ола</p>
       <h1>Вечер, который<br><span class="em">тело запомнит</span></h1>
@@ -226,7 +239,7 @@ html.no-js .space{opacity:1;transform:none}
   </section>
 
   <!-- 2. Зал ритуалов -->
-  <section class="space" data-c="0.20" data-w="0.038" aria-label="Зал ритуалов">
+  <section class="space space--rituals" data-c="0.178" data-w="0.016" aria-label="Зал ритуалов">
     <div class="inner">
       <p class="eyebrow">Пространство второе</p>
       <h2 class="h2">Зал ритуалов</h2>
@@ -244,7 +257,7 @@ html.no-js .space{opacity:1;transform:none}
   </section>
 
   <!-- 3. Пространство пара -->
-  <section class="space" data-c="0.34" data-w="0.038" aria-label="Пространство пара">
+  <section class="space" data-c="0.467" data-w="0.028" aria-label="Пространство пара">
     <div class="inner">
       <p class="eyebrow">Пространство третье</p>
       <h2 class="h2">Пространство пара</h2>
@@ -254,7 +267,7 @@ html.no-js .space{opacity:1;transform:none}
   </section>
 
   <!-- 4. Сад орхидей -->
-  <section class="space" data-c="0.52" data-w="0.038" aria-label="Сад орхидей">
+  <section class="space" data-c="0.545" data-w="0.026" data-c2="0.675" data-w2="0.018" aria-label="Сад орхидей">
     <div class="inner">
       <p class="eyebrow">Пространство четвёртое</p>
       <h2 class="h2">Сад орхидей</h2>
@@ -264,7 +277,7 @@ html.no-js .space{opacity:1;transform:none}
   </section>
 
   <!-- 5. Зал мастеров -->
-  <section class="space" data-c="0.88" data-w="0.038" aria-label="Зал мастеров">
+  <section class="space space--masters" data-c="0.787" data-w="0.015" aria-label="Зал мастеров">
     <div class="inner">
       <p class="eyebrow">Пространство пятое</p>
       <h2 class="h2">Зал мастеров</h2>
@@ -277,8 +290,23 @@ html.no-js .space{opacity:1;transform:none}
     </div>
   </section>
 
-  <!-- 5. Финал -->
-  <section class="space" data-c="0.97" data-w="0.055" aria-label="Контакты">
+  <!-- 6. Отзывы -->
+  <section class="space" data-c="0.895" data-w="0.022" aria-label="Отзывы гостей">
+    <div class="inner">
+      <p class="eyebrow">Пространство шестое</p>
+      <h2 class="h2">Нам доверяют</h2>
+      <p><span class="em">99% положительных</span> · более 100 отзывов на Яндекс Картах</p>
+      <div class="flat-reviews">
+        <blockquote>«Каждый массаж — не просто процедура, а настоящий ритуал. Помог снять напряжение и восстановить силы.»<cite>Марина Х. · ★★★★★</cite></blockquote>
+        <blockquote>«Как будто отключился от реальности — расслабило нереально. Всем рекомендую и ещё вернусь.»<cite>Никита А. · ★★★★★</cite></blockquote>
+        <blockquote>«Паровая бочка, скрабирование и тайский массаж — один из лучших. Внимание к деталям на высоте.»<cite>Ильдар М. · ★★★★★</cite></blockquote>
+        <blockquote>«Тихо и очень красиво. Чайная церемония после массажа добавила приятных эмоций.»<cite>Людмила П. · ★★★★★</cite></blockquote>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. Финал -->
+  <section class="space" data-c="0.98" data-w="0.034" aria-label="Контакты">
     <div class="inner">
       <p class="eyebrow">MAI SPA · Йошкар-Ола</p>
       <h2 class="h2">До встречи<br>в <span class="em">тишине</span></h2>
@@ -404,14 +432,25 @@ function mat4Basis(R,U,F,P,sx,sy){
 
 /* ---------- Catmull-Rom сплайн (аналог THREE.CatmullRomCurve3) ---------- */
 var CTRL = [
-  v3(0, 2.0, 116), v3(0, 2.0, 84), v3(0, 2.0, 52), v3(0, 2.0, 20),
-  v3(0, 2.0, -6), v3(8, 1.8, -26), v3(17, 1.6, -46),
-  // петля 360° ВНУТРИ сада орхидей: цветы кольцом вокруг камеры
-  v3(8, 2.0, -64),
-  v3(3.2, 2.2, -76.8), v3(4.2, 2.4, -81.5), v3(0, 2.6, -84.5),
-  v3(-4.2, 2.5, -81.5), v3(-3.2, 2.3, -76.8), v3(1.5, 2.2, -75.6),
-  v3(-3.5, 2.3, -88),    // выход из сада
-  v3(-18, 2.2, -112), v3(-8, 4.8, -128), v3(0, 9.5, -146)
+  v3(0, 2.0, 116), v3(0, 2.0, 72), v3(0, 2.2, 34), v3(0, 2.4, 16),
+  v3(0, 2.6, 6),         // конец прямой — логотип прямо по курсу
+  v3(-12, 4.8, 2),       // резкий поворот влево-вверх (~130°)
+  // петля 360° внутри ЗАЛА РИТУАЛОВ — сбоку и выше тоннеля
+  v3(-25.3, 6.7, 0.7), v3(-24.4, 6.8, -3.3), v3(-28, 6.9, -5.9),
+  v3(-31.6, 6.85, -3.3), v3(-30.7, 6.75, 0.7), v3(-26.7, 6.7, 1.8),
+  v3(-22, 5.2, -12),     // выход: поворот вправо-вниз
+  v3(-6, 2.2, -30),
+  v3(4, 1.6, -48),       // пар
+  v3(16, 0.4, -50),      // резкий поворот вправо-вниз (~130°) к саду
+  // петля 360° внутри сада орхидей — справа и ниже
+  v3(31.2, -1.0, -54.8), v3(32.2, -0.8, -59.5), v3(28, -0.6, -62.5),
+  v3(23.8, -0.7, -59.5), v3(24.8, -0.9, -54.8), v3(29.5, -1.0, -53.6),
+  v3(24.5, -0.9, -66),   // выход из сада
+  v3(2, 1.5, -92),       // мост-вираж
+  v3(-18, 2.2, -112),    // зал мастеров
+  v3(-20, 2.3, -126),
+  v3(-14, 2.5, -138), v3(-4, 2.8, -150),  // коридор отзывов
+  v3(2, 4.2, -162), v3(5, 7.5, -174), v3(6, 11.5, -186)  // подъём к лотосу
 ];
 function splineP(t) {
   t = clamp(t, 0, 1);
@@ -441,8 +480,8 @@ function basisAt(t){
 }
 
 /* ---------- якоря комнат ---------- */
-var ROOM_T = [0.04, 0.20, 0.34, 0.52, 0.88, 0.97];
-var ROOM_NAMES = ['Вход','Зал ритуалов','Пространство пара','Сад орхидей','Зал мастеров','Контакты'];
+var ROOM_T = [0.04, 0.178, 0.467, 0.545, 0.80, 0.895, 0.98];
+var ROOM_NAMES = ['Вход','Зал ритуалов','Пространство пара','Сад орхидей','Зал мастеров','Отзывы','Контакты'];
 
 /* ============================================================
    WebGL-хелперы
@@ -794,6 +833,65 @@ function texOrchid(pr, pg, pb) {
   x.beginPath(); x.arc(cx, cy, 4, 0, 6.283); x.fill();
   return makeTexture(c);
 }
+function texReview(quote, name) {
+  var c = cnv(640, 460), x = c.getContext('2d');
+  // стекло
+  var g = x.createLinearGradient(0, 0, 0, 460);
+  g.addColorStop(0, 'rgba(24,40,32,0.78)');
+  g.addColorStop(1, 'rgba(14,24,19,0.82)');
+  x.fillStyle = g; roundRect(x, 4, 4, 632, 452, 20); x.fill();
+  // блик стекла
+  var hg = x.createLinearGradient(0, 0, 640, 200);
+  hg.addColorStop(0, 'rgba(255,255,255,0.07)'); hg.addColorStop(1, 'rgba(255,255,255,0)');
+  x.fillStyle = hg; roundRect(x, 4, 4, 632, 180, 20); x.fill();
+  // латунная рамка
+  x.strokeStyle = 'rgba(211,161,92,0.6)'; x.lineWidth = 2.5;
+  roundRect(x, 10, 10, 620, 440, 16); x.stroke();
+  // звёзды
+  x.textAlign = 'left'; x.textBaseline = 'alphabetic';
+  x.fillStyle = '#E8C088'; x.font = '30px serif';
+  x.shadowColor = 'rgba(232,192,136,0.6)'; x.shadowBlur = 10;
+  x.fillText('\u2605 \u2605 \u2605 \u2605 \u2605', 44, 78);
+  x.shadowBlur = 0;
+  // цитата с переносами
+  x.fillStyle = '#F3EBDD'; x.font = "300 30px 'Manrope', 'Segoe UI', sans-serif";
+  var words = quote.split(' '), lines = [], cur = '';
+  for (var i = 0; i < words.length; i++) {
+    var t = cur ? cur + ' ' + words[i] : words[i];
+    if (x.measureText(t).width > 552 && cur) { lines.push(cur); cur = words[i]; }
+    else cur = t;
+  }
+  lines.push(cur);
+  for (i = 0; i < lines.length && i < 7; i++) x.fillText(lines[i], 44, 138 + i * 44);
+  // подпись
+  x.fillStyle = 'rgba(211,161,92,0.95)'; x.font = '600 24px \'Manrope\', sans-serif';
+  x.fillText(name + '  \u00b7  \u042f\u043d\u0434\u0435\u043a\u0441 \u041a\u0430\u0440\u0442\u044b', 44, 414);
+  return makeTexture(c);
+}
+function texAroma(text) {
+  var c = cnv(512, 128), x = c.getContext('2d');
+  x.textAlign = 'center'; x.textBaseline = 'middle';
+  x.shadowColor = 'rgba(232,192,136,0.75)'; x.shadowBlur = 16;
+  x.fillStyle = 'rgba(243,235,221,0.95)';
+  x.font = "italic 46px 'Prata', Georgia, serif";
+  x.fillText(text, 256, 64);
+  return makeTexture(c);
+}
+function texButton() {
+  var c = cnv(512, 160), x = c.getContext('2d');
+  var g = x.createLinearGradient(0, 0, 512, 160);
+  g.addColorStop(0, '#E8C088'); g.addColorStop(1, '#D3A15C');
+  x.fillStyle = g;
+  roundRect(x, 10, 14, 492, 132, 66); x.fill();
+  x.shadowColor = 'rgba(232,192,136,0.55)'; x.shadowBlur = 18;
+  roundRect(x, 10, 14, 492, 132, 66); x.fill();
+  x.shadowBlur = 0;
+  x.fillStyle = '#241a0d';
+  x.textAlign = 'center'; x.textBaseline = 'middle';
+  x.font = "600 52px 'Manrope', 'Segoe UI', sans-serif";
+  x.fillText('\u0417\u0430\u043f\u0438\u0441\u0430\u0442\u044c\u0441\u044f', 256, 82);
+  return makeTexture(c);
+}
 function texName(name) {
   var c = cnv(512,192), x = c.getContext('2d');
   x.textAlign='center'; x.textBaseline='middle';
@@ -851,7 +949,7 @@ function buildScene() {
   var tunN = MOBILE ? 900 : 1700;
   pos = []; seed = [];
   for (i=0;i<tunN;i++){
-    var tt = rnd(i+101)*0.24;
+    var tt = rnd(i+101)*0.14;
     var bb = basisAt(tt);
     var ang = rnd(i+113)*6.283;
     var rad = 2.6 + rnd(i+127)*4.4;
@@ -889,7 +987,7 @@ function buildScene() {
     colA:[0.9,0.45,0.18], colB:BRASS_L }));
 
   /* --- 4б. сад орхидей: пыльца и светящаяся дымка --- */
-  var obC = [0, 2.4, -80];
+  var obC = [28, -0.8, -58];
   var polN = MOBILE ? 160 : 280;
   pos = []; seed = [];
   for (i=0;i<polN;i++){
@@ -1003,26 +1101,30 @@ function buildQuads() {
   scene.quads = [];
   var i;
 
-  // логотип в глубине тоннеля
-  var lb = basisAt(0.16);
-  var lp2 = add(lb.P, scale(lb.T, 12));
+  // логотип в конце тоннеля (перед поворотом)
   scene.quads.push({
-    tex: texLogo(), pos: lp2, R: lb.R, U: lb.U, F: scale(lb.T,-1),
-    sx: 7.5, sy: 3.75, alpha: 1, additive: true, pulse: true
+    tex: texLogo(), pos: [0, 2.8, -4], R: [1,0,0], U: [0,1,0], F: [0,0,1],
+    sx: 7.5, sy: 3.75, alpha: 1, additive: true, pulse: true, fadeAfter: 0.15
   });
 
-  // кольцо из 6 карточек услуг
-  var rb = basisAt(ROOM_T[1] + 0.035);
-  var ringC = rb.P;
-  var RAD = 9.0; // радиус кольца увеличен — карточки-панели дальше от траектории, комфортный пролёт
+  // ЗАЛ РИТУАЛОВ: карточки стоят вертикальной трубой-конусом вокруг петли,
+  // камера вращается внутри; ближняя карточка подсвечивается и подаётся навстречу
+  var C2 = [-28, 6.8, -2];  // центр зала — в стороне и выше тоннеля
+  var TUBE_R = 7.0;
+  scene.cardGlowTex = texGlow('rgba(232,192,136,0.5)','rgba(232,192,136,0)');
   for (i=0;i<6;i++){
-    var a = i/6*6.283 + 0.5236; // смещение, чтобы карта не была ровно сверху/снизу
-    var off = add(scale(rb.R, Math.cos(a)*RAD), scale(rb.U, Math.sin(a)*RAD*0.72 + 0.6));
+    var a = i/6*6.283 + 0.26;
+    var cpos = [ C2[0] + Math.cos(a)*TUBE_R,
+                 C2[1] + (i % 2 ? 1.0 : -0.2),
+                 C2[2] + Math.sin(a)*TUBE_R ];
+    var cF = norm([C2[0]-cpos[0], 0.9, C2[2]-cpos[2]]);   // к центру, чуть вверх — «конус»
+    var cR = norm(cross([0,1,0], cF));
+    var cU = cross(cF, cR);
     scene.quads.push({
       tex: texCard(SERVICES[i][0], SERVICES[i][1], SERVICES[i][2]),
-      pos: add(ringC, off), R: rb.R, U: rb.U, F: scale(rb.T,-1),
-      sx: 1.5, sy: 1.87, alpha: 0.98, additive: false, hoverAmt: 0,
-      bob: i, card: i, ring: { c: ringC, R: rb.R, U: rb.U, rad: RAD, a0: a }
+      pos: cpos, R: cR, U: cU, F: cF,
+      sx: 1.55, sy: 1.93, alpha: 0.96, additive: false, hoverAmt: 0, cullBack: true,
+      bob: i, card: i, tube: true, prox: 0
     });
   }
 
@@ -1036,28 +1138,33 @@ function buildQuads() {
   });
 
   // сад орхидей: цветы-билборды вокруг центра петли — видны с любой стороны облёта
-  var GARDEN = [0, 2.4, -80];
+  var GARDEN = [28, -0.8, -58];
   var orchidPink = texOrchid(216, 146, 196);
   var orchidCream = texOrchid(238, 214, 188);
   var orchidGlow = texGlow('rgba(216,146,196,0.4)','rgba(216,146,196,0)');
-  var ORCHIDS = [
-    // кольцо сада вокруг камеры (радиус ~9-12, разные высоты)
-    [ 10.0, 2.6, -80.0, 1.8, 0], [  7.1, 1.3, -72.9, 1.5, 1], [  0.0, 3.6, -70.0, 1.7, 0],
-    [ -7.1, 2.0, -72.9, 1.4, 1], [-10.0, 3.2, -80.0, 1.9, 0], [ -7.1, 1.1, -87.1, 1.5, 1],
-    [  0.0, 2.2, -90.5, 1.7, 0], [  7.1, 3.4, -87.1, 1.6, 1],
-    // второй ярус — выше и дальше
-    [  8.5, 4.8, -71.5, 1.2, 1], [ -9.0, 5.0, -88.0, 1.3, 0],
-    [ -2.5, 5.4, -73.0, 1.1, 1], [  3.0, 0.4, -89.0, 1.2, 0]
+  var ORCHIDS = [ // смещения от центра сада (радиус ~9-12, разные высоты)
+    [ 10.0, 0.2,  0.0, 1.8, 0], [  7.1,-1.1,  7.1, 1.5, 1], [  0.0, 1.2, 10.0, 1.7, 0],
+    [ -7.1,-0.4,  7.1, 1.4, 1], [-10.0, 0.8,  0.0, 1.9, 0], [ -7.1,-1.3, -7.1, 1.5, 1],
+    [  0.0,-0.2,-10.5, 1.7, 0], [  7.1, 1.0, -7.1, 1.6, 1],
+    [  8.5, 2.4,  8.5, 1.2, 1], [ -9.0, 2.6, -8.0, 1.3, 0],
+    [ -2.5, 3.0,  7.0, 1.1, 1], [  3.0,-2.0, -9.0, 1.2, 0]
   ];
+  var AROMAS = ['франжипани','жасмин','иланг-иланг','лемонграсс','сандал','лотос',
+                'манго','зелёный чай','кокос','мята','орхидея','тамаринд'];
   for (i=0;i<ORCHIDS.length;i++){
     var oc = ORCHIDS[i];
-    var opos = [oc[0], oc[1], oc[2]];
+    var opos = [GARDEN[0]+oc[0], GARDEN[1]+oc[1], GARDEN[2]+oc[2]];
     scene.quads.push({ tex: orchidGlow, pos: opos, billboard: true,
       R: [1,0,0], U: [0,1,0], F: [0,0,1],
       sx: oc[3]*2.0, sy: oc[3]*2.0, alpha: 0.7, additive: true, pulse: true, sway: i*1.3 });
     scene.quads.push({ tex: oc[4] ? orchidCream : orchidPink, pos: opos, billboard: true,
       R: [1,0,0], U: [0,1,0], F: [0,0,1],
       sx: oc[3], sy: oc[3], alpha: 0.96, additive: false, sway: i*1.3 });
+    // подпись-аромат под цветком
+    scene.quads.push({ tex: texAroma(AROMAS[i % AROMAS.length]),
+      pos: [opos[0], opos[1] - oc[3]*1.02, opos[2]], billboard: true,
+      R: [1,0,0], U: [0,1,0], F: [0,0,1],
+      sx: oc[3]*1.05, sy: oc[3]*0.26, alpha: 0.85, additive: true, sway: i*1.3 });
   }
 
   // светлячки (позиции обновляются в кадре)
@@ -1066,25 +1173,62 @@ function buildQuads() {
   for (i=0;i<4;i++) scene.fireflies.push({ p: add(splineP(0), [i-2, 1, -2]), s: i });
 
   // три портала мастеров
-  var mb = basisAt(ROOM_T[4]);
-  var mC = add(mb.P, scale(mb.T, 18)); // порталы мастеров дальше по ходу полёта — камера пролетает на комфортном расстоянии
+  // мастера зигзагом вдоль коридора — камера пролетает рядом с каждой
   var ringTex = texPortalRing();
   var glowTex = texGlow('rgba(232,192,136,0.5)','rgba(232,192,136,0)');
+  var btnTex = texButton();
+  scene.masterGazes = [];
   for (i=0;i<3;i++){
-    var offR = (i-1) * 5.6;
-    var pp = add(mC, scale(mb.R, offR));
-    scene.quads.push({ tex: glowTex, pos: pp, R: mb.R, U: mb.U, F: scale(mb.T,-1),
+    var mt = 0.805 + i * 0.028;
+    var tb = basisAt(mt);
+    var mside = (i % 2 === 0) ? -1 : 1;          // слева-справа-слева
+    var pp = add(add(tb.P, scale(tb.R, mside * 6.2)), scale(tb.U, 0.9));
+    var pF = norm(add(scale(tb.T, -1), scale(tb.R, -mside * 0.5))); // развёрнута к пути
+    var pR = norm(cross([0,1,0], pF));
+    var pU = cross(pF, pR);
+    scene.quads.push({ tex: glowTex, pos: pp, R: pR, U: pU, F: pF,
       sx: 3.6, sy: 3.6, alpha: 0.8, additive: true, pulse: true });
     if (MASTER_IMGS[i]) {
       scene.quads.push({ tex: texPhotoCircle(MASTER_IMGS[i]), pos: pp,
-        R: mb.R, U: mb.U, F: scale(mb.T,-1),
-        sx: 1.62, sy: 1.62, alpha: 1, additive: false });
+        R: pR, U: pU, F: pF,
+        sx: 1.62, sy: 1.62, alpha: 1, additive: false, cullBack: true });
     }
-    scene.quads.push({ tex: ringTex, pos: pp, R: mb.R, U: mb.U, F: scale(mb.T,-1),
+    scene.quads.push({ tex: ringTex, pos: pp, R: pR, U: pU, F: pF,
       sx: 2.1, sy: 2.1, alpha: 0.95, additive: true });
-    scene.quads.push({ tex: texName(MASTERS[i]), pos: add(pp, [0,-2.9,0]),
-      R: mb.R, U: mb.U, F: scale(mb.T,-1), sx: 2.2, sy: 0.82, alpha: 0.95, additive: true });
+    scene.quads.push({ tex: texName(MASTERS[i]), pos: add(pp, scale(pU, -2.3)),
+      R: pR, U: pU, F: pF, sx: 2.2, sy: 0.82, alpha: 0.95, additive: true });
+    // 3D-кнопка «Записаться» — под тем же углом, что и имя
+    scene.quads.push({ tex: btnTex, pos: add(pp, scale(pU, -3.05)),
+      R: pR, U: pU, F: pF, sx: 1.05, sy: 0.33, alpha: 0.98, additive: false,
+      cullBack: true, btn: i, hoverAmt: 0 });
+    scene.masterGazes.push({ pos: pp, t: mt });
   }
+  scene.btnQuads = scene.quads.filter(function (q) { return q.btn != null; });
+  // коридор отзывов: стеклянные панели по бокам пути
+  var REVIEWS = [
+    ['Каждый массаж — не просто процедура, а настоящий ритуал. Помог снять напряжение и восстановить силы.', 'Марина Х.'],
+    ['Как будто отключился от реальности — расслабило нереально. Всем рекомендую и ещё вернусь.', 'Никита А.'],
+    ['Паровая бочка, скрабирование и тайский массаж — один из лучших. Внимание к деталям на высоте.', 'Ильдар М.'],
+    ['Тихо и очень красиво. Чайная церемония после массажа добавила приятных эмоций.', 'Людмила П.']
+  ];
+  var revGlow = texGlow('rgba(211,161,92,0.30)','rgba(211,161,92,0)');
+  scene.reviewPanels = [];
+  for (i = 0; i < REVIEWS.length; i++) {
+    var rt2 = 0.885 + i * 0.02;                  // после всех мастеров, по одной за раз
+    var rb2 = basisAt(rt2);
+    var side = (i % 2 === 0) ? -1 : 1;           // чередуем лево/право
+    var rpos = add(add(rb2.P, scale(rb2.R, side * 6.6)), scale(rb2.U, 1.4 + (i % 2) * 0.7));
+    // панель слегка развёрнута к пути
+    var rF = norm(add(scale(rb2.T, -1), scale(rb2.R, -side * 0.45)));
+    var rR = norm(cross([0,1,0], rF));
+    var rU = cross(rF, rR);
+    scene.quads.push({ tex: revGlow, pos: rpos, R: rR, U: rU, F: rF,
+      sx: 3.6, sy: 2.7, alpha: 0.55, additive: true, pulse: true, sway: i * 1.7, showAfter: 0.868 });
+    scene.quads.push({ tex: texReview(REVIEWS[i][0], REVIEWS[i][1]), pos: rpos,
+      R: rR, U: rU, F: rF, sx: 2.3, sy: 1.65, alpha: 0.97, additive: false, sway: i * 1.7, showAfter: 0.868, cullBack: true });
+    scene.reviewPanels.push({ pos: rpos, t: rt2 });
+  }
+
   scene.cardQuads = scene.quads.filter(function (q) { return q.card != null; });
   texturesReady = true;
 }
@@ -1227,14 +1371,14 @@ var fpTitle = document.getElementById('fpTitle');
 var fpDur = document.getElementById('fpDur');
 var fpDesc = document.getElementById('fpDesc');
 
-function raycastCards(mx, my) {
-  if (!camState || !scene.cardQuads || !scene.cardQuads.length) return null;
+function raycastList(list, mx, my) {
+  if (!camState || !list || !list.length) return null;
   var nx = (mx / W) * 2 - 1, ny = -((my / H) * 2 - 1);
   var tanV = 0.5774, tanH = tanV * (W / H);
   var d = norm(add(add(camState.fw, scale(camState.rt, nx * tanH)), scale(camState.up, ny * tanV)));
   var bestQ = null, bestT = 1e9;
-  for (var i = 0; i < scene.cardQuads.length; i++) {
-    var q = scene.cardQuads[i];
+  for (var i = 0; i < list.length; i++) {
+    var q = list[i];
     if (!q.curPos) continue;
     var denom = d[0]*q.F[0] + d[1]*q.F[1] + d[2]*q.F[2];
     if (Math.abs(denom) < 1e-4) continue;
@@ -1271,14 +1415,18 @@ addEventListener('touchmove', function () { if (focus.active) closeFocus(); }, {
 document.addEventListener('click', function (e) {
   if (e.target.closest('a, button, .focus-panel, .rail')) return;
   if (!entered) return;
-  var q = raycastCards(e.clientX, e.clientY);
+  var b = raycastList(scene.btnQuads, e.clientX, e.clientY);
+  if (b) { window.open('https://n1351412.yclients.com', '_blank', 'noopener'); return; }
+  var q = raycastList(scene.cardQuads, e.clientX, e.clientY);
   if (q) openFocus(q);
   else closeFocus();
 });
+var hoverBtnQ = null;
 document.addEventListener('mousemove', function (e) {
-  if (!entered || focus.active) { hoverQ = null; return; }
-  hoverQ = raycastCards(e.clientX, e.clientY);
-  document.body.style.cursor = hoverQ ? 'pointer' : '';
+  if (!entered || focus.active) { hoverQ = null; hoverBtnQ = null; return; }
+  hoverBtnQ = raycastList(scene.btnQuads, e.clientX, e.clientY);
+  hoverQ = hoverBtnQ ? null : raycastList(scene.cardQuads, e.clientX, e.clientY);
+  document.body.style.cursor = (hoverQ || hoverBtnQ) ? 'pointer' : '';
 });
 
 /* ============================================================
@@ -1320,7 +1468,7 @@ addEventListener('touchend', function () { tchLook = false; });
    DEEP-LINKS: #rituals / #steam / #orchids / #masters / #contacts
    ============================================================ */
 var HASH_ROOMS = { '#entrance': 0, '#rituals': 1, '#services': 1, '#steam': 2,
-                   '#orchids': 3, '#masters': 4, '#contacts': 5 };
+                   '#orchids': 3, '#masters': 4, '#reviews': 5, '#contacts': 6 };
 
 /* ============================================================
    Скролл → полёт камеры
@@ -1378,7 +1526,14 @@ function updateOverlays(t) {
   for (var i=0;i<spaces.length;i++){
     var el = spaces[i];
     var c = parseFloat(el.dataset.c), w = parseFloat(el.dataset.w);
-    var vis = Math.exp(-((t-c)*(t-c)) / (2*w*w)) * (1 - focus.anim);
+    var g = Math.exp(-((t-c)*(t-c)) / (2*w*w));
+    if (el.dataset.c2) { // эхо на выходе из петли
+      var c2 = parseFloat(el.dataset.c2), w2 = parseFloat(el.dataset.w2);
+      g += 0.55 * Math.exp(-((t-c2)*(t-c2)) / (2*w2*w2));
+    }
+    g = Math.min(1, g);
+    g = g < 0.14 ? 0 : (g - 0.14) / 0.86;   // порог: или видно, или нет
+    var vis = g * (1 - focus.anim);
     el.style.opacity = vis.toFixed(3);
     el.style.transform = 'translateY(' + ((1-vis)*26).toFixed(1) + 'px)';
     el.style.pointerEvents = vis > 0.45 ? 'auto' : 'none';
@@ -1437,9 +1592,28 @@ function frame(now) {
   var lookT = clamp(camT + 0.035, 0, 1);
   var target = splineP(lookT);
 
+  // взгляд активно поворачивается к мастерицам и панелям отзывов
+  var gazePts = (scene.masterGazes || []).concat(scene.reviewPanels || []);
+  if (gazePts.length) {
+    var rwSum = 0, rTx = 0, rTy = 0, rTz = 0;
+    for (i = 0; i < gazePts.length; i++) {
+      var rp = gazePts[i];
+      var rgd = camT - (rp.t - 0.008); // пик — на подлёте
+      var rg = Math.exp(-(rgd * rgd) / (2 * 0.015 * 0.015));
+      rg = rg * rg * rg; // ближайшая цель доминирует, взгляд не размывается
+      rwSum += rg; rTx += rp.pos[0] * rg; rTy += rp.pos[1] * rg; rTz += rp.pos[2] * rg;
+    }
+    if (rwSum > 0.02) {
+      var rBlend = Math.min(1, rwSum) * 0.96;
+      target = [ lerp(target[0], rTx / rwSum, rBlend),
+                 lerp(target[1], rTy / rwSum, rBlend),
+                 lerp(target[2], rTz / rwSum, rBlend) ];
+    }
+  }
+
   // в финале взгляд поднимается к лотосу
   if (scene.lotusPos) {
-    var wgt = clamp((camT - 0.88) / 0.09, 0, 1);
+    var wgt = clamp((camT - 0.945) / 0.033, 0, 1);
     wgt = wgt*wgt*(3-2*wgt);
     target = [ lerp(target[0], scene.lotusPos[0], wgt * 0.85),
                lerp(target[1], scene.lotusPos[1] * 0.8, wgt * 0.85),
@@ -1496,11 +1670,11 @@ function frame(now) {
     for (var i=0;i<scene.quads.length;i++){
       var q = scene.quads[i];
       var pos = q.pos;
-      if (q.ring) { // лёгкое вращение кольца карточек + покачивание
-        var a = q.ring.a0 + ringClock*0.07;
-        var off = add(scale(q.ring.R, Math.cos(a)*q.ring.rad),
-                      scale(q.ring.U, Math.sin(a)*q.ring.rad*0.72 + 0.6 + Math.sin(ringClock*0.9+q.bob)*0.18));
-        pos = add(q.ring.c, off);
+      if (q.tube) { // близость камеры: карточка светится и подаётся навстречу
+        var dEC = Math.hypot(eye[0]-q.pos[0], eye[1]-q.pos[1], eye[2]-q.pos[2]);
+        q.prox = clamp(1 - (dEC - 3.4) / 3.6, 0, 1);
+        pos = add(q.pos, scale(q.F, q.prox * 0.9));
+        pos = add(pos, scale(q.U, Math.sin(time*0.8 + q.bob) * 0.1));
       }
       if (q.sway != null) pos = add(pos, scale(q.billboard ? [0,1,0] : q.U, Math.sin(time*0.7 + q.sway) * 0.12));
       q.curPos = pos;
@@ -1510,12 +1684,33 @@ function frame(now) {
         var hTgt = (hoverQ === q || focus.q === q && focus.active) ? 1 : 0;
         q.hoverAmt += (hTgt - q.hoverAmt) * 0.1;
       }
-      var hs = 1 + (q.hoverAmt || 0) * 0.09;
+      if (q.btn != null) {
+        q.hoverAmt += (((hoverBtnQ === q) ? 1 : 0) - q.hoverAmt) * 0.12;
+      }
+      // дальняя отсечка непрозрачных объектов: не спойлерим комнаты сквозь туман
+      if (!q.additive) {
+        var dq = Math.hypot(eye[0]-pos[0], eye[1]-pos[1], eye[2]-pos[2]);
+        if (dq > 34) continue;
+        var farFade = clamp((34 - dq) / 7, 0, 1);
+      } else var farFade = 1;
+      var hs = 1 + (q.hoverAmt || 0) * 0.09 + (q.prox || 0) * 0.12;
       var m = mat4Basis(qR, qU, qF, pos, q.sx * hs, q.sy * hs);
       var al = q.alpha * (q.pulse ? flick : 1);
+      if (q.fadeAfter) al *= clamp(1 - (camT - q.fadeAfter) / 0.045, 0, 1); // логотип гаснет за спиной
+      if (q.showAfter) al *= clamp((camT - q.showAfter) / 0.02, 0, 1);       // отзывы — после зала мастеров
+      if (q.tube) {
+        al = q.alpha * (0.8 + 0.25 * q.prox);
+        if (q.prox > 0.04) { // золотой ореол у ближней карточки
+          gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
+          var mg = mat4Basis(qR, qU, qF, pos, q.sx * 2.0 * hs, q.sy * 1.7 * hs);
+          drawQuad(mg, scene.cardGlowTex, q.prox * 0.5, true, view, proj);
+        }
+      }
       if (q.additive) gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
       else gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-      drawQuad(m, q.tex, al, q.additive, view, proj);
+      if (q.cullBack) gl.enable(gl.CULL_FACE);
+      drawQuad(m, q.tex, Math.min(1, al * farFade), q.additive, view, proj);
+      if (q.cullBack) gl.disable(gl.CULL_FACE);
     }
   }
 
