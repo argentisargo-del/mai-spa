@@ -1481,10 +1481,13 @@ function buildQuads() {
     // камера подлетает к ней строго в лоб (она смотрит на карточку, карточка — на
     // камеру через trackCamera), а затем карточка гаснет прямо перед пролётом,
     // так что всегда попадает в кадр целиком и по центру.
+    // Масштаб пути возле отзывов ≈ 4.4 мировых единицы на 0.01 t. Карточку держим
+    // видимой, пока камера в ~5–8 единицах позади якоря (заметно, крупно, в упор),
+    // и быстро гасим прямо перед пролётом — короткие фейды (fadeIn/fadeOut), иначе
+    // на такой близкой дистанции карточка успевает раздуться за кадр.
     for (i = 0; i < REVIEWS.length; i++) {
       var side = (i % 2 === 0) ? -1 : 1;
-      var focusT = 0.872 + i * 0.018;            // момент, когда камера смотрит на карточку в упор
-      var anchorT = focusT + 0.040;              // карточка стоит впереди по ходу полёта
+      var anchorT = 0.892 + i * 0.019;           // карточка стоит впереди по ходу полёта
       var rb2 = basisAt(anchorT);
       // почти по центру пути: крошечное смещение вбок/вверх, чтобы камера не
       // проходила ровно сквозь неё и оставалась «жизнь» в композиции
@@ -1492,12 +1495,14 @@ function buildQuads() {
       var rF = norm(add(scale(rb2.T, -1), scale(rb2.R, -side * 0.2)));
       var rR = norm(cross([0,1,0], rF));
       var rU = cross(rF, rR);
-      var showA = focusT - 0.030, hideA = focusT - 0.006;
+      var showA = anchorT - 0.026, hideA = anchorT - 0.015;   // видна ~8u→6u, гаснет к ~3u
       scene.quads.push({ tex: revGlow, pos: rpos, R: rR, U: rU, F: rF, trackCamera: true,
-        sx: 2.0, sy: 1.5, alpha: 0.5, additive: true, pulse: true, sway: i * 1.7, showAfter: showA, hideAfter: hideA });
+        sx: 1.7, sy: 1.2, alpha: 0.5, additive: true, pulse: true, sway: i * 1.7,
+        showAfter: showA, hideAfter: hideA, fadeIn: 0.008, fadeOut: 0.008 });
       scene.quads.push({ tex: texReview(REVIEWS[i][0], REVIEWS[i][1]), pos: rpos,
-        R: rR, U: rU, F: rF, trackCamera: true, sx: 1.3, sy: 0.93, alpha: 0.98, additive: false, sway: i * 1.7, showAfter: showA, hideAfter: hideA, cullBack: true });
-      scene.reviewPanels.push({ pos: rpos, t: focusT + 0.008 });   // пик взгляда — на focusT
+        R: rR, U: rU, F: rF, trackCamera: true, sx: 1.15, sy: 0.82, alpha: 0.98, additive: false,
+        sway: i * 1.7, showAfter: showA, hideAfter: hideA, fadeIn: 0.008, fadeOut: 0.008, cullBack: true });
+      scene.reviewPanels.push({ pos: rpos, t: anchorT - 0.009 });   // пик взгляда — когда карточка в ~7.5u впереди
     }
   } else {
     for (i = 0; i < REVIEWS.length; i++) {
@@ -2472,8 +2477,8 @@ function frame(now) {
       var m = mat4Basis(qR, qU, qF, pos, q.sx * hs, q.sy * hs);
       var al = q.alpha * (q.pulse ? flick : 1);
       if (q.fadeAfter) al *= clamp(1 - (camT - q.fadeAfter) / 0.045, 0, 1); // логотип гаснет за спиной
-      if (q.showAfter) al *= clamp((camT - q.showAfter) / 0.02, 0, 1);       // отзывы — после зала мастеров
-      if (q.hideAfter) al *= clamp(1 - (camT - q.hideAfter) / 0.022, 0, 1);
+      if (q.showAfter) al *= clamp((camT - q.showAfter) / (q.fadeIn || 0.02), 0, 1);   // отзывы — после зала мастеров
+      if (q.hideAfter) al *= clamp(1 - (camT - q.hideAfter) / (q.fadeOut || 0.022), 0, 1);
       if (q.tube) {
         al = q.alpha * (0.8 + 0.25 * q.prox);
         if (q.prox > 0.04) { // золотой ореол у ближней карточки
