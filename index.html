@@ -1473,27 +1473,48 @@ function buildQuads() {
     ['Тихо и очень красиво. Чайная церемония после массажа добавила приятных эмоций.', 'Людмила П.']
   ];
   var revGlow = texGlow('rgba(211,161,92,0.30)','rgba(211,161,92,0)');
-  // Вертикальный FOV фиксирован (60°), поэтому на портретных экранах горизонтальный
-  // угол обзора узкий — панель отзыва прежнего размера не помещается по ширине и
-  // обрезается краем кадра. На мобильных уменьшаем панель (и её ореол), сохраняя
-  // пропорции текстуры, чтобы отзыв целиком попадал в кадр при пролёте камеры.
-  var revTx = MOBILE ? 1.45 : 2.3,  revTy = MOBILE ? 1.04 : 1.65;
-  var revGx = MOBILE ? 2.27 : 3.6,  revGy = MOBILE ? 1.70 : 2.7;
   scene.reviewPanels = [];
-  for (i = 0; i < REVIEWS.length; i++) {
-    var rt2 = 0.875 + i * 0.017;                 // после всех мастеров, по одной за раз
-    var rb2 = basisAt(rt2);
-    var side = (i % 2 === 0) ? -1 : 1;           // чередуем лево/право
-    var rpos = add(add(rb2.P, scale(rb2.R, side * 6.6)), scale(rb2.U, 1.4 + (i % 2) * 0.7));
-    // панель слегка развёрнута к пути
-    var rF = norm(add(scale(rb2.T, -1), scale(rb2.R, -side * 0.45)));
-    var rR = norm(cross([0,1,0], rF));
-    var rU = cross(rF, rR);
-    scene.quads.push({ tex: revGlow, pos: rpos, R: rR, U: rU, F: rF, trackCamera: true,
-      sx: revGx, sy: revGy, alpha: 0.55, additive: true, pulse: true, sway: i * 1.7, showAfter: 0.858, hideAfter: 0.952 });
-    scene.quads.push({ tex: texReview(REVIEWS[i][0], REVIEWS[i][1]), pos: rpos,
-      R: rR, U: rU, F: rF, trackCamera: true, sx: revTx, sy: revTy, alpha: 0.97, additive: false, sway: i * 1.7, showAfter: 0.858, hideAfter: 0.952, cullBack: true });
-    scene.reviewPanels.push({ pos: rpos, t: rt2 });
+  if (MOBILE) {
+    // На портретных экранах горизонтальный угол обзора узкий (вертикальный FOV
+    // фиксирован 60°), поэтому боковые панели «стоят слишком широко» и обрезаются
+    // краем кадра. Ставим карточку почти на линию полёта, но чуть впереди камеры:
+    // камера подлетает к ней строго в лоб (она смотрит на карточку, карточка — на
+    // камеру через trackCamera), а затем карточка гаснет прямо перед пролётом,
+    // так что всегда попадает в кадр целиком и по центру.
+    for (i = 0; i < REVIEWS.length; i++) {
+      var side = (i % 2 === 0) ? -1 : 1;
+      var focusT = 0.872 + i * 0.018;            // момент, когда камера смотрит на карточку в упор
+      var anchorT = focusT + 0.040;              // карточка стоит впереди по ходу полёта
+      var rb2 = basisAt(anchorT);
+      // почти по центру пути: крошечное смещение вбок/вверх, чтобы камера не
+      // проходила ровно сквозь неё и оставалась «жизнь» в композиции
+      var rpos = add(add(rb2.P, scale(rb2.R, side * 0.22)), scale(rb2.U, 0.4));
+      var rF = norm(add(scale(rb2.T, -1), scale(rb2.R, -side * 0.2)));
+      var rR = norm(cross([0,1,0], rF));
+      var rU = cross(rF, rR);
+      var showA = focusT - 0.030, hideA = focusT - 0.006;
+      scene.quads.push({ tex: revGlow, pos: rpos, R: rR, U: rU, F: rF, trackCamera: true,
+        sx: 2.0, sy: 1.5, alpha: 0.5, additive: true, pulse: true, sway: i * 1.7, showAfter: showA, hideAfter: hideA });
+      scene.quads.push({ tex: texReview(REVIEWS[i][0], REVIEWS[i][1]), pos: rpos,
+        R: rR, U: rU, F: rF, trackCamera: true, sx: 1.3, sy: 0.93, alpha: 0.98, additive: false, sway: i * 1.7, showAfter: showA, hideAfter: hideA, cullBack: true });
+      scene.reviewPanels.push({ pos: rpos, t: focusT + 0.008 });   // пик взгляда — на focusT
+    }
+  } else {
+    for (i = 0; i < REVIEWS.length; i++) {
+      var rt2 = 0.875 + i * 0.017;               // после всех мастеров, по одной за раз
+      var rb2 = basisAt(rt2);
+      var side = (i % 2 === 0) ? -1 : 1;         // чередуем лево/право
+      var rpos = add(add(rb2.P, scale(rb2.R, side * 6.6)), scale(rb2.U, 1.4 + (i % 2) * 0.7));
+      // панель слегка развёрнута к пути
+      var rF = norm(add(scale(rb2.T, -1), scale(rb2.R, -side * 0.45)));
+      var rR = norm(cross([0,1,0], rF));
+      var rU = cross(rF, rR);
+      scene.quads.push({ tex: revGlow, pos: rpos, R: rR, U: rU, F: rF, trackCamera: true,
+        sx: 3.6, sy: 2.7, alpha: 0.55, additive: true, pulse: true, sway: i * 1.7, showAfter: 0.858, hideAfter: 0.952 });
+      scene.quads.push({ tex: texReview(REVIEWS[i][0], REVIEWS[i][1]), pos: rpos,
+        R: rR, U: rU, F: rF, trackCamera: true, sx: 2.3, sy: 1.65, alpha: 0.97, additive: false, sway: i * 1.7, showAfter: 0.858, hideAfter: 0.952, cullBack: true });
+      scene.reviewPanels.push({ pos: rpos, t: rt2 });
+    }
   }
 
   scene.cardQuads = scene.quads.filter(function (q) { return q.card != null; });
