@@ -1473,6 +1473,12 @@ function buildQuads() {
     ['Тихо и очень красиво. Чайная церемония после массажа добавила приятных эмоций.', 'Людмила П.']
   ];
   var revGlow = texGlow('rgba(211,161,92,0.30)','rgba(211,161,92,0)');
+  // Вертикальный FOV фиксирован (60°), поэтому на портретных экранах горизонтальный
+  // угол обзора узкий — панель отзыва прежнего размера не помещается по ширине и
+  // обрезается краем кадра. На мобильных уменьшаем панель (и её ореол), сохраняя
+  // пропорции текстуры, чтобы отзыв целиком попадал в кадр при пролёте камеры.
+  var revTx = MOBILE ? 1.45 : 2.3,  revTy = MOBILE ? 1.04 : 1.65;
+  var revGx = MOBILE ? 2.27 : 3.6,  revGy = MOBILE ? 1.70 : 2.7;
   scene.reviewPanels = [];
   for (i = 0; i < REVIEWS.length; i++) {
     var rt2 = 0.875 + i * 0.017;                 // после всех мастеров, по одной за раз
@@ -1484,9 +1490,9 @@ function buildQuads() {
     var rR = norm(cross([0,1,0], rF));
     var rU = cross(rF, rR);
     scene.quads.push({ tex: revGlow, pos: rpos, R: rR, U: rU, F: rF, trackCamera: true,
-      sx: 3.6, sy: 2.7, alpha: 0.55, additive: true, pulse: true, sway: i * 1.7, showAfter: 0.858, hideAfter: 0.952 });
+      sx: revGx, sy: revGy, alpha: 0.55, additive: true, pulse: true, sway: i * 1.7, showAfter: 0.858, hideAfter: 0.952 });
     scene.quads.push({ tex: texReview(REVIEWS[i][0], REVIEWS[i][1]), pos: rpos,
-      R: rR, U: rU, F: rF, trackCamera: true, sx: 2.3, sy: 1.65, alpha: 0.97, additive: false, sway: i * 1.7, showAfter: 0.858, hideAfter: 0.952, cullBack: true });
+      R: rR, U: rU, F: rF, trackCamera: true, sx: revTx, sy: revTy, alpha: 0.97, additive: false, sway: i * 1.7, showAfter: 0.858, hideAfter: 0.952, cullBack: true });
     scene.reviewPanels.push({ pos: rpos, t: rt2 });
   }
 
