@@ -101,6 +101,14 @@ h1,.h1{font-family:var(--serif);font-weight:400;font-size:clamp(2.2rem,7vw,4.8re
 .contacts a{border-bottom:1px solid rgba(211,161,92,.35);transition:color .3s;pointer-events:auto}
 .contacts a:hover{color:var(--brass-l)}
 
+.flat-reviews{display:none}
+.flat .flat-reviews{display:flex;flex-direction:column;gap:1.1rem;margin-top:1rem;max-width:520px}
+.flat .flat-reviews blockquote{background:rgba(211,161,92,.06);border:1px solid var(--line);
+  border-radius:14px;padding:1.1rem 1.3rem;font-size:.95rem;color:var(--ink-soft);
+  font-weight:300;text-align:left}
+.flat .flat-reviews cite{display:block;margin-top:.6rem;font-style:normal;
+  font-size:.78rem;letter-spacing:.08em;color:var(--brass)}
+
 /* ---------- Прогресс-путь ---------- */
 .rail{position:fixed;right:clamp(.9rem,3vw,2.2rem);top:50%;transform:translateY(-50%);
   z-index:10;display:flex;flex-direction:column;align-items:center;gap:0}
@@ -244,7 +252,7 @@ html.no-js .space{opacity:1;transform:none}
   </section>
 
   <!-- 3. Пространство пара -->
-  <section class="space" data-c="0.34" data-w="0.038" aria-label="Пространство пара">
+  <section class="space" data-c="0.31" data-w="0.038" aria-label="Пространство пара">
     <div class="inner">
       <p class="eyebrow">Пространство третье</p>
       <h2 class="h2">Пространство пара</h2>
@@ -264,7 +272,7 @@ html.no-js .space{opacity:1;transform:none}
   </section>
 
   <!-- 5. Зал мастеров -->
-  <section class="space" data-c="0.88" data-w="0.038" aria-label="Зал мастеров">
+  <section class="space" data-c="0.775" data-w="0.034" aria-label="Зал мастеров">
     <div class="inner">
       <p class="eyebrow">Пространство пятое</p>
       <h2 class="h2">Зал мастеров</h2>
@@ -277,8 +285,23 @@ html.no-js .space{opacity:1;transform:none}
     </div>
   </section>
 
-  <!-- 5. Финал -->
-  <section class="space" data-c="0.97" data-w="0.055" aria-label="Контакты">
+  <!-- 6. Отзывы -->
+  <section class="space" data-c="0.868" data-w="0.03" aria-label="Отзывы гостей">
+    <div class="inner">
+      <p class="eyebrow">Пространство шестое</p>
+      <h2 class="h2">Нам доверяют</h2>
+      <p><span class="em">99% положительных</span> · более 100 отзывов на Яндекс Картах</p>
+      <div class="flat-reviews">
+        <blockquote>«Каждый массаж — не просто процедура, а настоящий ритуал. Помог снять напряжение и восстановить силы.»<cite>Марина Х. · ★★★★★</cite></blockquote>
+        <blockquote>«Как будто отключился от реальности — расслабило нереально. Всем рекомендую и ещё вернусь.»<cite>Никита А. · ★★★★★</cite></blockquote>
+        <blockquote>«Паровая бочка, скрабирование и тайский массаж — один из лучших. Внимание к деталям на высоте.»<cite>Ильдар М. · ★★★★★</cite></blockquote>
+        <blockquote>«Тихо и очень красиво. Чайная церемония после массажа добавила приятных эмоций.»<cite>Людмила П. · ★★★★★</cite></blockquote>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. Финал -->
+  <section class="space" data-c="0.975" data-w="0.045" aria-label="Контакты">
     <div class="inner">
       <p class="eyebrow">MAI SPA · Йошкар-Ола</p>
       <h2 class="h2">До встречи<br>в <span class="em">тишине</span></h2>
@@ -411,7 +434,9 @@ var CTRL = [
   v3(3.2, 2.2, -76.8), v3(4.2, 2.4, -81.5), v3(0, 2.6, -84.5),
   v3(-4.2, 2.5, -81.5), v3(-3.2, 2.3, -76.8), v3(1.5, 2.2, -75.6),
   v3(-3.5, 2.3, -88),    // выход из сада
-  v3(-18, 2.2, -112), v3(-8, 4.8, -128), v3(0, 9.5, -146)
+  v3(-18, 2.2, -112),    // зал мастеров
+  v3(-16, 2.4, -130), v3(-6, 2.8, -144),  // коридор отзывов
+  v3(0, 5.5, -158), v3(4, 10.5, -172)     // подъём к лотосу
 ];
 function splineP(t) {
   t = clamp(t, 0, 1);
@@ -441,8 +466,8 @@ function basisAt(t){
 }
 
 /* ---------- якоря комнат ---------- */
-var ROOM_T = [0.04, 0.20, 0.34, 0.52, 0.88, 0.97];
-var ROOM_NAMES = ['Вход','Зал ритуалов','Пространство пара','Сад орхидей','Зал мастеров','Контакты'];
+var ROOM_T = [0.04, 0.20, 0.31, 0.52, 0.775, 0.868, 0.968];
+var ROOM_NAMES = ['Вход','Зал ритуалов','Пространство пара','Сад орхидей','Зал мастеров','Отзывы','Контакты'];
 
 /* ============================================================
    WebGL-хелперы
@@ -794,6 +819,41 @@ function texOrchid(pr, pg, pb) {
   x.beginPath(); x.arc(cx, cy, 4, 0, 6.283); x.fill();
   return makeTexture(c);
 }
+function texReview(quote, name) {
+  var c = cnv(640, 460), x = c.getContext('2d');
+  // стекло
+  var g = x.createLinearGradient(0, 0, 0, 460);
+  g.addColorStop(0, 'rgba(24,40,32,0.78)');
+  g.addColorStop(1, 'rgba(14,24,19,0.82)');
+  x.fillStyle = g; roundRect(x, 4, 4, 632, 452, 20); x.fill();
+  // блик стекла
+  var hg = x.createLinearGradient(0, 0, 640, 200);
+  hg.addColorStop(0, 'rgba(255,255,255,0.07)'); hg.addColorStop(1, 'rgba(255,255,255,0)');
+  x.fillStyle = hg; roundRect(x, 4, 4, 632, 180, 20); x.fill();
+  // латунная рамка
+  x.strokeStyle = 'rgba(211,161,92,0.6)'; x.lineWidth = 2.5;
+  roundRect(x, 10, 10, 620, 440, 16); x.stroke();
+  // звёзды
+  x.textAlign = 'left'; x.textBaseline = 'alphabetic';
+  x.fillStyle = '#E8C088'; x.font = '30px serif';
+  x.shadowColor = 'rgba(232,192,136,0.6)'; x.shadowBlur = 10;
+  x.fillText('\u2605 \u2605 \u2605 \u2605 \u2605', 44, 78);
+  x.shadowBlur = 0;
+  // цитата с переносами
+  x.fillStyle = '#F3EBDD'; x.font = "300 30px 'Manrope', 'Segoe UI', sans-serif";
+  var words = quote.split(' '), lines = [], cur = '';
+  for (var i = 0; i < words.length; i++) {
+    var t = cur ? cur + ' ' + words[i] : words[i];
+    if (x.measureText(t).width > 552 && cur) { lines.push(cur); cur = words[i]; }
+    else cur = t;
+  }
+  lines.push(cur);
+  for (i = 0; i < lines.length && i < 7; i++) x.fillText(lines[i], 44, 138 + i * 44);
+  // подпись
+  x.fillStyle = 'rgba(211,161,92,0.95)'; x.font = '600 24px \'Manrope\', sans-serif';
+  x.fillText(name + '  \u00b7  \u042f\u043d\u0434\u0435\u043a\u0441 \u041a\u0430\u0440\u0442\u044b', 44, 414);
+  return makeTexture(c);
+}
 function texName(name) {
   var c = cnv(512,192), x = c.getContext('2d');
   x.textAlign='center'; x.textBaseline='middle';
@@ -1067,7 +1127,7 @@ function buildQuads() {
 
   // три портала мастеров
   var mb = basisAt(ROOM_T[4]);
-  var mC = add(mb.P, scale(mb.T, 13.5));
+  var mC = add(add(mb.P, scale(mb.T, 11)), scale(mb.R, 2.4)); // сдвиг по направлению взгляда (путь уходит вбок)
   var ringTex = texPortalRing();
   var glowTex = texGlow('rgba(232,192,136,0.5)','rgba(232,192,136,0)');
   for (i=0;i<3;i++){
@@ -1085,6 +1145,29 @@ function buildQuads() {
     scene.quads.push({ tex: texName(MASTERS[i]), pos: add(pp, [0,-2.9,0]),
       R: mb.R, U: mb.U, F: scale(mb.T,-1), sx: 2.2, sy: 0.82, alpha: 0.95, additive: true });
   }
+  // коридор отзывов: стеклянные панели по бокам пути
+  var REVIEWS = [
+    ['Каждый массаж — не просто процедура, а настоящий ритуал. Помог снять напряжение и восстановить силы.', 'Марина Х.'],
+    ['Как будто отключился от реальности — расслабило нереально. Всем рекомендую и ещё вернусь.', 'Никита А.'],
+    ['Паровая бочка, скрабирование и тайский массаж — один из лучших. Внимание к деталям на высоте.', 'Ильдар М.'],
+    ['Тихо и очень красиво. Чайная церемония после массажа добавила приятных эмоций.', 'Людмила П.']
+  ];
+  var revGlow = texGlow('rgba(211,161,92,0.30)','rgba(211,161,92,0)');
+  for (i = 0; i < REVIEWS.length; i++) {
+    var rt2 = 0.845 + i * 0.022;                 // точки вдоль коридора
+    var rb2 = basisAt(rt2);
+    var side = (i % 2 === 0) ? -1 : 1;           // чередуем лево/право
+    var rpos = add(add(rb2.P, scale(rb2.R, side * 4.4)), scale(rb2.U, 0.6 + (i % 2) * 0.5));
+    // панель слегка развёрнута к пути
+    var rF = norm(add(scale(rb2.T, -1), scale(rb2.R, -side * 0.45)));
+    var rR = norm(cross([0,1,0], rF));
+    var rU = cross(rF, rR);
+    scene.quads.push({ tex: revGlow, pos: rpos, R: rR, U: rU, F: rF,
+      sx: 3.6, sy: 2.7, alpha: 0.55, additive: true, pulse: true, sway: i * 1.7 });
+    scene.quads.push({ tex: texReview(REVIEWS[i][0], REVIEWS[i][1]), pos: rpos,
+      R: rR, U: rU, F: rF, sx: 2.3, sy: 1.65, alpha: 0.97, additive: false, sway: i * 1.7 });
+  }
+
   scene.cardQuads = scene.quads.filter(function (q) { return q.card != null; });
   texturesReady = true;
 }
@@ -1320,7 +1403,7 @@ addEventListener('touchend', function () { tchLook = false; });
    DEEP-LINKS: #rituals / #steam / #orchids / #masters / #contacts
    ============================================================ */
 var HASH_ROOMS = { '#entrance': 0, '#rituals': 1, '#services': 1, '#steam': 2,
-                   '#orchids': 3, '#masters': 4, '#contacts': 5 };
+                   '#orchids': 3, '#masters': 4, '#reviews': 5, '#contacts': 6 };
 
 /* ============================================================
    Скролл → полёт камеры
