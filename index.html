@@ -40,7 +40,7 @@ a{color:inherit;text-decoration:none}
   background:radial-gradient(120% 90% at 50% 50%,transparent 55%,rgba(5,10,8,.55) 100%)}
 
 /* ---------- Скролл-простор ---------- */
-.spacer{height:1200vh;position:relative;z-index:0}
+.spacer{height:1400vh;position:relative;z-index:0}
 
 /* ---------- Оверлеи-пространства ---------- */
 .overlay{position:fixed;inset:0;z-index:5;pointer-events:none}
@@ -108,6 +108,16 @@ h1,.h1{font-family:var(--serif);font-weight:400;font-size:clamp(2.2rem,7vw,4.8re
   font-weight:300;text-align:left}
 .flat .flat-reviews cite{display:block;margin-top:.6rem;font-style:normal;
   font-size:.78rem;letter-spacing:.08em;color:var(--brass)}
+
+/* мастера в 3D: текст выше, кнопки под порталами, имена рисует WebGL */
+body:not(.flat) .space--masters .inner{transform:translateY(-9vh);max-width:1100px}
+body:not(.flat) .space--masters .masters{margin-top:38vh;width:min(1000px,84vw);
+  justify-content:space-between;gap:0;flex-wrap:nowrap}
+body:not(.flat) .space--masters .master b{display:none}
+@media (max-width:760px){
+  body:not(.flat) .space--masters .masters{width:94vw;margin-top:30vh}
+  body:not(.flat) .space--masters .master .btn{padding:.55rem 1rem;font-size:.78rem}
+}
 
 /* ---------- Прогресс-путь ---------- */
 .rail{position:fixed;right:clamp(.9rem,3vw,2.2rem);top:50%;transform:translateY(-50%);
@@ -234,7 +244,7 @@ html.no-js .space{opacity:1;transform:none}
   </section>
 
   <!-- 2. Зал ритуалов -->
-  <section class="space" data-c="0.20" data-w="0.038" aria-label="Зал ритуалов">
+  <section class="space" data-c="0.21" data-w="0.024" data-c2="0.35" data-w2="0.018" aria-label="Зал ритуалов">
     <div class="inner">
       <p class="eyebrow">Пространство второе</p>
       <h2 class="h2">Зал ритуалов</h2>
@@ -252,7 +262,7 @@ html.no-js .space{opacity:1;transform:none}
   </section>
 
   <!-- 3. Пространство пара -->
-  <section class="space" data-c="0.31" data-w="0.038" aria-label="Пространство пара">
+  <section class="space" data-c="0.44" data-w="0.028" aria-label="Пространство пара">
     <div class="inner">
       <p class="eyebrow">Пространство третье</p>
       <h2 class="h2">Пространство пара</h2>
@@ -262,7 +272,7 @@ html.no-js .space{opacity:1;transform:none}
   </section>
 
   <!-- 4. Сад орхидей -->
-  <section class="space" data-c="0.52" data-w="0.038" aria-label="Сад орхидей">
+  <section class="space" data-c="0.56" data-w="0.026" data-c2="0.685" data-w2="0.018" aria-label="Сад орхидей">
     <div class="inner">
       <p class="eyebrow">Пространство четвёртое</p>
       <h2 class="h2">Сад орхидей</h2>
@@ -272,7 +282,7 @@ html.no-js .space{opacity:1;transform:none}
   </section>
 
   <!-- 5. Зал мастеров -->
-  <section class="space" data-c="0.775" data-w="0.034" aria-label="Зал мастеров">
+  <section class="space space--masters" data-c="0.78" data-w="0.028" aria-label="Зал мастеров">
     <div class="inner">
       <p class="eyebrow">Пространство пятое</p>
       <h2 class="h2">Зал мастеров</h2>
@@ -286,7 +296,7 @@ html.no-js .space{opacity:1;transform:none}
   </section>
 
   <!-- 6. Отзывы -->
-  <section class="space" data-c="0.868" data-w="0.03" aria-label="Отзывы гостей">
+  <section class="space" data-c="0.87" data-w="0.026" aria-label="Отзывы гостей">
     <div class="inner">
       <p class="eyebrow">Пространство шестое</p>
       <h2 class="h2">Нам доверяют</h2>
@@ -301,7 +311,7 @@ html.no-js .space{opacity:1;transform:none}
   </section>
 
   <!-- 7. Финал -->
-  <section class="space" data-c="0.975" data-w="0.045" aria-label="Контакты">
+  <section class="space" data-c="0.975" data-w="0.04" aria-label="Контакты">
     <div class="inner">
       <p class="eyebrow">MAI SPA · Йошкар-Ола</p>
       <h2 class="h2">До встречи<br>в <span class="em">тишине</span></h2>
@@ -427,16 +437,22 @@ function mat4Basis(R,U,F,P,sx,sy){
 
 /* ---------- Catmull-Rom сплайн (аналог THREE.CatmullRomCurve3) ---------- */
 var CTRL = [
-  v3(0, 2.0, 116), v3(0, 2.0, 84), v3(0, 2.0, 52), v3(0, 2.0, 20),
-  v3(0, 2.0, -6), v3(8, 1.8, -26), v3(17, 1.6, -46),
-  // петля 360° ВНУТРИ сада орхидей: цветы кольцом вокруг камеры
+  v3(0, 2.0, 116), v3(0, 2.0, 84), v3(0, 2.0, 52), v3(0, 2.0, 26),
+  v3(0, 2.0, 6),
+  // петля 360° внутри ЗАЛА РИТУАЛОВ: карточки трубой вокруг камеры
+  v3(2.7, 2.1, -7.3), v3(3.6, 2.2, -11.3), v3(0, 2.3, -13.9),
+  v3(-3.6, 2.25, -11.3), v3(-2.7, 2.15, -7.3), v3(1.3, 2.1, -6.2),
+  v3(5.5, 1.9, -20),     // выход из зала
+  v3(17, 1.6, -46),      // пар
   v3(8, 2.0, -64),
+  // петля 360° внутри сада орхидей
   v3(3.2, 2.2, -76.8), v3(4.2, 2.4, -81.5), v3(0, 2.6, -84.5),
   v3(-4.2, 2.5, -81.5), v3(-3.2, 2.3, -76.8), v3(1.5, 2.2, -75.6),
   v3(-3.5, 2.3, -88),    // выход из сада
   v3(-18, 2.2, -112),    // зал мастеров
-  v3(-16, 2.4, -130), v3(-6, 2.8, -144),  // коридор отзывов
-  v3(0, 5.5, -158), v3(4, 10.5, -172)     // подъём к лотосу
+  v3(-20, 2.3, -126),
+  v3(-14, 2.5, -138), v3(-4, 2.8, -150),  // коридор отзывов
+  v3(2, 4.2, -162), v3(5, 7.5, -174), v3(6, 11.5, -186)  // подъём к лотосу
 ];
 function splineP(t) {
   t = clamp(t, 0, 1);
@@ -466,7 +482,7 @@ function basisAt(t){
 }
 
 /* ---------- якоря комнат ---------- */
-var ROOM_T = [0.04, 0.20, 0.31, 0.52, 0.775, 0.868, 0.968];
+var ROOM_T = [0.04, 0.21, 0.44, 0.56, 0.78, 0.87, 0.975];
 var ROOM_NAMES = ['Вход','Зал ритуалов','Пространство пара','Сад орхидей','Зал мастеров','Отзывы','Контакты'];
 
 /* ============================================================
@@ -854,6 +870,15 @@ function texReview(quote, name) {
   x.fillText(name + '  \u00b7  \u042f\u043d\u0434\u0435\u043a\u0441 \u041a\u0430\u0440\u0442\u044b', 44, 414);
   return makeTexture(c);
 }
+function texAroma(text) {
+  var c = cnv(512, 128), x = c.getContext('2d');
+  x.textAlign = 'center'; x.textBaseline = 'middle';
+  x.shadowColor = 'rgba(232,192,136,0.75)'; x.shadowBlur = 16;
+  x.fillStyle = 'rgba(243,235,221,0.95)';
+  x.font = "italic 46px 'Prata', Georgia, serif";
+  x.fillText(text, 256, 64);
+  return makeTexture(c);
+}
 function texName(name) {
   var c = cnv(512,192), x = c.getContext('2d');
   x.textAlign='center'; x.textBaseline='middle';
@@ -911,7 +936,7 @@ function buildScene() {
   var tunN = MOBILE ? 900 : 1700;
   pos = []; seed = [];
   for (i=0;i<tunN;i++){
-    var tt = rnd(i+101)*0.24;
+    var tt = rnd(i+101)*0.14;
     var bb = basisAt(tt);
     var ang = rnd(i+113)*6.283;
     var rad = 2.6 + rnd(i+127)*4.4;
@@ -1064,25 +1089,31 @@ function buildQuads() {
   var i;
 
   // логотип в глубине тоннеля
-  var lb = basisAt(0.16);
+  var lb = basisAt(0.10);
   var lp2 = add(lb.P, scale(lb.T, 12));
   scene.quads.push({
     tex: texLogo(), pos: lp2, R: lb.R, U: lb.U, F: scale(lb.T,-1),
-    sx: 7.5, sy: 3.75, alpha: 1, additive: true, pulse: true
+    sx: 7.5, sy: 3.75, alpha: 1, additive: true, pulse: true, fadeAfter: 0.135
   });
 
-  // кольцо из 6 карточек услуг
-  var rb = basisAt(ROOM_T[1] + 0.035);
-  var ringC = rb.P;
-  var RAD = 6.8;
+  // ЗАЛ РИТУАЛОВ: карточки стоят вертикальной трубой-конусом вокруг петли,
+  // камера вращается внутри; ближняя карточка подсвечивается и подаётся навстречу
+  var C2 = [0, 2.2, -10];   // центр зала (совпадает с центром петли камеры)
+  var TUBE_R = 7.0;
+  scene.cardGlowTex = texGlow('rgba(232,192,136,0.5)','rgba(232,192,136,0)');
   for (i=0;i<6;i++){
-    var a = i/6*6.283 + 0.5236; // смещение, чтобы карта не была ровно сверху/снизу
-    var off = add(scale(rb.R, Math.cos(a)*RAD), scale(rb.U, Math.sin(a)*RAD*0.72 + 0.6));
+    var a = i/6*6.283 + 0.26;
+    var cpos = [ C2[0] + Math.cos(a)*TUBE_R,
+                 2.2 + (i % 2 ? 1.0 : -0.2),
+                 C2[2] + Math.sin(a)*TUBE_R ];
+    var cF = norm([C2[0]-cpos[0], 0.9, C2[2]-cpos[2]]);   // к центру, чуть вверх — «конус»
+    var cR = norm(cross([0,1,0], cF));
+    var cU = cross(cF, cR);
     scene.quads.push({
       tex: texCard(SERVICES[i][0], SERVICES[i][1], SERVICES[i][2]),
-      pos: add(ringC, off), R: rb.R, U: rb.U, F: scale(rb.T,-1),
-      sx: 1.5, sy: 1.87, alpha: 0.98, additive: false, hoverAmt: 0,
-      bob: i, card: i, ring: { c: ringC, R: rb.R, U: rb.U, rad: RAD, a0: a }
+      pos: cpos, R: cR, U: cU, F: cF,
+      sx: 1.55, sy: 1.93, alpha: 0.96, additive: false, hoverAmt: 0,
+      bob: i, card: i, tube: true, prox: 0
     });
   }
 
@@ -1109,6 +1140,8 @@ function buildQuads() {
     [  8.5, 4.8, -71.5, 1.2, 1], [ -9.0, 5.0, -88.0, 1.3, 0],
     [ -2.5, 5.4, -73.0, 1.1, 1], [  3.0, 0.4, -89.0, 1.2, 0]
   ];
+  var AROMAS = ['франжипани','жасмин','иланг-иланг','лемонграсс','сандал','лотос',
+                'манго','зелёный чай','кокос','мята','орхидея','тамаринд'];
   for (i=0;i<ORCHIDS.length;i++){
     var oc = ORCHIDS[i];
     var opos = [oc[0], oc[1], oc[2]];
@@ -1118,6 +1151,11 @@ function buildQuads() {
     scene.quads.push({ tex: oc[4] ? orchidCream : orchidPink, pos: opos, billboard: true,
       R: [1,0,0], U: [0,1,0], F: [0,0,1],
       sx: oc[3], sy: oc[3], alpha: 0.96, additive: false, sway: i*1.3 });
+    // подпись-аромат под цветком
+    scene.quads.push({ tex: texAroma(AROMAS[i % AROMAS.length]),
+      pos: [oc[0], oc[1] - oc[3]*1.02, oc[2]], billboard: true,
+      R: [1,0,0], U: [0,1,0], F: [0,0,1],
+      sx: oc[3]*1.05, sy: oc[3]*0.26, alpha: 0.85, additive: true, sway: i*1.3 });
   }
 
   // светлячки (позиции обновляются в кадре)
@@ -1142,7 +1180,7 @@ function buildQuads() {
     }
     scene.quads.push({ tex: ringTex, pos: pp, R: mb.R, U: mb.U, F: scale(mb.T,-1),
       sx: 2.1, sy: 2.1, alpha: 0.95, additive: true });
-    scene.quads.push({ tex: texName(MASTERS[i]), pos: add(pp, [0,-2.9,0]),
+    scene.quads.push({ tex: texName(MASTERS[i]), pos: add(pp, [0, i === 0 ? -1.9 : -2.35, 0]),
       R: mb.R, U: mb.U, F: scale(mb.T,-1), sx: 2.2, sy: 0.82, alpha: 0.95, additive: true });
   }
   // коридор отзывов: стеклянные панели по бокам пути
@@ -1154,7 +1192,7 @@ function buildQuads() {
   ];
   var revGlow = texGlow('rgba(211,161,92,0.30)','rgba(211,161,92,0)');
   for (i = 0; i < REVIEWS.length; i++) {
-    var rt2 = 0.845 + i * 0.022;                 // точки вдоль коридора
+    var rt2 = 0.838 + i * 0.022;                 // точки вдоль коридора
     var rb2 = basisAt(rt2);
     var side = (i % 2 === 0) ? -1 : 1;           // чередуем лево/право
     var rpos = add(add(rb2.P, scale(rb2.R, side * 4.4)), scale(rb2.U, 0.6 + (i % 2) * 0.5));
@@ -1461,7 +1499,14 @@ function updateOverlays(t) {
   for (var i=0;i<spaces.length;i++){
     var el = spaces[i];
     var c = parseFloat(el.dataset.c), w = parseFloat(el.dataset.w);
-    var vis = Math.exp(-((t-c)*(t-c)) / (2*w*w)) * (1 - focus.anim);
+    var g = Math.exp(-((t-c)*(t-c)) / (2*w*w));
+    if (el.dataset.c2) { // эхо на выходе из петли
+      var c2 = parseFloat(el.dataset.c2), w2 = parseFloat(el.dataset.w2);
+      g += 0.55 * Math.exp(-((t-c2)*(t-c2)) / (2*w2*w2));
+    }
+    g = Math.min(1, g);
+    g = g < 0.14 ? 0 : (g - 0.14) / 0.86;   // порог: или видно, или нет
+    var vis = g * (1 - focus.anim);
     el.style.opacity = vis.toFixed(3);
     el.style.transform = 'translateY(' + ((1-vis)*26).toFixed(1) + 'px)';
     el.style.pointerEvents = vis > 0.45 ? 'auto' : 'none';
@@ -1579,11 +1624,11 @@ function frame(now) {
     for (var i=0;i<scene.quads.length;i++){
       var q = scene.quads[i];
       var pos = q.pos;
-      if (q.ring) { // лёгкое вращение кольца карточек + покачивание
-        var a = q.ring.a0 + ringClock*0.07;
-        var off = add(scale(q.ring.R, Math.cos(a)*q.ring.rad),
-                      scale(q.ring.U, Math.sin(a)*q.ring.rad*0.72 + 0.6 + Math.sin(ringClock*0.9+q.bob)*0.18));
-        pos = add(q.ring.c, off);
+      if (q.tube) { // близость камеры: карточка светится и подаётся навстречу
+        var dEC = Math.hypot(eye[0]-q.pos[0], eye[1]-q.pos[1], eye[2]-q.pos[2]);
+        q.prox = clamp(1 - (dEC - 3.4) / 3.6, 0, 1);
+        pos = add(q.pos, scale(q.F, q.prox * 0.9));
+        pos = add(pos, scale(q.U, Math.sin(time*0.8 + q.bob) * 0.1));
       }
       if (q.sway != null) pos = add(pos, scale(q.billboard ? [0,1,0] : q.U, Math.sin(time*0.7 + q.sway) * 0.12));
       q.curPos = pos;
@@ -1593,12 +1638,21 @@ function frame(now) {
         var hTgt = (hoverQ === q || focus.q === q && focus.active) ? 1 : 0;
         q.hoverAmt += (hTgt - q.hoverAmt) * 0.1;
       }
-      var hs = 1 + (q.hoverAmt || 0) * 0.09;
+      var hs = 1 + (q.hoverAmt || 0) * 0.09 + (q.prox || 0) * 0.12;
       var m = mat4Basis(qR, qU, qF, pos, q.sx * hs, q.sy * hs);
       var al = q.alpha * (q.pulse ? flick : 1);
+      if (q.fadeAfter) al *= clamp(1 - (camT - q.fadeAfter) / 0.045, 0, 1); // логотип гаснет за спиной
+      if (q.tube) {
+        al = q.alpha * (0.8 + 0.25 * q.prox);
+        if (q.prox > 0.04) { // золотой ореол у ближней карточки
+          gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
+          var mg = mat4Basis(qR, qU, qF, pos, q.sx * 2.0 * hs, q.sy * 1.7 * hs);
+          drawQuad(mg, scene.cardGlowTex, q.prox * 0.5, true, view, proj);
+        }
+      }
       if (q.additive) gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
       else gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-      drawQuad(m, q.tex, al, q.additive, view, proj);
+      drawQuad(m, q.tex, Math.min(1, al), q.additive, view, proj);
     }
   }
 
