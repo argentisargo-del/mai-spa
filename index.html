@@ -277,7 +277,7 @@ html.no-js .space{opacity:1;transform:none}
   </section>
 
   <!-- 5. Зал мастеров -->
-  <section class="space space--masters" data-c="0.80" data-w="0.02" aria-label="Зал мастеров">
+  <section class="space space--masters" data-c="0.787" data-w="0.015" aria-label="Зал мастеров">
     <div class="inner">
       <p class="eyebrow">Пространство пятое</p>
       <h2 class="h2">Зал мастеров</h2>
@@ -1177,6 +1177,7 @@ function buildQuads() {
   var ringTex = texPortalRing();
   var glowTex = texGlow('rgba(232,192,136,0.5)','rgba(232,192,136,0)');
   var btnTex = texButton();
+  scene.masterGazes = [];
   for (i=0;i<3;i++){
     var mt = 0.805 + i * 0.028;
     var tb = basisAt(mt);
@@ -1200,6 +1201,7 @@ function buildQuads() {
     scene.quads.push({ tex: btnTex, pos: add(pp, scale(pU, -3.05)),
       R: pR, U: pU, F: pF, sx: 1.05, sy: 0.33, alpha: 0.98, additive: false,
       cullBack: true, btn: i, hoverAmt: 0 });
+    scene.masterGazes.push({ pos: pp, t: mt });
   }
   scene.btnQuads = scene.quads.filter(function (q) { return q.btn != null; });
   // коридор отзывов: стеклянные панели по бокам пути
@@ -1590,17 +1592,19 @@ function frame(now) {
   var lookT = clamp(camT + 0.035, 0, 1);
   var target = splineP(lookT);
 
-  // в коридоре отзывов взгляд активно поворачивается от панели к панели
-  if (scene.reviewPanels && scene.reviewPanels.length) {
+  // взгляд активно поворачивается к мастерицам и панелям отзывов
+  var gazePts = (scene.masterGazes || []).concat(scene.reviewPanels || []);
+  if (gazePts.length) {
     var rwSum = 0, rTx = 0, rTy = 0, rTz = 0;
-    for (i = 0; i < scene.reviewPanels.length; i++) {
-      var rp = scene.reviewPanels[i];
-      var rgd = camT - (rp.t - 0.007); // пик взгляда — на подлёте к панели
-      var rg = Math.exp(-(rgd * rgd) / (2 * 0.011 * 0.011));
+    for (i = 0; i < gazePts.length; i++) {
+      var rp = gazePts[i];
+      var rgd = camT - (rp.t - 0.008); // пик — на подлёте
+      var rg = Math.exp(-(rgd * rgd) / (2 * 0.015 * 0.015));
+      rg = rg * rg * rg; // ближайшая цель доминирует, взгляд не размывается
       rwSum += rg; rTx += rp.pos[0] * rg; rTy += rp.pos[1] * rg; rTz += rp.pos[2] * rg;
     }
-    if (rwSum > 0.02 && camT > 0.868) {
-      var rBlend = Math.min(1, rwSum) * 0.85;
+    if (rwSum > 0.02) {
+      var rBlend = Math.min(1, rwSum) * 0.96;
       target = [ lerp(target[0], rTx / rwSum, rBlend),
                  lerp(target[1], rTy / rwSum, rBlend),
                  lerp(target[2], rTz / rwSum, rBlend) ];
