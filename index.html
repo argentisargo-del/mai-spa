@@ -1650,6 +1650,12 @@ function frame(now) {
         var hTgt = (hoverQ === q || focus.q === q && focus.active) ? 1 : 0;
         q.hoverAmt += (hTgt - q.hoverAmt) * 0.1;
       }
+      // дальняя отсечка непрозрачных объектов: не спойлерим комнаты сквозь туман
+      if (!q.additive) {
+        var dq = Math.hypot(eye[0]-pos[0], eye[1]-pos[1], eye[2]-pos[2]);
+        if (dq > 40) continue;
+        var farFade = clamp((40 - dq) / 7, 0, 1);
+      } else var farFade = 1;
       var hs = 1 + (q.hoverAmt || 0) * 0.09 + (q.prox || 0) * 0.12;
       var m = mat4Basis(qR, qU, qF, pos, q.sx * hs, q.sy * hs);
       var al = q.alpha * (q.pulse ? flick : 1);
@@ -1665,7 +1671,7 @@ function frame(now) {
       }
       if (q.additive) gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
       else gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-      drawQuad(m, q.tex, Math.min(1, al), q.additive, view, proj);
+      drawQuad(m, q.tex, Math.min(1, al * farFade), q.additive, view, proj);
     }
   }
 
