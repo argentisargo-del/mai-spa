@@ -277,8 +277,8 @@ body.is-finale .offer-btn{opacity:1;visibility:visible;pointer-events:auto;trans
   .master-panel.is-on{transform:translateY(0)}
   .garden-panel{width:min(310px,86vw);right:auto;bottom:auto}
   .offer-btn{top:4.1rem;right:1rem;font-size:.62rem;padding:.46rem .62rem}
-  .insta-top{top:3.78rem;right:8rem;width:40px;height:40px}
-  .insta-top img{width:40px;height:40px}
+  .insta-top{top:3.82rem;right:10.9rem;width:38px;height:38px}
+  .insta-top img{width:38px;height:38px}
 }
 
 /* ============================================================
@@ -316,7 +316,7 @@ html.no-js .space{opacity:1;transform:none}
 <div class="spacer" aria-hidden="true"></div>
 
 <a class="brand" href="#top" aria-label="MAI SPA — наверх"><span class="mark">✦</span> MAI <em>SPA</em></a>
-<a class="insta-top" href="https://www.instagram.com/maitaispa12/" target="_blank" rel="noopener" aria-label="Instagram MAI SPA">
+<a class="insta-top" href="https://www.instagram.com/mai_tai_spa/" target="_blank" rel="noopener" aria-label="Instagram MAI SPA">
   <img src="assets/img/instagram-gold.svg" alt="" aria-hidden="true" />
 </a>
 <button class="offer-btn" id="offerBtn" type="button">Публичная оферта</button>
@@ -1473,6 +1473,12 @@ function buildQuads() {
     ['Тихо и очень красиво. Чайная церемония после массажа добавила приятных эмоций.', 'Людмила П.']
   ];
   var revGlow = texGlow('rgba(211,161,92,0.30)','rgba(211,161,92,0)');
+  // Вертикальный FOV фиксирован (60°), поэтому на портретных экранах горизонтальный
+  // угол обзора узкий — панель отзыва прежнего размера не помещается по ширине и
+  // обрезается краем кадра. На мобильных уменьшаем панель (и её ореол), сохраняя
+  // пропорции текстуры, чтобы отзыв целиком попадал в кадр при пролёте камеры.
+  var revTx = MOBILE ? 1.45 : 2.3,  revTy = MOBILE ? 1.04 : 1.65;
+  var revGx = MOBILE ? 2.27 : 3.6,  revGy = MOBILE ? 1.70 : 2.7;
   scene.reviewPanels = [];
   for (i = 0; i < REVIEWS.length; i++) {
     var rt2 = 0.875 + i * 0.017;                 // после всех мастеров, по одной за раз
@@ -1484,9 +1490,9 @@ function buildQuads() {
     var rR = norm(cross([0,1,0], rF));
     var rU = cross(rF, rR);
     scene.quads.push({ tex: revGlow, pos: rpos, R: rR, U: rU, F: rF, trackCamera: true,
-      sx: 3.6, sy: 2.7, alpha: 0.55, additive: true, pulse: true, sway: i * 1.7, showAfter: 0.858, hideAfter: 0.952 });
+      sx: revGx, sy: revGy, alpha: 0.55, additive: true, pulse: true, sway: i * 1.7, showAfter: 0.858, hideAfter: 0.952 });
     scene.quads.push({ tex: texReview(REVIEWS[i][0], REVIEWS[i][1]), pos: rpos,
-      R: rR, U: rU, F: rF, trackCamera: true, sx: 2.3, sy: 1.65, alpha: 0.97, additive: false, sway: i * 1.7, showAfter: 0.858, hideAfter: 0.952, cullBack: true });
+      R: rR, U: rU, F: rF, trackCamera: true, sx: revTx, sy: revTy, alpha: 0.97, additive: false, sway: i * 1.7, showAfter: 0.858, hideAfter: 0.952, cullBack: true });
     scene.reviewPanels.push({ pos: rpos, t: rt2 });
   }
 
