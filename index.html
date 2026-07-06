@@ -2309,7 +2309,17 @@ gl.clearColor(BG[0], BG[1], BG[2], 1);
 var t0 = performance.now();
 var prevNow = t0, ringClock = 0;
 
+var FRAME_MIN = 1000 / 30;   // кап 30 FPS — GPU не жжём на полной частоте
+var lastFrame = 0;           // время последнего отрисованного кадра
+var rafMain = 0;             // id запланированного rAF (0 = не запланирован)
+var paused = false;          // рендер остановлен (вкладка скрыта)
+
 function frame(now) {
+  if (paused) { rafMain = 0; return; }
+  rafMain = requestAnimationFrame(frame);
+  if (now - lastFrame < FRAME_MIN) return;   // ещё рано для следующего кадра
+  lastFrame = now;
+
   var time = (now - t0) / 1000;
   var dt = Math.min(0.05, (now - prevNow) / 1000); prevNow = now;
   if (!focus.active) ringClock += dt;            // кольцо замирает при фокусе
@@ -2488,9 +2498,21 @@ function frame(now) {
   }
 
   updateOverlays(camT);
-  requestAnimationFrame(frame);
 }
-requestAnimationFrame(frame);
+rafMain = requestAnimationFrame(frame);
+
+// Пауза рендера, когда вкладка скрыта: 0 нагрузки на GPU вместо фонового троттлинга
+document.addEventListener('visibilitychange', function () {
+  if (document.hidden) {
+    paused = true;
+    if (rafMain) { cancelAnimationFrame(rafMain); rafMain = 0; }
+  } else if (paused) {
+    paused = false;
+    lastFrame = 0;                       // не копим дельту за время простоя
+    prevNow = performance.now();         // чтобы dt после возврата не скакнул
+    if (!rafMain) rafMain = requestAnimationFrame(frame);
+  }
+});
 
 })();
 </script>
