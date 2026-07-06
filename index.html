@@ -663,6 +663,11 @@ function basisAt(t){
 
 /* ---------- якоря комнат ---------- */
 var ROOM_T = [0.04, 0.178, 0.467, 0.545, 0.80, 0.895, 0.996];
+// Точки остановки для прилипания: комнаты + центры мастеров.
+// Мастер по центру экрана при camT = mt − 0.008, где mt = 0.805 + 0.028·i
+// (см. сборку сцены и пик взгляда). «Зал мастеров» (0.80) заменяем тремя мастерами.
+var MASTER_CENTER_T = [0.797, 0.825, 0.853];
+var SNAP_T = ROOM_T.slice(0, 4).concat(MASTER_CENTER_T, ROOM_T.slice(5));
 var ROOM_NAMES = ['Вход','Зал ритуалов','Пространство пара','Сад орхидей','Зал мастеров','Отзывы','Контакты'];
 
 /* ============================================================
@@ -2359,8 +2364,8 @@ function flyTo(t) {
   })(start);
 }
 
-/* ближайшая комната к позиции t */
-function nearestRoomIdx(t){ var b=0, bd=1e9; for (var i=0;i<ROOM_T.length;i++){ var d=Math.abs(t-ROOM_T[i]); if (d<bd){bd=d;b=i;} } return b; }
+/* ближайшая точка остановки (комната или мастер) к позиции t */
+function nearestStopIdx(t){ var b=0, bd=1e9; for (var i=0;i<SNAP_T.length;i++){ var d=Math.abs(t-SNAP_T[i]); if (d<bd){bd=d;b=i;} } return b; }
 
 /* плавное прилипание страницы к комнате (ease-out, ~0.6 c) */
 function startSnap(toT){
@@ -2389,8 +2394,8 @@ function maybeSnap(now){
   if (now - lastScrollActivity < SNAP_IDLE) return;   // скролл/инерция ещё идут
   if (now - lastUserIntent < SNAP_IDLE) return;        // пользователь только что взаимодействовал
   var curT = clamp(scrollY / maxScroll, 0, 1);
-  var ri = nearestRoomIdx(curT);
-  if (Math.abs(curT - ROOM_T[ri]) > 0.004) startSnap(ROOM_T[ri]);
+  var ri = nearestStopIdx(curT);
+  if (Math.abs(curT - SNAP_T[ri]) > 0.004) startSnap(SNAP_T[ri]);
 }
 
 /* оверлеи */
@@ -2472,7 +2477,7 @@ function frame(now) {
   } else {
     // «магнит» комнат: возле точки скорость гаснет, но при резком скролле пропускает
     var scrollSpeed = Math.abs(tTarget - tTargetPrev); tTargetPrev = tTarget;
-    var nc = ROOM_T[nearestRoomIdx(tTarget)];
+    var nc = SNAP_T[nearestStopIdx(tTarget)];
     var proximity = Math.max(0, 1 - Math.abs(tTarget - nc) / ROOM_CAPTURE); // 1 в центре
     var slowness  = clamp(1 - scrollSpeed / 0.028, 0, 1);                    // 1 когда почти стоит
     var magnet = proximity * proximity * slowness;                          // 0..1
