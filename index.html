@@ -1937,6 +1937,52 @@ function gong(base, vol) {
     o.start(t0); o.stop(t0 + 3.4 + i * 0.35);
   });
 }
+/* Тайская релакс-мелодия: разрежённые pluck-ноты по пентатонике (ре-минор),
+   мягко проявляется после стартового гонга. Синтез, без файлов. */
+var melodyTimer = null, melodyOn = false;
+function startMelody() {
+  if (!AC || melodyOn || REDUCED) return;
+  melodyOn = true;
+  var mg = AC.createGain(); mg.gain.value = 0; mg.connect(master);
+  var t0 = AC.currentTime;
+  mg.gain.setValueAtTime(0, t0 + 1.6);
+  mg.gain.linearRampToValueAtTime(0.1, t0 + 8);     // медленный «выход» после гонга
+  // лёгкий «зал» через короткий feedback-дилей
+  var dl = AC.createDelay(1.0); dl.delayTime.value = 0.33;
+  var fb = AC.createGain(); fb.gain.value = 0.27;
+  var wet = AC.createGain(); wet.gain.value = 0.32;
+  dl.connect(fb); fb.connect(dl); dl.connect(wet); wet.connect(mg);
+  var scale = [293.66, 349.23, 392.00, 440.00, 523.25, 587.33, 698.46]; // D F G A C D F
+  function pluck(freq, t, vel) {
+    var o = AC.createOscillator(); o.type = 'triangle'; o.frequency.value = freq;
+    var o2 = AC.createOscillator(); o2.type = 'sine'; o2.frequency.value = freq * 2;
+    var g = AC.createGain(), g2 = AC.createGain();
+    var lp = AC.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 1500; lp.Q.value = 0.6;
+    var peak = 0.15 * vel;
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(peak, t + 0.02);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + 2.3);
+    g2.gain.setValueAtTime(0.0001, t);
+    g2.gain.exponentialRampToValueAtTime(peak * 0.32, t + 0.015);
+    g2.gain.exponentialRampToValueAtTime(0.0001, t + 1.1);
+    o.connect(g); o2.connect(g2); g.connect(lp); g2.connect(lp);
+    lp.connect(mg); lp.connect(dl);
+    o.start(t); o.stop(t + 2.5); o2.start(t); o2.stop(t + 1.3);
+  }
+  var idx = 3;
+  function next() {
+    if (!AC) return;
+    var t = AC.currentTime + 0.05;
+    if (Math.random() < 0.82) {                       // иначе — пауза (тишина)
+      var step = (Math.random() < 0.5 ? -1 : 1) * (Math.random() < 0.7 ? 1 : 2);
+      idx = clamp(idx + step, 0, scale.length - 1);
+      pluck(scale[idx], t, 0.7 + Math.random() * 0.4);
+      if (Math.random() < 0.24) { var hi = clamp(idx + 2, 0, scale.length - 1); pluck(scale[hi], t + 0.09, 0.4); }
+    }
+    melodyTimer = setTimeout(next, 1500 + Math.random() * 1600); // 1.5–3.1 c
+  }
+  next();
+}
 var lastRoom = -1;
 function doEnter(withSound) {
   if (entered) return;
@@ -1948,7 +1994,7 @@ function doEnter(withSound) {
   setTimeout(function () { enterEl.classList.add('is-gone'); }, REDUCED ? 0 : 1080);
   setTimeout(function () { if (enter3D && enter3D.stop) enter3D.stop(); }, REDUCED ? 0 : 1500);
   document.documentElement.style.overflow = '';
-  if (withSound && !REDUCED) { startAudio(); gong(140, 1.1); }
+  if (withSound && !REDUCED) { startAudio(); gong(140, 1.1); startMelody(); }
   lastRoom = 0;
   // deep-link: короткий подлёт к комнате из хэша
   var hr = HASH_ROOMS[location.hash];
@@ -2207,9 +2253,18 @@ var maxScroll = 1;
 function measure(){ maxScroll = Math.max(1, document.documentElement.scrollHeight - innerHeight); }
 measure();
 
+/* прилипание к комнатам */
+var tTargetPrev = 0;              // предыдущий сырой target — для скорости скролла
+var lastScrollActivity = -1e9;    // время последнего события scroll (вкл. инерцию)
+var lastUserIntent = -1e9;        // время последнего явного ввода (wheel/touch/клавиши)
+var snapAnim = null;
+var ROOM_CAPTURE = 0.055;         // радиус «магнита» вокруг комнаты (в t)
+var SNAP_IDLE = 150;              // мс тишины до прилипания к ближайшей комнате
+
 addEventListener('scroll', function(){
   if (DEBUG_P != null) return; // в debug-режиме камера зафиксирована
   tTarget = clamp(scrollY / maxScroll, 0, 1);
+  lastScrollActivity = performance.now();
   if (scrollY > 30) hintEl.classList.add('is-hidden');
 }, { passive: true });
 
@@ -2250,6 +2305,40 @@ function flyTo(t) {
   })(start);
 }
 
+/* ближайшая комната к позиции t */
+function nearestRoomIdx(t){ var b=0, bd=1e9; for (var i=0;i<ROOM_T.length;i++){ var d=Math.abs(t-ROOM_T[i]); if (d<bd){bd=d;b=i;} } return b; }
+
+/* плавное прилипание страницы к комнате (ease-out, ~0.6 c) */
+function startSnap(toT){
+  var from = scrollY, to = toT * maxScroll, start = performance.now(), dur = 620;
+  if (snapAnim) cancelAnimationFrame(snapAnim);
+  (function step(now){
+    var p = clamp((now-start)/dur, 0, 1);
+    var e = 1 - Math.pow(1-p, 3);
+    scrollTo(0, from + (to-from)*e);
+    if (p<1) snapAnim = requestAnimationFrame(step); else snapAnim = null;
+  })(start);
+}
+
+/* любой явный ввод пользователя отменяет прилипание и не даёт «тупить» */
+function noteIntent(){ lastUserIntent = performance.now(); if (snapAnim){ cancelAnimationFrame(snapAnim); snapAnim = null; } }
+addEventListener('wheel', noteIntent, { passive: true });
+addEventListener('touchstart', noteIntent, { passive: true });
+addEventListener('touchmove', noteIntent, { passive: true });
+addEventListener('keydown', function(e){
+  if (['ArrowUp','ArrowDown','PageUp','PageDown','Home','End',' ','Spacebar'].indexOf(e.key) >= 0) noteIntent();
+});
+
+/* когда скролл и инерция улеглись — мягко дотягиваем к ближайшей комнате */
+function maybeSnap(now){
+  if (!entered || DEBUG_P != null || focus.active || snapAnim || flyAnim) return;
+  if (now - lastScrollActivity < SNAP_IDLE) return;   // скролл/инерция ещё идут
+  if (now - lastUserIntent < SNAP_IDLE) return;        // пользователь только что взаимодействовал
+  var curT = clamp(scrollY / maxScroll, 0, 1);
+  var ri = nearestRoomIdx(curT);
+  if (Math.abs(curT - ROOM_T[ri]) > 0.004) startSnap(ROOM_T[ri]);
+}
+
 /* оверлеи */
 function updateOverlays(t) {
   document.body.classList.toggle('is-finale', t > 0.982);
@@ -2271,7 +2360,7 @@ function updateOverlays(t) {
   var best = 0, bd = 1e9;
   for (i=0;i<ROOM_T.length;i++){ var d = Math.abs(t-ROOM_T[i]); if (d<bd){bd=d;best=i;} }
   for (i=0;i<dots.length;i++) dots[i].classList.toggle('is-active', i===best);
-  if (entered && best !== lastRoom) { gong(150 + best * 24, 0.85); lastRoom = best; }
+  if (entered && best !== lastRoom) { lastRoom = best; }   // гонг только в начале, не у каждой комнаты
 }
 
 /* ---------- размер ---------- */
@@ -2324,7 +2413,19 @@ function frame(now) {
   var dt = Math.min(0.05, (now - prevNow) / 1000); prevNow = now;
   if (!focus.active) ringClock += dt;            // кольцо замирает при фокусе
   focus.anim += ((focus.active ? 1 : 0) - focus.anim) * 0.06;
-  tCur += (tTarget - tCur) * 0.055;              // демпфирование полёта
+  if (DEBUG_P != null) {
+    tCur += (tTarget - tCur) * 0.055;            // debug: камера строго за target
+  } else {
+    // «магнит» комнат: возле точки скорость гаснет, но при резком скролле пропускает
+    var scrollSpeed = Math.abs(tTarget - tTargetPrev); tTargetPrev = tTarget;
+    var nc = ROOM_T[nearestRoomIdx(tTarget)];
+    var proximity = Math.max(0, 1 - Math.abs(tTarget - nc) / ROOM_CAPTURE); // 1 в центре
+    var slowness  = clamp(1 - scrollSpeed / 0.028, 0, 1);                    // 1 когда почти стоит
+    var magnet = proximity * proximity * slowness;                          // 0..1
+    var goal = tTarget + (nc - tTarget) * magnet;
+    tCur += (goal - tCur) * 0.055;               // демпфирование полёта
+    maybeSnap(now);                              // дотяжка к комнате после остановки
+  }
   px += (pxT - px) * 0.04; py += (pyT - py) * 0.04;
 
   var camT = clamp(tCur, 0, 1);
