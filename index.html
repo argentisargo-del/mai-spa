@@ -444,6 +444,7 @@ html.no-js .space{opacity:1;transform:none}
 
 <!-- Звук -->
 <button class="mute" id="muteBtn" type="button" aria-label="Включить или выключить звук">🔊</button>
+<audio id="bgm" loop playsinline preload="none" src="assets/audio/moon-over-mae-klong.mp3"></audio>
 
 <!-- Панель услуги -->
 <aside class="focus-panel" id="focusPanel" aria-hidden="true">
@@ -1983,6 +1984,27 @@ function startMelody() {
   }
   next();
 }
+/* Тайский релакс-трек: реальный файл через WebAudio (общий mute), мягкий выход
+   после гонга. Если файл не загрузился — падаем на синтез startMelody(). */
+var bgm = null, bgmGain = null;
+function startTrack() {
+  if (!AC || bgm || REDUCED) return;
+  var el = document.getElementById('bgm');
+  if (!el) { startMelody(); return; }
+  bgm = el;
+  bgm.addEventListener('error', function () { if (!melodyOn) startMelody(); }, { once: true });
+  try {
+    var srcNode = AC.createMediaElementSource(bgm);
+    bgmGain = AC.createGain(); bgmGain.gain.value = 0;
+    srcNode.connect(bgmGain); bgmGain.connect(master);
+    var t = AC.currentTime;
+    bgmGain.gain.setValueAtTime(0, t + 1.6);
+    bgmGain.gain.linearRampToValueAtTime(0.7, t + 7);   // выход после гонга
+  } catch (e) { startMelody(); return; }
+  bgm.loop = true;
+  var p = bgm.play();
+  if (p && p.catch) p.catch(function () { if (!melodyOn) startMelody(); });
+}
 var lastRoom = -1;
 function doEnter(withSound) {
   if (entered) return;
@@ -1994,7 +2016,7 @@ function doEnter(withSound) {
   setTimeout(function () { enterEl.classList.add('is-gone'); }, REDUCED ? 0 : 1080);
   setTimeout(function () { if (enter3D && enter3D.stop) enter3D.stop(); }, REDUCED ? 0 : 1500);
   document.documentElement.style.overflow = '';
-  if (withSound && !REDUCED) { startAudio(); gong(140, 1.1); startMelody(); }
+  if (withSound && !REDUCED) { startAudio(); gong(140, 1.1); startTrack(); }
   lastRoom = 0;
   // deep-link: короткий подлёт к комнате из хэша
   var hr = HASH_ROOMS[location.hash];
