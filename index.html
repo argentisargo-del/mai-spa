@@ -2313,12 +2313,11 @@ function measure(){ maxScroll = Math.max(1, document.documentElement.scrollHeigh
 measure();
 
 /* прилипание к комнатам */
-var tTargetPrev = 0;              // предыдущий сырой target — для скорости скролла
 var lastScrollActivity = -1e9;    // время последнего события scroll (вкл. инерцию)
 var lastUserIntent = -1e9;        // время последнего явного ввода (wheel/touch/клавиши)
 var snapAnim = null;
-var ROOM_CAPTURE = 0.055;         // радиус «магнита» вокруг комнаты (в t)
-var SNAP_IDLE = 150;              // мс тишины до прилипания к ближайшей комнате
+var SNAP_RADIUS = 0.02;           // доводим к точке ТОЛЬКО если остановились рядом (в t)
+var SNAP_IDLE = 150;              // мс тишины скролла до мягкой доводки
 
 addEventListener('scroll', function(){
   if (DEBUG_P != null) return; // в debug-режиме камера зафиксирована
@@ -2369,7 +2368,7 @@ function nearestStopIdx(t){ var b=0, bd=1e9; for (var i=0;i<SNAP_T.length;i++){ 
 
 /* плавное прилипание страницы к комнате (ease-out, ~0.6 c) */
 function startSnap(toT){
-  var from = scrollY, to = toT * maxScroll, start = performance.now(), dur = 620;
+  var from = scrollY, to = toT * maxScroll, start = performance.now(), dur = 440;
   if (snapAnim) cancelAnimationFrame(snapAnim);
   (function step(now){
     var p = clamp((now-start)/dur, 0, 1);
@@ -2395,7 +2394,8 @@ function maybeSnap(now){
   if (now - lastUserIntent < SNAP_IDLE) return;        // пользователь только что взаимодействовал
   var curT = clamp(scrollY / maxScroll, 0, 1);
   var ri = nearestStopIdx(curT);
-  if (Math.abs(curT - SNAP_T[ri]) > 0.004) startSnap(SNAP_T[ri]);
+  var dist = Math.abs(curT - SNAP_T[ri]);
+  if (dist > 0.004 && dist < SNAP_RADIUS) startSnap(SNAP_T[ri]); // только рядом с точкой, иначе не трогаем
 }
 
 /* оверлеи */
@@ -2472,19 +2472,8 @@ function frame(now) {
   var dt = Math.min(0.05, (now - prevNow) / 1000); prevNow = now;
   if (!focus.active) ringClock += dt;            // кольцо замирает при фокусе
   focus.anim += ((focus.active ? 1 : 0) - focus.anim) * 0.06;
-  if (DEBUG_P != null) {
-    tCur += (tTarget - tCur) * 0.055;            // debug: камера строго за target
-  } else {
-    // «магнит» комнат: возле точки скорость гаснет, но при резком скролле пропускает
-    var scrollSpeed = Math.abs(tTarget - tTargetPrev); tTargetPrev = tTarget;
-    var nc = SNAP_T[nearestStopIdx(tTarget)];
-    var proximity = Math.max(0, 1 - Math.abs(tTarget - nc) / ROOM_CAPTURE); // 1 в центре
-    var slowness  = clamp(1 - scrollSpeed / 0.028, 0, 1);                    // 1 когда почти стоит
-    var magnet = proximity * proximity * slowness;                          // 0..1
-    var goal = tTarget + (nc - tTarget) * magnet;
-    tCur += (goal - tCur) * 0.055;               // демпфирование полёта
-    maybeSnap(now);                              // дотяжка к комнате после остановки
-  }
+  tCur += (tTarget - tCur) * 0.14;               // камера чётко следует за пальцем/скроллом
+  if (DEBUG_P == null) maybeSnap(now);           // мягкая доводка ТОЛЬКО вблизи точки
   px += (pxT - px) * 0.04; py += (pyT - py) * 0.04;
 
   var camT = clamp(tCur, 0, 1);
