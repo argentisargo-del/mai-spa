@@ -1902,6 +1902,9 @@ var mutedFlag = false;
 try { mutedFlag = localStorage.getItem('maispa-muted') === '1'; } catch (e) {}
 
 document.documentElement.style.overflow = 'hidden'; // до входа не листается
+// при обновлении страницы всегда начинаем с начала (браузер не восстанавливает позицию)
+if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+scrollTo(0, 0);
 
 function unlockPlayback() {
   // iOS: тихий <audio> переводит аудиосессию в playback —
