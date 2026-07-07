@@ -419,7 +419,7 @@ html.no-js .space{opacity:1;transform:none}
 <!-- ================= ПРОГРЕСС-ПУТЬ ================= -->
 <nav class="rail" aria-label="Путь по пространствам" id="rail"></nav>
 
-<div class="hint" id="hint" aria-hidden="true"><span>Листайте · зажмите, чтобы осмотреться</span><i></i></div>
+<div class="hint" id="hint" aria-hidden="true"><span>Листайте · свайп в бок — осмотреться</span><i></i></div>
 
 <!-- Экран-приглашение -->
 <div class="enter" id="enter" role="dialog" aria-label="Вход в MAI SPA">
@@ -663,7 +663,10 @@ var ROOM_T = [0.04, 0.178, 0.467, 0.545, 0.80, 0.895, 0.996];
 // Мастер по центру экрана при camT = mt − 0.008, где mt = 0.805 + 0.028·i
 // (см. сборку сцены и пик взгляда). «Зал мастеров» (0.80) заменяем тремя мастерами.
 var MASTER_CENTER_T = [0.797, 0.825, 0.853];
-var SNAP_T = ROOM_T.slice(0, 4).concat(MASTER_CENTER_T, ROOM_T.slice(5));
+// центры отзывов: rt2 − 0.008, где rt2 = 0.885 + 0.018·i (см. сборку панелей) —
+// чтобы можно было остановиться у каждого отзыва, а не только у комнаты
+var REVIEW_CENTER_T = [0.877, 0.895, 0.913, 0.931];
+var SNAP_T = ROOM_T.slice(0, 4).concat(MASTER_CENTER_T, REVIEW_CENTER_T, [ROOM_T[6]]);
 var ROOM_NAMES = ['Вход','Зал ритуалов','Пространство пара','Сад орхидей','Зал мастеров','Отзывы','Контакты'];
 
 /* ============================================================
@@ -1480,7 +1483,7 @@ function buildQuads() {
     var rt2 = 0.885 + i * 0.018;                 // чуть дальше от мастеров, по одной за раз
     var rb2 = basisAt(rt2);
     var side = (i % 2 === 0) ? -1 : 1;           // чередуем лево/право
-    var rpos = add(add(rb2.P, scale(rb2.R, side * 9.5)), scale(rb2.U, 1.4 + (i % 2) * 0.7));
+    var rpos = add(add(rb2.P, scale(rb2.R, side * 11.0)), scale(rb2.U, 1.4 + (i % 2) * 0.7));
     // панель слегка развёрнута к пути
     var rF = norm(add(scale(rb2.T, -1), scale(rb2.R, -side * 0.45)));
     var rR = norm(cross([0,1,0], rF));
@@ -2243,8 +2246,8 @@ document.addEventListener('mousedown', function (e) {
 });
 document.addEventListener('mousemove', function (e) {
   if (!isDragging) return;
-  yawT = clamp(yawT - (e.clientX - dragX) * 0.0024, -0.7, 0.7);
-  pitchT = clamp(pitchT + (e.clientY - dragY) * 0.0018, -0.4, 0.4);
+  yawT = clamp(yawT - (e.clientX - dragX) * 0.0030, -1.1, 1.1);
+  pitchT = clamp(pitchT + (e.clientY - dragY) * 0.0020, -0.5, 0.5);
   dragX = e.clientX; dragY = e.clientY;
 });
 addEventListener('mouseup', function () {
@@ -2259,8 +2262,8 @@ document.addEventListener('touchstart', function (e) {
 document.addEventListener('touchmove', function (e) {
   if (e.touches.length !== 1 || !entered || focus.active) return;
   var dx = e.touches[0].clientX - tchX, dy = e.touches[0].clientY - tchY;
-  if (!tchLook && Math.abs(dx) > Math.abs(dy) * 1.4 && Math.abs(dx) > 6) tchLook = true;
-  if (tchLook) yawT = clamp(yawT - dx * 0.003, -0.7, 0.7);
+  if (!tchLook && Math.abs(dx) > Math.abs(dy) * 1.25 && Math.abs(dx) > 5) tchLook = true;
+  if (tchLook) yawT = clamp(yawT - dx * 0.0042, -1.1, 1.1);
   tchX = e.touches[0].clientX; tchY = e.touches[0].clientY;
 }, { passive: true });
 addEventListener('touchend', function () { tchLook = false; });
@@ -2477,7 +2480,7 @@ function frame(now) {
   }
 
   // осмотр: поворот взгляда (зажать и потянуть)
-  if (!isDragging) { yawT *= 0.95; pitchT *= 0.95; }
+  if (!isDragging && !tchLook) { yawT *= 0.965; pitchT *= 0.965; } // держим взгляд, пока осматриваешься; плавный возврат после
   lookYaw += (yawT - lookYaw) * 0.09;
   lookPitch += (pitchT - lookPitch) * 0.09;
 
