@@ -337,7 +337,6 @@ html.no-js .space{opacity:1;transform:none}
   <!-- 2. Зал ритуалов -->
   <section class="space space--rituals" data-c="0.178" data-w="0.016" aria-label="Зал ритуалов">
     <div class="inner">
-      <p class="eyebrow">Пространство второе</p>
       <h2 class="h2">Зал ритуалов</h2>
       <p>Шесть программ парят вокруг вас. Каждая — путь к балансу, подобранный под ваше состояние.</p>
       <ul class="services-list">
@@ -355,7 +354,6 @@ html.no-js .space{opacity:1;transform:none}
   <!-- 3. Пространство пара -->
   <section class="space" data-c="0.467" data-w="0.028" aria-label="Пространство пара">
     <div class="inner">
-      <p class="eyebrow">Пространство третье</p>
       <h2 class="h2">Пространство пара</h2>
       <p>Тёплый мрамор хаммама, кедровая <span class="em">фитобочка</span> и медленный пар, который забирает усталость.
       После — чайная церемония: улун, тишина и время, принадлежащее только вам.</p>
@@ -365,7 +363,6 @@ html.no-js .space{opacity:1;transform:none}
   <!-- 4. Сад орхидей -->
   <section class="space" data-c="0.545" data-w="0.026" data-c2="0.675" data-w2="0.018" aria-label="Сад орхидей">
     <div class="inner">
-      <p class="eyebrow">Пространство четвёртое</p>
       <h2 class="h2">Сад орхидей</h2>
       <p>Тропический уголок Таиланда: живые орхидеи, влажный тёплый воздух
       и короткие тихие мысли, которые раскрываются при прикосновении.</p>
@@ -375,7 +372,6 @@ html.no-js .space{opacity:1;transform:none}
   <!-- 5. Зал мастеров -->
   <section class="space space--masters" data-c="0.787" data-w="0.015" aria-label="Зал мастеров">
     <div class="inner">
-      <p class="eyebrow">Пространство пятое</p>
       <h2 class="h2">Зал мастеров</h2>
       <p>Три мастера из Таиланда. Три техники. Одно чувство — руки, которые точно знают, что делают.</p>
       <div class="masters">
@@ -389,7 +385,6 @@ html.no-js .space{opacity:1;transform:none}
   <!-- 6. Отзывы -->
   <section class="space space--reviews" data-c="0.895" data-w="0.022" aria-label="Отзывы гостей">
     <div class="inner">
-      <p class="eyebrow">Пространство шестое</p>
       <h2 class="h2">Нам доверяют</h2>
       <p><span class="em">99% положительных</span> · более 100 отзывов на Яндекс Картах</p>
       <div class="flat-reviews">
@@ -1492,10 +1487,11 @@ function buildQuads() {
     scene.quads.push({ tex: revGlow, pos: rpos, R: rR, U: rU, F: rF, trackCamera: true,
       sx: 3.6, sy: 2.7, alpha: 0.55, additive: true, pulse: true, sway: i * 1.7, showAfter: 0.858, hideAfter: 0.952 });
     scene.quads.push({ tex: texReview(REVIEWS[i][0], REVIEWS[i][1]), pos: rpos,
-      R: rR, U: rU, F: rF, trackCamera: true, sx: 2.3, sy: 1.65, alpha: 0.97, additive: false, sway: i * 1.7, showAfter: 0.858, hideAfter: 0.952, cullBack: true });
+      R: rR, U: rU, F: rF, trackCamera: true, sx: 2.3, sy: 1.65, alpha: 0.97, additive: false, sway: i * 1.7, showAfter: 0.858, hideAfter: 0.952, cullBack: true, review: true });
     scene.reviewPanels.push({ pos: rpos, t: rt2 });
   }
 
+  scene.reviewQuads = scene.quads.filter(function (q) { return q.review; });
   scene.cardQuads = scene.quads.filter(function (q) { return q.card != null; });
   texturesReady = true;
 }
@@ -1651,28 +1647,27 @@ function initEnterThree() {
       return [x * c + z * s, -x * s + z * c];
     }
     function petalPoint(i) {
+      // Лотос как на логотипе: лепестки веером вверх из общей базы, острые кончики.
       var petals = [
-        { c:[0.0,0.52,0.0], s:[0.62,1.32,0.36], rz:0.0, ry:0.0 },
-        { c:[-0.66,0.04,0.06], s:[0.68,1.12,0.34], rz:-0.58, ry:0.18 },
-        { c:[0.66,0.04,0.06], s:[0.68,1.12,0.34], rz:0.58, ry:-0.18 },
-        { c:[-0.96,-0.42,-0.04], s:[0.68,0.88,0.30], rz:-1.02, ry:0.25 },
-        { c:[0.96,-0.42,-0.04], s:[0.68,0.88,0.30], rz:1.02, ry:-0.25 },
-        { c:[0.0,-0.66,0.02], s:[0.92,0.46,0.26], rz:0.0, ry:0.0 }
+        { ang: 0.00, L: 1.66, W: 0.27, back: 0.00 },  // центральный
+        { ang: 0.46, L: 1.48, W: 0.28, back: 0.10 },  // внутренние
+        { ang:-0.46, L: 1.48, W: 0.28, back: 0.10 },
+        { ang: 0.92, L: 1.24, W: 0.27, back: 0.20 },  // средние
+        { ang:-0.92, L: 1.24, W: 0.27, back: 0.20 },
+        { ang: 1.34, L: 0.98, W: 0.24, back: 0.30 },  // внешние (раскрытые)
+        { ang:-1.34, L: 0.98, W: 0.24, back: 0.30 }
       ];
+      var K = 1.3, baseY = -0.91;                     // масштаб и общая база — центр совпадает с прежним кадром
       var p = petals[Math.floor(rnd(i + 330) * petals.length)];
-      var t = Math.pow(rnd(i + 341), 0.78);         // 0 = tip, 1 = base
-      var width = p.s[0] * Math.pow(Math.sin(Math.PI * t), 0.72);
-      var x = (rnd(i + 352) * 2 - 1) * width;
-      var y = (0.52 - t) * p.s[1];
-      var z = (rnd(i + 363) - 0.5) * p.s[2] * 0.24 + Math.sin(Math.PI * t) * p.s[2] * 0.22;
-      // Уплотняем края и центральную жилку, чтобы лепестки читались после сборки.
-      if (rnd(i + 374) < 0.34) x = Math.sign(x || (rnd(i + 375) - 0.5)) * width * (0.82 + rnd(i + 376) * 0.18);
-      if (rnd(i + 377) < 0.18) x *= 0.18;
-      var rz = rotateZ(x, y, p.rz);
-      x = rz[0]; y = rz[1];
-      var ry = rotateY(x, z, p.ry);
-      x = ry[0]; z = ry[1];
-      return [x + p.c[0], y + p.c[1], z + p.c[2]];
+      var t = Math.pow(rnd(i + 341), 0.6);            // 0 = база, 1 = кончик; плотнее к кончикам
+      var w = p.W * K * Math.pow(Math.sin(Math.PI * t), 0.62); // острый кончик, узкая база
+      var x = (rnd(i + 352) * 2 - 1) * w;
+      var y = t * p.L * K;
+      // уплотняем контур лепестка, чтобы лепестки читались как в лайн-арте
+      if (rnd(i + 374) < 0.58) x = Math.sign(x || (rnd(i + 375) - 0.5)) * w * (0.86 + rnd(i + 376) * 0.14);
+      var z = (rnd(i + 363) - 0.5) * 0.10 + Math.sin(Math.PI * t) * p.back;
+      var r = rotateZ(x, y, p.ang);
+      return [r[0], r[1] + baseY, z];
     }
 
     for (var i = 0; i < count; i++) {
@@ -2217,6 +2212,8 @@ document.addEventListener('click', function (e) {
   if (m) { openMasterInfo(m.master); return; }
   var o = raycastList(scene.orchidQuads, e.clientX, e.clientY);
   if (o) { openOrchidNote(o, e.clientX, e.clientY); return; }
+  var rv = raycastList(scene.reviewQuads, e.clientX, e.clientY);
+  if (rv) { window.open('https://yandex.ru/navi/org/may/18303980818?si=wt3mrfjh8wvr539tjx35p5qmfr', '_blank', 'noopener'); return; }
   var q = raycastList(scene.cardQuads, e.clientX, e.clientY);
   if (q) openFocus(q);
   else { closeFocus(); closeMasterInfo(); closeGardenNote(); }
@@ -2227,8 +2224,9 @@ document.addEventListener('mousemove', function (e) {
   hoverBtnQ = raycastList(scene.btnQuads, e.clientX, e.clientY);
   hoverMasterQ = hoverBtnQ ? null : raycastList(scene.masterQuads, e.clientX, e.clientY);
   hoverOrchidQ = (hoverBtnQ || hoverMasterQ) ? null : raycastList(scene.orchidQuads, e.clientX, e.clientY);
-  hoverQ = (hoverBtnQ || hoverMasterQ || hoverOrchidQ) ? null : raycastList(scene.cardQuads, e.clientX, e.clientY);
-  document.body.style.cursor = (hoverQ || hoverBtnQ || hoverMasterQ || hoverOrchidQ) ? 'pointer' : '';
+  var hoverReviewQ = (hoverBtnQ || hoverMasterQ || hoverOrchidQ) ? null : raycastList(scene.reviewQuads, e.clientX, e.clientY);
+  hoverQ = (hoverBtnQ || hoverMasterQ || hoverOrchidQ || hoverReviewQ) ? null : raycastList(scene.cardQuads, e.clientX, e.clientY);
+  document.body.style.cursor = (hoverQ || hoverBtnQ || hoverMasterQ || hoverOrchidQ || hoverReviewQ) ? 'pointer' : '';
 });
 
 /* ============================================================
