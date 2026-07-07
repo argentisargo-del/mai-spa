@@ -149,6 +149,20 @@ body:not(.flat) .space--contacts .inner{transform:translateY(14vh)}   /* ниж�
 @keyframes hintdot{0%{transform:translateY(-100%)}100%{transform:translateY(260%)}}
 .hint.is-hidden{opacity:0}
 
+/* значок «скролль пальцем вверх-вниз» — стартовая подсказка */
+.scroll-cue{position:fixed;right:15vw;bottom:23vh;z-index:10;pointer-events:none;
+  opacity:0;transition:opacity .6s var(--ease);filter:drop-shadow(0 8px 18px rgba(0,0,0,.45))}
+body.entered:not(.flat) .scroll-cue{opacity:.92}
+.scroll-cue.is-hidden{opacity:0 !important}
+.scroll-cue svg{display:block;overflow:visible}
+.cue-hand{animation:cueSwipe 2.4s var(--ease) infinite}
+.cue-arrow{fill:none;stroke:var(--brass);stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.cue-arrow--up{animation:cueUp 2.4s var(--ease) infinite}
+.cue-arrow--down{animation:cueDown 2.4s var(--ease) infinite}
+@keyframes cueSwipe{0%,100%{transform:translateY(-11px)}50%{transform:translateY(11px)}}
+@keyframes cueUp{0%,100%{opacity:1}45%,60%{opacity:.25}}
+@keyframes cueDown{0%,100%{opacity:.25}45%,60%{opacity:1}}
+
 /* ---------- Брендинг в углу ---------- */
 .brand{position:fixed;top:1.4rem;left:clamp(1.2rem,4vw,2.4rem);z-index:10;
   font-family:var(--serif);font-size:1.25rem;letter-spacing:.08em;color:var(--ink);
@@ -288,7 +302,7 @@ body.is-finale .offer-btn{opacity:1;visibility:visible;pointer-events:auto;trans
 @media (prefers-reduced-motion:reduce){
   .hint i::after{animation:none}
 }
-.flat #gl,.flat .vignette,.flat .spacer,.flat .rail,.flat .hint{display:none}
+.flat #gl,.flat .vignette,.flat .spacer,.flat .rail,.flat .hint,.flat .scroll-cue{display:none}
 .flat .overlay{position:static;pointer-events:auto}
 .flat .space{position:static;opacity:1 !important;transform:none !important;
   min-height:auto;padding:clamp(3.4rem,9vh,6.5rem) clamp(1.2rem,6vw,4rem);
@@ -420,6 +434,15 @@ html.no-js .space{opacity:1;transform:none}
 <nav class="rail" aria-label="Путь по пространствам" id="rail"></nav>
 
 <div class="hint" id="hint" aria-hidden="true"><span>Листайте · свайп в бок — осмотреться</span><i></i></div>
+<div class="scroll-cue" id="scrollCue" aria-hidden="true">
+  <svg viewBox="0 0 48 104" width="50" height="108">
+    <path class="cue-arrow cue-arrow--up" d="M18 13 L24 6 L30 13"/>
+    <g class="cue-hand">
+      <path transform="translate(6,34) scale(1.5)" fill="#e8c088" d="M9 11.24V7.5C9 6.12 10.12 5 11.5 5S14 6.12 14 7.5v3.74c1.21-.81 2-2.18 2-3.74C16 5.01 13.99 3 11.5 3S7 5.01 7 7.5c0 1.56.79 2.93 2 3.74zm9.84 4.63l-4.54-2.26c-.17-.07-.35-.11-.54-.11H13v-6C13 6.67 12.33 6 11.5 6S10 6.67 10 7.5v10.74l-3.43-.72c-.08-.01-.15-.03-.24-.03-.31 0-.59.13-.79.33l-.79.8 4.94 4.94c.27.27.65.44 1.06.44h6.79c.75 0 1.33-.55 1.44-1.28l.75-5.27c.01-.07.02-.14.02-.2 0-.62-.38-1.16-.92-1.38z"/>
+    </g>
+    <path class="cue-arrow cue-arrow--down" d="M18 91 L24 98 L30 91"/>
+  </svg>
+</div>
 
 <!-- Экран-приглашение -->
 <div class="enter" id="enter" role="dialog" aria-label="Вход в MAI SPA">
@@ -561,6 +584,7 @@ var canvas = document.getElementById('gl');
 var spaces = [].slice.call(document.querySelectorAll('.space'));
 var railEl = document.getElementById('rail');
 var hintEl = document.getElementById('hint');
+var cueEl = document.getElementById('scrollCue');
 
 /* ---------- фолбэк ---------- */
 function goFlat() { document.body.classList.add('flat'); }
@@ -2293,7 +2317,7 @@ addEventListener('scroll', function(){
   if (DEBUG_P != null) return; // в debug-режиме камера зафиксирована
   tTarget = clamp(scrollY / maxScroll, 0, 1);
   lastScrollActivity = performance.now();
-  if (scrollY > 30) hintEl.classList.add('is-hidden');
+  if (scrollY > 30) { hintEl.classList.add('is-hidden'); if (cueEl) cueEl.classList.add('is-hidden'); }
 }, { passive: true });
 
 /* параллакс за курсором / гироскопом */
