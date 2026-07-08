@@ -388,8 +388,9 @@ html.no-js .space{opacity:1;transform:none}
   <section class="space space--masters" data-c="0.787" data-w="0.015" aria-label="Зал мастеров">
     <div class="inner">
       <h2 class="h2">Зал мастеров</h2>
-      <p>Три мастера из Таиланда. Три техники. Одно чувство — руки, которые точно знают, что делают.</p>
+      <p>Четыре мастера из Таиланда. Четыре техники. Одно чувство — руки, которые точно знают, что делают.</p>
       <div class="masters">
+        <div class="master"><video class="master-photo" src="тай4.mp4" muted loop autoplay playsinline preload="metadata" aria-label="Мисс Сомджит — мастер тайского массажа"></video><b>Мисс Сомджит</b><a class="btn" href="https://n1351412.yclients.com" target="_blank" rel="noopener">Записаться</a></div>
         <div class="master"><img class="master-photo" src="assets/img/master-lauan.jpg" alt="Мисс Лауан — мастер тайского массажа" loading="lazy" /><b>Мисс Лауан</b><a class="btn" href="https://n1351412.yclients.com" target="_blank" rel="noopener">Записаться</a></div>
         <div class="master"><img class="master-photo" src="assets/img/master-vanni.jpg" alt="Мисс Ванни — мастер тайского массажа" loading="lazy" /><b>Мисс Ванни</b><a class="btn" href="https://n1351412.yclients.com" target="_blank" rel="noopener">Записаться</a></div>
         <div class="master"><img class="master-photo" src="assets/img/master-natsinee.jpg" alt="Мисс Натсинее — мастер тайского массажа" loading="lazy" /><b>Мисс Натсинее</b><a class="btn" href="https://n1351412.yclients.com" target="_blank" rel="noopener">Записаться</a></div>
@@ -686,10 +687,10 @@ var ROOM_T = [0.04, 0.178, 0.467, 0.545, 0.80, 0.895, 0.996];
 // Точки остановки для прилипания: комнаты + центры мастеров.
 // Мастер по центру экрана при camT = mt − 0.008, где mt = 0.805 + 0.028·i
 // (см. сборку сцены и пик взгляда). «Зал мастеров» (0.80) заменяем тремя мастерами.
-var MASTER_CENTER_T = [0.797, 0.825, 0.853];
-// центры отзывов: rt2 − 0.008, где rt2 = 0.885 + 0.018·i (см. сборку панелей) —
+var MASTER_CENTER_T = [0.792, 0.816, 0.840, 0.864];   // mt − 0.008, mt = 0.800 + 0.024·i
+// центры отзывов: rt2 − 0.008, где rt2 = 0.896 + 0.016·i (см. сборку панелей) —
 // чтобы можно было остановиться у каждого отзыва, а не только у комнаты
-var REVIEW_CENTER_T = [0.877, 0.895, 0.913, 0.931];
+var REVIEW_CENTER_T = [0.888, 0.904, 0.920, 0.936];
 var SNAP_T = ROOM_T.slice(0, 4).concat(MASTER_CENTER_T, REVIEW_CENTER_T, [ROOM_T[6]]);
 var ROOM_NAMES = ['Вход','Зал ритуалов','Пространство пара','Сад орхидей','Зал мастеров','Отзывы','Контакты'];
 
@@ -1138,13 +1139,15 @@ var ORCHID_NOTES = [
   { title:'Тропики', text:'Орхидеи напоминают: красота может быть спокойной, влажной и почти невесомой.' },
   { title:'Покой', text:'Здесь не нужно спешить. Сад раскрывается ровно настолько, насколько вы готовы.' }
 ];
-var MASTERS = ['Мисс Лауан','Мисс Ванни','Мисс Натсинее'];
-var MASTER_IMGS = [null, null, null];
-var MASTER_VIDEO_SRCS = ['1%D1%82%D0%B0%D0%B9.mp4', '%D1%82%D0%B0%D0%B92.mp4', '%D1%82%D0%B0%D0%B93.mp4'];
-var MASTER_VIDEO_OFFSETS = [0.22, 0.22, 0.22];
-var MASTER_VIDEO_TEX = [null, null, null];
-['assets/img/master-lauan.jpg','assets/img/master-vanni.jpg','assets/img/master-natsinee.jpg']
+var MASTERS = ['Мисс Сомджит','Мисс Лауан','Мисс Ванни','Мисс Натсинее'];
+var MASTER_IMGS = [null, null, null, null];
+var MASTER_VIDEO_SRCS = ['%D1%82%D0%B0%D0%B94.mp4', '1%D1%82%D0%B0%D0%B9.mp4', '%D1%82%D0%B0%D0%B92.mp4', '%D1%82%D0%B0%D0%B93.mp4'];
+var MASTER_VIDEO_OFFSETS = [0.22, 0.22, 0.22, 0.22];
+var MASTER_VIDEO_TEX = [null, null, null, null];
+// у Сомджит фото нет — только видео (индекс 0 остаётся null, texVideoCircle это допускает)
+[null,'assets/img/master-lauan.jpg','assets/img/master-vanni.jpg','assets/img/master-natsinee.jpg']
   .forEach(function (src, idx) {
+    if (!src) return;
     var im = new Image();
     im.onload = function () {
       MASTER_IMGS[idx] = im;
@@ -1462,8 +1465,8 @@ function buildQuads() {
   var glowTex = texGlow('rgba(232,192,136,0.5)','rgba(232,192,136,0)');
   var btnTex = texButton();
   scene.masterGazes = [];
-  for (i=0;i<3;i++){
-    var mt = 0.805 + i * 0.028;
+  for (i=0;i<4;i++){
+    var mt = 0.800 + i * 0.024;
     var tb = basisAt(mt);
     var mside = (i % 2 === 0) ? -1 : 1;          // слева-справа-слева
     var pp = add(add(tb.P, scale(tb.R, mside * 10.0)), scale(tb.U, 0.9));
@@ -1504,7 +1507,7 @@ function buildQuads() {
   var revGlow = texGlow('rgba(211,161,92,0.30)','rgba(211,161,92,0)');
   scene.reviewPanels = [];
   for (i = 0; i < REVIEWS.length; i++) {
-    var rt2 = 0.885 + i * 0.018;                 // чуть дальше от мастеров, по одной за раз
+    var rt2 = 0.896 + i * 0.016;                 // после четырёх мастеров, по одной за раз
     var rb2 = basisAt(rt2);
     var side = (i % 2 === 0) ? -1 : 1;           // чередуем лево/право
     var rpos = add(add(rb2.P, scale(rb2.R, side * 11.0)), scale(rb2.U, 1.4 + (i % 2) * 0.7));
@@ -1513,9 +1516,9 @@ function buildQuads() {
     var rR = norm(cross([0,1,0], rF));
     var rU = cross(rF, rR);
     scene.quads.push({ tex: revGlow, pos: rpos, R: rR, U: rU, F: rF, trackCamera: true,
-      sx: 3.6, sy: 2.7, alpha: 0.55, additive: true, pulse: true, sway: i * 1.7, showAfter: 0.858, hideAfter: 0.952 });
+      sx: 3.6, sy: 2.7, alpha: 0.55, additive: true, pulse: true, sway: i * 1.7, showAfter: 0.872, hideAfter: 0.952 });
     scene.quads.push({ tex: texReview(REVIEWS[i][0], REVIEWS[i][1]), pos: rpos,
-      R: rR, U: rU, F: rF, trackCamera: true, sx: 2.3, sy: 1.65, alpha: 0.97, additive: false, sway: i * 1.7, showAfter: 0.858, hideAfter: 0.952, cullBack: true, review: true });
+      R: rR, U: rU, F: rF, trackCamera: true, sx: 2.3, sy: 1.65, alpha: 0.97, additive: false, sway: i * 1.7, showAfter: 0.872, hideAfter: 0.952, cullBack: true, review: true });
     scene.reviewPanels.push({ pos: rpos, t: rt2 });
   }
 
@@ -2106,6 +2109,11 @@ var offerModal = document.getElementById('offerModal');
 var offerClose = document.getElementById('offerClose');
 
 var MASTER_INFO = [
+  {
+    role: 'Thai Master',
+    name: 'Мисс Сомджит',
+    desc: 'Мастер тайских техник с мягкой, внимательной подачей. Помогает снять напряжение, вернуть телу лёгкость и настроиться на спокойный ритм восстановления.'
+  },
   {
     role: 'Thai Master',
     name: 'Мисс Лауан',
