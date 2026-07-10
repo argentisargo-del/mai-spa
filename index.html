@@ -1512,7 +1512,9 @@ function buildQuads() {
     var rb2 = basisAt(rt2);
     var side = (i % 2 === 0) ? -1 : 1;           // чередуем лево/право
     // пары одной стороны (i и i+2) разводим по высоте и вбок — иначе на десктопе они наслаиваются вдоль взгляда
-    var rpos = add(add(rb2.P, scale(rb2.R, side * (11.0 + (i >> 1) * 2.5))), scale(rb2.U, 1.4 + (i % 2) * 0.7 + (i >> 1) * 1.6));
+    var rLat = side * (11.0 + (i >> 1) * 2.5);
+    if (i === 3) rLat = -9.5;  // последний отзыв: путь тут заворачивает к финалу, «право» пути смотрит влево на экране — кладём на другую сторону
+    var rpos = add(add(rb2.P, scale(rb2.R, rLat)), scale(rb2.U, 1.4 + (i % 2) * 0.7 + (i >> 1) * 1.6));
     // панель слегка развёрнута к пути
     var rF = norm(add(scale(rb2.T, -1), scale(rb2.R, -side * 0.45)));
     var rR = norm(cross([0,1,0], rF));
@@ -1521,7 +1523,8 @@ function buildQuads() {
       sx: 3.6, sy: 2.7, alpha: 0.55, additive: true, pulse: true, sway: i * 1.7, showAfter: 0.872, hideAfter: 0.952 });
     scene.quads.push({ tex: texReview(REVIEWS[i][0], REVIEWS[i][1]), pos: rpos,
       R: rR, U: rU, F: rF, trackCamera: true, sx: 2.3, sy: 1.65, alpha: 0.97, additive: false, sway: i * 1.7, showAfter: 0.872, hideAfter: 0.952, cullBack: true, review: true });
-    scene.reviewPanels.push({ pos: rpos, t: rt2 });
+    // прицел взгляда — чуть левее панели: сама панель ложится правее центра кадра
+    scene.reviewPanels.push({ pos: sub(rpos, scale(rb2.R, 2.0)), t: rt2 });
   }
 
   scene.reviewQuads = scene.quads.filter(function (q) { return q.review; });
@@ -2502,6 +2505,12 @@ function frame(now) {
   var eye = splineP(camT);
   var lookT = clamp(camT + 0.035, 0, 1);
   var target = splineP(lookT);
+  // нормализуем дистанцию «вперёд по пути»: направление то же, но точка не дальше 10 ед.
+  // Иначе у финала она очень далеко и при смешивании с прицелом на панель (lerp по позициям)
+  // остаток утягивает взгляд — панель уезжает из центра кадра.
+  var tgd = sub(target, eye);
+  var tgl = Math.hypot(tgd[0], tgd[1], tgd[2]) || 1;
+  if (tgl > 10) target = add(eye, scale(tgd, 10 / tgl));
 
   // взгляд активно поворачивается к мастерицам и панелям отзывов
   var gazePts = (scene.masterGazes || []).concat(scene.reviewPanels || []);
